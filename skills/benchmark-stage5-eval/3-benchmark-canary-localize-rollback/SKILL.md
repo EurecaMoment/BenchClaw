@@ -1,0 +1,141 @@
+---
+name: benchmark-canary-localize-rollback
+description: "Atomic module: 灰度失败定位与回退计划。只负责把灰度评测失败映射到具体 stage/phase/skill/artifact 并生成回退修复计划，不负责直接修改产物、不负责全量评测、不负责版本控制修改 skill。Use when user says '灰度失败定位'canary rollback'定位回退到相应位."
+argument-hint: [stage5-canary-report]
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
+metadata:
+  openclaw:
+    emoji: ""
+    requires:
+      bins: [python3]
+---
+
+
+## Workspace and File Access Boundary
+
+This skill must operate only inside the current run workspace.
+
+- Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
+- Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
+- If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
+- Outputs must be written only to the active `WORKSPACE_ROOT` paths declared by this skill. Do not mirror or cache run artifacts into other workspaces or unrelated server folders.
+- If the user explicitly provides an external path, use it only when it is directly relevant to this skill, record it as a user-provided exception, and do not expand access to sibling or parent directories.
+
+This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
+
+# Canary Failure Localization and Rollback Planning
+
+Localize canary failures and produce rollback instructions for: **$ARGUMENTS**
+
+This skill is an **atomic single-responsibility skill**. It must only diagnose canary failures and write a rollback plan.
+
+---
+
+## Purpose
+
+- 本模块负责在 Stage 5 灰度评测失败后，定位问题应回退到哪些stage、phase、skill ->artifact- 本模块直接产物是 `~/bench_workspace/workspace{i}/stage5/CANARY_ROLLBACK_PLAN.md` ->`~/bench_workspace/workspace{i}/stage5/ROLLBACK_STATE_PATCH.json`- 本模块不负责执行回退、不负责改写上游产物、不负责修改 skill 源码；skill 源码的手术刀式修改由 Stage 6 负责
+---
+
+## Inputs
+
+- `$ARGUMENTS`：`~/bench_workspace/workspace{i}/stage5/CANARY_EVAL_REPORT.md` ->Stage 5 目录- 必需输入->  - `~/bench_workspace/workspace{i}/stage5/CANARY_EVAL_REPORT.md`
+  - `~/bench_workspace/workspace{i}/stage5/CANARY_METRICS.json`
+  - `~/bench_workspace/workspace{i}/stage5/CANARY_VERDICT.json`
+  - `~/bench_workspace/workspace{i}/stage1/STAGE1_UNIT_TEST_REPORT.md`
+  - `~/bench_workspace/workspace{i}/stage2/STAGE2_UNIT_TEST_REPORT.md`
+  - `~/bench_workspace/workspace{i}/stage3/STAGE3_UNIT_TEST_REPORT.md`
+  - `~/bench_workspace/workspace{i}/stage4/STAGE4_UNIT_TEST_REPORT.md`
+  - `~/bench_workspace/workspace{i}/stage5/EVAL_SYSTEM_PROMPT.md`
+  - `~/bench_workspace/workspace{i}/stage5/RUN_CONFIG.json`
+- 可选输入：
+  - `~/bench_workspace/workspace{i}/stage5/CANARY_RAW_OUTPUTS.jsonl`
+  - `pipeline_state.json`
+
+若灰verdict ->PASS，本模块应写入`NO_ROLLBACK_NEEDED` 报告并结束
+---
+
+## Localization Rules
+
+按以下优先级定位
+| Symptom | Primary rollback target | Secondary target |
+|---------|--------------------------|------------------|
+| API 认证、endpoint、payload、rate limit 错误 | Stage 5 Phase 1 `/benchmark-build-eval-system-prompt` | 模型 API 配置 |
+| 输出格式大面积不可解| Stage 5 Phase 1 prompt/output schema | Stage 4 `EVALSET_SCHEMA.md` |
+| metric runtime 失败 | Stage 4 Phase 2 `/benchmark-metric-establish` | Stage 4 Phase 3 `/benchmark-validate-stage4` |
+| sample manifest/schema mismatch | Stage 4 Phase 1 `/benchmark-evalset-generate` | Stage 3 `CLEANED_DATA_SCHEMA.md` |
+| GT 缺失、错位、明显错| Stage 3 Phase 4 `/benchmark-cleaning-validate` | Stage 2 Phase 5 `/benchmark-batch-collect` |
+| 清洗后维度覆盖塌| Stage 3 Phase 1/2/3 | Stage 2 补采 |
+| 任务设计与能力维度不一| Stage 1 Phase 3/5 | Stage 4 Phase 1 |
+| 灰度样本无法覆盖关键维度 | Stage 4 Phase 1 synthesis rules | Stage 2/3 数据不足 |
+| GT 泄露到模型输| Stage 4 Phase 1/3 | Stage 5 Phase 1 prompt packaging |
+
+---
+
+## Procedure
+
+1. **读取灰度失败证据**：解`CANARY_EVAL_REPORT.md`、`CANARY_METRICS.json`、`CANARY_VERDICT.json`2. **读取单元测试证据**：汇Stage 1-4 的单元测verdict、warnings、required fix target3. **分类失败类型**：将错误归类API、prompt、schema、metric、data、cleaning、task design、GT leakage、coverage collapse、cost/stability4. **计算回退目标**：按 `Localization Rules` 和单元测试证据给出最小回退点5. **生成执行计划**：列出应重跑stage/phase/skill、应检查的 artifact、保留废弃的下游产物6. **写入 pipeline state patch**：生成可供父 orchestrator 合并`ROLLBACK_STATE_PATCH.json`7. **写入报告**：生成`CANARY_ROLLBACK_PLAN.md`
+---
+
+## Expected Outputs
+
+- `~/bench_workspace/workspace{i}/stage5/CANARY_ROLLBACK_PLAN.md`
+- `~/bench_workspace/workspace{i}/stage5/ROLLBACK_STATE_PATCH.json`
+
+`CANARY_ROLLBACK_PLAN.md` 必须包含
+```markdown
+# Canary Rollback Plan
+
+**Canary verdict**: FAIL | NEEDS_REVIEW | NO_ROLLBACK_NEEDED
+**Minimal rollback target**: Stage N / Phase M / Skill `/skill-name`
+**Blocking artifact**: [path]
+
+## Evidence
+| Evidence Source | Finding | Severity | Supports Target |
+|-----------------|---------|----------|-----------------|
+| CANARY_EVAL_REPORT | ... | blocking | Stage ... |
+| STAGE*_UNIT_TEST_REPORT | ... | warning/fail | Stage ... |
+
+## Root Symptom Classification
+- Primary symptom: [...]
+- Secondary symptoms: [...]
+
+## Rollback Execution Plan
+1. Preserve: [artifacts to keep]
+2. Invalidate: [downstream artifacts to regenerate]
+3. Rerun from: [stage/phase/skill]
+4. Required modification before rerun: [artifact edits or skill issue to defer to Stage 6]
+5. Regression checks after rerun: [unit tests + canary]
+
+## User-Facing Decision
+- Recommended action: rollback and rerun from [target]
+- Full-scale evaluation allowed now: no
+```
+
+`ROLLBACK_STATE_PATCH.json` 必须包含
+```json
+{
+  "current_stage": "rollback_required",
+  "failed_stage": "stage5_canary",
+  "rollback_target": {
+    "stage": "stageN",
+    "phase": "phaseM",
+    "skill": "/skill-name",
+    "artifact": "path"
+  },
+  "invalidate_after_stage": "stageN",
+  "full_eval_allowed": false
+}
+```
+
+---
+
+## Completion Criteria
+
+- [ ] 报告中有且只有一minimal rollback target- [ ] 回退目标必须精确stage、phase、skill ->artifact- [ ] 明确列出哪些下游产物需要废弃并重跑- [ ] 不执行全量评测，不修改上游主产物
+---
+
+## Downstream Handoff
+
+- 父级 `benchmark-stage5-eval` ->`benchmark-pipeline` 合并 `ROLLBACK_STATE_PATCH.json` ->`pipeline_state.json`- 用户或父流程根据 `CANARY_ROLLBACK_PLAN.md` 回退到目录stage/phase- Stage 6 使用该报告判断是否需要修改对skill 的流程规则

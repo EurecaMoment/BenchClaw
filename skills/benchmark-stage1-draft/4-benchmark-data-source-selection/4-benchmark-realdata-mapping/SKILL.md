@@ -1,0 +1,129 @@
+---
+name: benchmark-realdata-mapping
+description: "Atomic module: stage1 Phase 4 真实采集数据能力匹配模块。只负责将能力维度与真实采集数据源进行匹配，输出维度-真实数据映射表、未覆盖维度分析和可行性评估，不负责真实采集执行、数据清洗或仿真器选择。Use when user says '匹配真实数据'、'realdata mapping'、'真实采集数据选取'."
+argument-hint: [benchmark-context]
+allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
+metadata:
+  openclaw:
+    emoji: ""
+    requires:
+      bins: [python3]
+---
+
+
+## Workspace and File Access Boundary
+
+This skill must operate only inside the current run workspace.
+
+- Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
+- Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
+- If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
+- Outputs must be written only to the active `WORKSPACE_ROOT` paths declared by this skill. Do not mirror or cache run artifacts into other workspaces or unrelated server folders.
+- If the user explicitly provides an external path, use it only when it is directly relevant to this skill, record it as a user-provided exception, and do not expand access to sibling or parent directories.
+
+This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
+
+# Benchmark Real-Data Mapping
+
+Execute real-data-to-capability mapping for: **$ARGUMENTS**
+
+This skill is an **atomic single-responsibility skill**.
+It must only do the work scoped to this module.
+
+## Purpose
+
+- 本模块负责将 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 中的每个能力维度与真实采集数据源进行匹配，判断哪些维度需要真实世界采集才能成立。
+- 本模块评估真实数据源的场景真实性、采集约束、合规风险、标注成本与覆盖效率。
+- 本模块位于 Stage 1 第四环节的真实数据分支，直接产物是 `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md`。
+- 本模块不负责真实采集执行、仿真器选择、评测集设计或草稿生成。
+
+## Inputs
+
+- `$ARGUMENTS`：真实数据映射的补充要求或用户偏好（如优先高真实性场景）。
+- 必需输入：`~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`。
+- 必需输入：真实数据能力卡片目录 `~/benchclaw/realdata_cards`（每张卡片描述一个真实采集数据源的场景、模态、采集条件、标注形式等）。
+- 可选输入：真实采集数据目录 `~/benchclaw/realdatas`、workspace `~/bench_workspace/workspace{i}/stage1/datasets/` 中的离线样本。
+- **若 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 缺失，应立即停止并报告缺失文件。**
+- **若 `~/benchclaw/realdata_cards` 目录缺失或为空，应标注为"无真实数据卡片可用"并要求后续不使用该模块。**
+
+## Procedure
+
+1. **读取能力维度**：读取 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`，提取所有能力维度及其操作性定义与任务类型示例。
+2. **读取真实数据卡片**：遍历 `~/benchclaw/realdata_cards` 中的所有真实数据能力卡片，提取每个数据源支持的场景类型、模态、采集条件、标注方式等。
+3. **逐维度匹配**：将每个能力维度与真实数据源能力进行匹配，判定：
+   - 哪些维度可被哪些真实数据源直接支持（full coverage）
+   - 哪些维度需要多个真实数据源组合覆盖（partial coverage, combination needed）
+   - 哪些维度当前无真实数据源可支持（none, need simulator or offline/manual construction）
+4. **推荐方案**：为每个维度推荐首选真实数据源及备选方案，附选择理由。
+5. **扫描离线资产**：轻量扫描真实采集数据目录，识别已有真实数据资产对未覆盖维度的补充覆盖能力。
+6. **可行性评估**：评估选定真实数据源组合的：
+   - 采集复杂度
+   - 合规与隐私风险
+   - 场景真实性与多样性
+   - 数据获取或复用吞吐量
+7. **确定最终组合**：综合匹配结果与可行性评估，选定最终真实数据组合并给出选择理由。
+8. **校验**：确认所有能力维度在映射表中均有对应条目（即使是 "none"）。
+9. **写入**：确保 `~/bench_workspace/workspace{i}/stage1/data_source_selection/` 存在，并写入 `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md`。
+
+## Expected Outputs
+
+- `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md`
+
+输出文件结构：
+
+```markdown
+# Real-Data Mapping
+
+## Available Real-Data Sources
+| Source | Collection Scenarios | Modalities | Constraints | Key Characteristics |
+|--------|----------------------|------------|-------------|---------------------|
+| ...    | ...                  | ...        | ...         | ...                 |
+
+## Dimension-RealData Mapping
+| Capability Dimension | Primary Source | Backup Source | Coverage | Notes |
+|---------------------|----------------|---------------|----------|-------|
+| ...                 | ...            | ...           | full/partial/none | ... |
+
+## Uncovered Dimensions
+[无真实数据源可直接支持的维度，需要仿真器、离线数据或人工构造]
+
+## Existing Real-Data Assets
+[workspace 中已有的真实采集数据资产及其对能力维度的补充覆盖情况]
+
+## Feasibility Assessment
+- Collection complexity: [评估]
+- Compliance / privacy burden: [评估]
+- Scene realism / diversity: [评估]
+- Acquisition throughput: [评估]
+
+## Selected Real-Data Set
+[最终选定的真实数据组合及选择理由]
+```
+
+## Completion Criteria
+
+- [ ] `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md` 已存在且非空。
+- [ ] Dimension-RealData Mapping 表覆盖了 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 中的所有维度。
+- [ ] 每个维度至少标注了 coverage 等级（full / partial / none）。
+- [ ] Uncovered Dimensions 对 "none" 类维度提供了仿真器、离线数据或人工构造的替代方案建议。
+- [ ] Feasibility Assessment 包含四项评估维度的具体结论。
+- [ ] Selected Real-Data Set 给出了最终选择及理由。
+
+## Rules
+
+- 不生成 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md`、`~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`、`~/bench_workspace/workspace{i}/stage1/BENCHMARK_DRAFT.md` 或任何后续 phase 产物。
+- 不擅自改写 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 或任何上游产物。
+- 不执行真实数据采集、标注或清洗——那是 stage2/3 的职责。
+- 不因真实数据限制而删减能力维度——应标注 "none" 并建议替代方案，由上游 Phase 3 决定是否调整维度。
+- 卡片信息与自身知识冲突时，以卡片信息为准。
+- 出错时必须明确指出阻塞原因（如卡片目录缺失、某关键真实数据源信息不足）。
+- 如果 Write 因文件过大失败，立即 fallback 到 Bash 分块写入，不要询问用户许可。
+
+## Downstream Handoff
+
+- `benchmark-data-source-selection` 读取 `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md` 作为统一汇总输入。
+- `benchmark-evalset-prototype-gen` 以 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 为最终依据；如需追溯真实数据分支细节，可读取 `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md`。
+- `benchmark-draft-gen` 以 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 为最终依据；如需追溯 Selected Real-Data Set，可读取 `~/bench_workspace/workspace{i}/stage1/data_source_selection/REALDATA_MAPPING.md`。
+- 本模块只写交接关系，不调度下游模块。
