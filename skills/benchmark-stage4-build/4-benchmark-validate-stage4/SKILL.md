@@ -1,6 +1,6 @@
 ---
 name: benchmark-validate-stage4
-description: "Atomic module: stage4 Phase 3 联调验证模块。只负责对评测集与指标体系执行四项验证（输入输出契约、评分链dry-run、可复现性、覆盖完整性），输PASS/FAIL 判定与阻塞项分析，不负责评测集合成或指标实现。Use when user says '联调验证'validate stage4'验证评测集和指标'dry-run 评分'"
+description: "Atomic module: stage4 Phase 4 联调验证模块。只负责对评测集与指标体系执行四项验证（输入输出契约、评分链dry-run、可复现性、覆盖完整性），输PASS/FAIL 判定与阻塞项分析，不负责评测集合成或指标实现。Use when user says '联调验证'validate stage4'验证评测集和指标'dry-run 评分'"
 argument-hint: [stage4-context]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
@@ -9,6 +9,13 @@ metadata:
     requires:
       bins: [python3]
 ---
+
+## `~/benchclaw` 只读约束
+
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -78,6 +85,34 @@ check:
 
 Any leakage or metadata-only/text-only solvability is a critical blocking issue
 with Suggested Fix Phase = `Phase 1.1-1.3 /benchmark-evalset-generate`.
+
+## Critical Hotfix: Validate HuggingFace Evalset Folder Contract
+
+Validation must fail if `EVALSET_DATASET/` is not a HuggingFace-friendly final
+dataset root with one independent folder per question.
+
+During Input-Output Contract Validation, check:
+
+- Root files exist: `README.md`, `dataset_info.json`, `data.jsonl`,
+  `manifest.json`, `statistics.json`, and `gt_generators/`.
+- `data.jsonl` is valid JSONL, one row per question, with relative paths only.
+- Each row includes `question_id`, `source_type`, `source_name`,
+  `capability_dimension`, `question_dir`, `images`, `question_path`,
+  `answer_path`, `ground_truth_path`, `gt_generator_file`,
+  `gt_generator_function`, `metadata_path`, `template_id`, `metric_ids`, and
+  `split`.
+- Every `question_dir` matches
+  `{source_type}/{source_name}/{capability_dimension}/{question_id}/`.
+- Every question folder contains `images/`, `question.json`, `question.md`,
+  `answer.json`, `ground_truth.json`, `gt_code_ref.json`, and `metadata.json`.
+- Every image required by the question is inside that question's `images/`
+  directory and uses stable numbering such as `image_0001.{ext}`.
+- Every `gt_code_ref.json` points to an existing file under
+  `EVALSET_DATASET/gt_generators/` and names the function/version used to
+  generate that question's `ground_truth.json`.
+
+Any violation is a critical blocking issue with Suggested Fix Phase =
+`Phase 1.3-1.4 /benchmark-evalset-generate`.
 
 ---
 
@@ -204,12 +239,32 @@ with Suggested Fix Phase = `Phase 1.1-1.3 /benchmark-evalset-generate`.
 
 ---
 
+---
+
+## Fixed Artifact Format Contract
+
+All artifacts produced by this skill have fixed file formats. The format block under `Expected Outputs`, `Output`, `Output Structure`, `Unified Output`, or the nearest equivalent output section is normative, not illustrative.
+
+Mandatory rules:
+
+- Produce every declared artifact at the exact declared path and with the exact declared extension. Do not rename, relocate, split, merge, or substitute artifacts unless this skill explicitly permits it.
+- Markdown artifacts (`.md`) must keep the declared top-level title and section heading order exactly. Required tables must keep the declared column names and column order exactly. If a value is unknown, write `UNKNOWN`; if it is not applicable, write `N/A`; do not omit the row, section, or column.
+- JSON artifacts (`.json`) must be valid UTF-8 JSON with a single top-level object unless this skill explicitly declares a top-level array. Required keys must always be present. Use `null`, `[]`, or `{}` for empty values instead of deleting keys.
+- JSONL artifacts (`.jsonl`) must contain exactly one valid JSON object per non-empty line. Every line must share the same required key set declared by this skill or by the upstream schema.
+- CSV/TSV artifacts must include a header row. Header names and order are fixed. Quote fields when needed and keep one logical record per row.
+- YAML artifacts must be parseable YAML and must preserve the declared top-level keys. Generated config YAML must include enough comments or companion fields to trace each operator, field, or rule back to the source artifact named by this skill.
+- Directory artifacts must contain the declared files plus a `MANIFEST.json` or `manifest.jsonl` when the skill declares one. The manifest must enumerate relative paths, artifact type, source_type/source_name when applicable, producer skill name, and creation timestamp.
+- Validation or gate reports must include a fixed `verdict` value from `PASS`, `FAIL`, `WARNING`, `BLOCKED`, or `NEEDS_REVIEW`, plus `checked_artifacts`, `blocking_issues`, and `next_action` sections or keys.
+- Handoff artifacts consumed by downstream skills must be backward-compatible: add optional fields only under an `extras` section/key, never by changing or deleting required fields.
+- Before marking the skill complete, perform a format check against this contract and mention any deviation explicitly in the completion or gate report.
+
 ## Completion Criteria
 
 - [ ] Empty `METRIC_LIBRARY` subdirectories are treated as FAIL, not warning.
 - [ ] Every declared metric is matched to an importable implementation file.
 - [ ] `tools/evaluate_evalset.py` smoke mode is executed or its absence is marked FAIL.
 - [ ] GT-copy and empty-prediction smoke checks are recorded in `DRY_RUN_RESULTS.md`.
+- [ ] HuggingFace evalset root files, `data.jsonl`, per-question folders, numbered `images/`, and `gt_code_ref.json` references are validated.
 - [ ] Sampled eval questions pass observation-grounding and leakage checks.
 - [ ] Any text-only-solvable non-text task is marked FAIL with Phase 1 fix target.
 

@@ -10,6 +10,13 @@ metadata:
       bins: [python3, dj-process]
 ---
 
+## `~/benchclaw` 只读约束
+
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+
 
 ## Workspace and File Access Boundary
 
@@ -34,6 +41,13 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 ## 重要约束
 
 本 skill 是三类数据源共同使用的唯一 Phase 3 skill。不得拆成三套执行 skill；必须根据同一个 `DATAJUICER_CONFIG_INDEX.md` 并行运行三类数据配置，并输出统一运行报告。若存在 `ANNOTATION_TOOL_PLAN.md` 或 `run_annotation_tools.sh`，不得在本 skill 中执行；应交给 `/benchmark-semisupervised-annotation`。
+
+## 置信度执行要求
+
+- 执行 Data-Juicer 的目的必须是落实清洗计划中的置信度提升策略，而不是盲目产出 cleaned_data。
+- 每个 source 的运行日志和 `DATAJUICER_RUN_REPORT.md` 必须记录哪些 operator 实际提升或验证了图片质量、文本质量、图文一致性、metadata 完整性、去重状态或 lineage 完整性。
+- 被拒收或降级的样本必须保留 rejection reason / review reason；不得只删除样本而不解释置信度风险。
+- 若某 source 的清洗运行失败、输出为空、证据字段缺失或无法证明置信度提升，运行报告必须把该 source 标记为 `FAIL` 或 `NEEDS_REVIEW`。
 
 ## 输入
 
@@ -114,6 +128,10 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 ## Operator Statistics
 [按 source_type 和 operator 汇总]
 
+## Confidence Improvement Evidence
+| Source Type | Source | Confidence Dimension | Evidence Field / Artifact | Passed | Review Reason |
+|-------------|--------|----------------------|---------------------------|--------|---------------|
+
 ## Failed Runs
 [失败配置、日志路径、恢复命令]
 
@@ -127,6 +145,25 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 - 执行前通过 capability spec 校验。
 - 每个成功配置都有 cleaned output 和 log。
 - 每个 source 的 cleaned output、rejected samples 和 log 必须位于 `source_work/{source_type}/{source_name}/` 下；根目录平铺输出只作为兼容镜像。
+- `DATAJUICER_RUN_REPORT.md` 记录每个 source 的置信度提升证据、被过滤样本原因和需要人工复核的原因。
 - 每个 cleaned/rejected 样本都有 lineage。
 - 不覆盖或删除 Stage 2 原始数据。
 - 不运行 annotation-tool，不生成 pseudo_annotations。
+---
+
+## Fixed Artifact Format Contract
+
+All artifacts produced by this skill have fixed file formats. The format block under `Expected Outputs`, `Output`, `Output Structure`, `Unified Output`, or the nearest equivalent output section is normative, not illustrative.
+
+Mandatory rules:
+
+- Produce every declared artifact at the exact declared path and with the exact declared extension. Do not rename, relocate, split, merge, or substitute artifacts unless this skill explicitly permits it.
+- Markdown artifacts (`.md`) must keep the declared top-level title and section heading order exactly. Required tables must keep the declared column names and column order exactly. If a value is unknown, write `UNKNOWN`; if it is not applicable, write `N/A`; do not omit the row, section, or column.
+- JSON artifacts (`.json`) must be valid UTF-8 JSON with a single top-level object unless this skill explicitly declares a top-level array. Required keys must always be present. Use `null`, `[]`, or `{}` for empty values instead of deleting keys.
+- JSONL artifacts (`.jsonl`) must contain exactly one valid JSON object per non-empty line. Every line must share the same required key set declared by this skill or by the upstream schema.
+- CSV/TSV artifacts must include a header row. Header names and order are fixed. Quote fields when needed and keep one logical record per row.
+- YAML artifacts must be parseable YAML and must preserve the declared top-level keys. Generated config YAML must include enough comments or companion fields to trace each operator, field, or rule back to the source artifact named by this skill.
+- Directory artifacts must contain the declared files plus a `MANIFEST.json` or `manifest.jsonl` when the skill declares one. The manifest must enumerate relative paths, artifact type, source_type/source_name when applicable, producer skill name, and creation timestamp.
+- Validation or gate reports must include a fixed `verdict` value from `PASS`, `FAIL`, `WARNING`, `BLOCKED`, or `NEEDS_REVIEW`, plus `checked_artifacts`, `blocking_issues`, and `next_action` sections or keys.
+- Handoff artifacts consumed by downstream skills must be backward-compatible: add optional fields only under an `extras` section/key, never by changing or deleting required fields.
+- Before marking the skill complete, perform a format check against this contract and mention any deviation explicitly in the completion or gate report.

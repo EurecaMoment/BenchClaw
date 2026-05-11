@@ -1,125 +1,114 @@
 ---
 name: benchmark-template-refinement
-description: "Stage 2 Phase 3：模板与 schema 修整。按 simulator、existing_dataset、real_data 三类数据源分别生成或修整评测模板和字段约束。Use when user says '修整模板', 'template refinement', '对齐评测模板'."
+description: "Stage 2 Phase 3：原始数据模板细化。为三类数据源生成统一 raw schema 和模板占位，不生成清洗框架模板，不做清洗过滤设计。"
 argument-hint: [stage2-context]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
-metadata:
-  openclaw:
-    emoji: ""
-    requires:
-      bins: [python3]
 ---
 
+## `~/benchclaw` 只读约束
 
-## Workspace and File Access Boundary
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
-This skill must operate only inside the current run workspace.
+# 模板细化
 
-- Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
-- Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
-- Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
-- If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
-- Outputs must be written only to the active `WORKSPACE_ROOT` paths declared by this skill. Do not mirror or cache run artifacts into other workspaces or unrelated server folders.
-- If the user explicitly provides an external path, use it only when it is directly relevant to this skill, record it as a user-provided exception, and do not expand access to sibling or parent directories.
+面向：*$ARGUMENTS*
 
-This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
-
-# 模板与 Schema 修整（三类数据同一 Skill 并行）
-
-面向：**$ARGUMENTS**
-
-本 skill 只修整模板与 schema，不生成脚本、不采集数据。
-
-重要约束：本 skill 是三类数据源共同使用的唯一 Phase 3 skill。不得拆成 simulator template skill、dataset template skill、real-data template skill；必须在同一次执行中并行生成三类模板，并用同一份 `TEMPLATE_REFINEMENT_REPORT.md` 汇总。
+本 phase 输出 `stage2/TEMPLATE_REFINEMENT_REPORT.md` 和 `stage2/templates/{source_type}_{source_name}_RAW_TEMPLATE.yaml`。
 
 ## 输入
 
-必需：
+- `stage2/COLLECTION_GUIDANCE_PLAN.md`
+- `stage2/SOURCE_CAPABILITY_SURVEY.md`
+- `stage1/EVALSET_PROTOTYPE.md`
+- `~/benchclaw/simulator_cards/`
+- `~/benchclaw/dataset_cards/`
+- `~/benchclaw/realdata_cards/`
 
-- `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`
-- `~/bench_workspace/workspace{i}/stage2/SOURCE_CAPABILITY_SURVEY.md`
-- `~/bench_workspace/workspace{i}/stage2/COLLECTION_GUIDANCE_PLAN.md`
+必须读取 `COLLECTION_GUIDANCE_PLAN.md` 中的 `Source Card Basis`，并复核每个 source 的 `card_path`。模板字段不得凭空定义；运行方式、数据根目录、字段 schema、登记表、授权/隐私等 source-specific 字段必须来自对应 card 或显式用户补充。
 
-可选：
+`~/benchclaw/` 下的 source card 只能读取，不得修改、补写、移动、删除或生成派生 card。所有模板、报告和缓存都必须写入 `WORKSPACE_ROOT/stage2/`，不得写回 `~/benchclaw/`。
 
-- workspace `templates/`
-- `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`
+## 模板目标
 
-## 三类数据模板策略
+模板用于统一记录原始样本，不用于清洗或筛选。模板必须覆盖：
 
-执行方式：读取 `COLLECTION_GUIDANCE_PLAN.md` 中全部 source，按 `source_type` 并行修整模板。模板可以按 source 分文件输出，但报告必须统一，字段角色和状态枚举必须一致。
+- 图像路径和记录路径。
+- 原始 source 信息。
+- 能力维度。
+- GT 或标注可用性。
+- 原始 metadata。
+- source card 路径、card 中使用过的字段和运行/访问依据。
+- 问题标记字段。
+- 后续 Stage 3 可读取的可追溯字段。
 
-### 仿真器 `simulator`
+## 必备字段
 
-- 模板必须列出可采集 GT 字段。
-- 坐标系、单位、图像格式、depth/segmentation/pose 格式必须明确。
-- 对仿真器不能提供的必需字段，标记 `N/A` 或 `missing_gt`，并说明原因。
-- 输出模板可用于采集脚本生成。
-
-### 已有数据集 `existing_dataset`
-
-- 模板必须包含原始数据集字段到 benchmark 字段的映射。
-- 保留 `original_sample_id`、`original_split`、`annotation_provenance`。
-- QA、caption、label、metadata 等字段标记为 `provided_annotation`。
-- 缺失字段不得删除，应标记为 `missing_or_derived`。
-- 若字段需要格式转换，写明转换规则。
-
-### 真实数据 `real_data`
-
-- 模板必须包含图片路径、metadata、质量检查字段和标注占位字段。
-- 缺失真值字段标记为 `needs_annotation` 或 `not_observable`。
-- 允许 `pseudo_annotation` 字段，但必须与 GT 字段分开。
-- 输出模板主要用于登记、人工复核和后续构建阶段。
-
-## 输出
-
-- `~/bench_workspace/workspace{i}/stage2/TEMPLATE_REFINEMENT_REPORT.md`
-- `~/bench_workspace/workspace{i}/stage2/templates/{source_type}_{source_name}_EVAL_TEMPLATE.yaml`
-
-## YAML 模板必须包含
+每个样本记录模板必须包含：
 
 ```yaml
-source_type: simulator | existing_dataset | real_data
-source_name: ...
-source_path: ...
-capability_dimensions: []
-sample_id_fields: []
-modalities: []
-fields:
-  - name: ...
-    role: observation | gt | provided_annotation | metadata | annotation_gap | pseudo_annotation
-    required: true | false
-    availability: full_gt | partial_gt | provided_annotation | missing_or_derived | needs_annotation | not_observable
-    format: ...
-    notes: ...
+sample_id:
+source_type:
+source_name:
+source_path:
+capability_dimension:
+source_role:
+stage1_requirement_ref:
+source_card_path:
+source_card_fields_used: []
+runtime_or_access_ref:
+image_path:
+record_json_path:
+original_sample_id:
+gt_availability:
+annotation_status:
+raw_observation_flags: []
+integrity_notes: []
+annotation_gap: []
+access_error:
+needs_human_review: false
+provenance:
+  collected_by:
+  collected_at:
+  script_or_method:
+metadata: {}
+raw_payload_refs: []
 ```
 
-## 报告结构
+`sample_id` 使用 `{source_type}_{source_name}_{000001}` 格式递增。`source_name` 可以是数据批次、仿真器场景/地图/任务配置、已有数据集切片或真实采集批次。
+
+## 输出报告结构
+
+`TEMPLATE_REFINEMENT_REPORT.md` 必须包含：
 
 ```markdown
 # Template Refinement Report
 
-## Summary
-| Source Type | Source | Template File | Added Fields | Missing Fields | Notes |
+## Template List
+| Source Type | Source Name | Template File | Purpose |
+|-------------|-------------|---------------|---------|
 
-## Simulator Template Changes
-[GT 字段、格式、坐标系、API 依赖]
+## Unified Raw Record Fields
+| Field | Required | Meaning | Stage3 Usage |
+|-------|----------|---------|--------------|
 
-## Existing Dataset Schema Mapping
-[原字段 -> benchmark 字段，annotation provenance]
+## Source-Specific Extensions
+| Source Type | Source Name | Extra Fields | Reason |
+|-------------|-------------|--------------|--------|
 
-## Real Data Registration Schema
-[metadata、quality flags、annotation gaps]
+## Source Card Field Mapping
+| Source Type | Source Name | Card Path | Card Fields Used | Template Fields Added | Missing Items |
+|-------------|-------------|-----------|------------------|-----------------------|---------------|
 
-## Unresolved Conflicts
-[无法自动对齐的字段和建议]
+## Raw-Only Statement
+These templates preserve raw collected data and issue flags only. They do not define cleaning or filtering behavior.
 ```
 
-## 完成标准
+## 禁止事项
 
-- `COLLECTION_GUIDANCE_PLAN.md` 中每个 source 都有模板。
-- 每个模板含 `source_type`。
-- 缺失字段保留状态，不被静默删除。
-- existing_dataset 和 real_data 不被伪装成 simulator 模板。
-- 三类模板使用同一套字段角色和状态枚举，汇总在同一份报告中。
+- 不得对 `~/benchclaw/` 下任何文件或目录做增删改。
+- 不得写入任何清洗配置目录。
+- 不得定义过滤阈值、质量通过阈值或删除策略。
+- 不得把任何问题标记作为 Stage2 筛选字段；应使用 `raw_observation_flags` 记录观察到的问题。

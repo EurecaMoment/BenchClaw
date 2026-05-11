@@ -10,6 +10,13 @@ metadata:
       bins: [python3]
 ---
 
+## `~/benchclaw` 只读约束
+
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+
 
 ## Workspace and File Access Boundary
 
@@ -34,6 +41,13 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 ## 重要约束
 
 本 skill 是三类数据源共同使用的唯一 Phase 2 skill。不得拆出独立 config-gen skill；必须在同一次执行中并行生成 `simulator`、`existing_dataset`、`real_data` 的配置，并写入同一个 `DATAJUICER_CONFIG_INDEX.md`。若 `DATA_CLEANING_PLAN.md` 中存在 `Annotation Tool Plan`，还必须生成 `ANNOTATION_TOOL_PLAN.md`、`annotation_tool_configs/` 和 `run_annotation_tools.sh`。半监督标注配置默认只为 `existing_dataset` 和 `real_data` 生成；`simulator` 只有在计划明确标注 `audit_only` 时才允许生成 annotation-tool 配置。
+
+## 置信度配置要求
+
+- 配置生成必须把 `DATA_CLEANING_PLAN.md` 中的 `Confidence Improvement Plan` 落到 manifest 字段、YAML operator、annotation-tool 配置和静态校验项中。
+- 每个 source 的 manifest 必须保留或生成用于后续验证的置信度证据字段，例如 `confidence_dimensions`、`quality_flags`、`consistency_checks`、`lineage_id`、`review_required`、`review_reason`。
+- YAML 只能配置能提升图文数据置信度或证据完整性的 operator；不得加入无法解释置信度收益的装饰性处理。
+- 对会降低可追溯性、覆盖原图/GT、删除 annotation provenance 或丢弃低置信样本原因的配置，静态校验必须为 `FAIL`。
 
 ## 输入
 
@@ -75,6 +89,7 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 - YAML 可配置文本清洗、去重、图文一致性、label 标准化。
 - 保留 `original_sample_id`、`original_split`、`annotation_provenance`。
 - 若计划调用 `sam3`、`depthanything`、`yolo`，配置必须把输出写入 `source_work/existing_dataset/{source_name}/pseudo_annotations/`，并保留原始标注来源。
+- 若工具会生成与原图不同的图片产物，配置必须要求输出记录包含 `original_image_path`、`derived_image_path`、`derived_image_type` 和 `metadata_update_required=true`，以便 Phase 5 合并到 final metadata。
 
 ### 真实数据 `real_data`
 
@@ -82,6 +97,7 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 - YAML 可配置图片质量过滤、重复检测、metadata 标准化、已有说明文本清洗。
 - annotation gap 字段不得被删除；pseudo annotation 必须保留状态标签。
 - 若计划调用 annotation-tool，配置必须把候选标注写入 `source_work/real_data/{source_name}/pseudo_annotations/`，并强制 `annotation_review_status=needs_human_review`。
+- 若 annotation-tool 生成 YOLO 画框图、深度图、mask overlay、裁剪图或诊断可视化图，配置必须要求派生图片独立保存，并输出 `original_image_path`、`derived_image_path`、`derived_image_type`、`metadata_update_required=true`。
 
 ## 输出
 
@@ -115,6 +131,7 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 - Manifest non-empty: PASS/FAIL
 - Raw output isolation: PASS/FAIL
 - Protected field policy encoded: PASS/FAIL
+- Confidence evidence fields encoded: PASS/FAIL
 
 ## Run Command
 ```bash
@@ -133,6 +150,25 @@ bash ~/bench_workspace/workspace{i}/stage3/run_datajuicer_cleaning.sh
 - 每个 source 的 manifest 和 config 必须复制或直接写入 `source_work/{source_type}/{source_name}/` 下，不得只保留根目录平铺文件。
 - 三类配置都登记在同一份 `DATAJUICER_CONFIG_INDEX.md`。
 - 输出路径全部位于 `stage3/`，不得覆盖 `stage2/collected_data/`。
+- 每个配置都能说明对应的置信度提升目标、证据字段和 Stage4 ready 风险。
 - copy-only 字段不会被 Data-Juicer operator 修改。
 - annotation-tool 配置只生成 `pseudo_annotation`，不得覆盖 GT、原始 label 或 annotation provenance。
 - simulator 的 annotation-tool 配置默认不存在；若存在，必须在 `ANNOTATION_TOOL_PLAN.md` 中标明 `audit_only` 和非评分用途。
+---
+
+## Fixed Artifact Format Contract
+
+All artifacts produced by this skill have fixed file formats. The format block under `Expected Outputs`, `Output`, `Output Structure`, `Unified Output`, or the nearest equivalent output section is normative, not illustrative.
+
+Mandatory rules:
+
+- Produce every declared artifact at the exact declared path and with the exact declared extension. Do not rename, relocate, split, merge, or substitute artifacts unless this skill explicitly permits it.
+- Markdown artifacts (`.md`) must keep the declared top-level title and section heading order exactly. Required tables must keep the declared column names and column order exactly. If a value is unknown, write `UNKNOWN`; if it is not applicable, write `N/A`; do not omit the row, section, or column.
+- JSON artifacts (`.json`) must be valid UTF-8 JSON with a single top-level object unless this skill explicitly declares a top-level array. Required keys must always be present. Use `null`, `[]`, or `{}` for empty values instead of deleting keys.
+- JSONL artifacts (`.jsonl`) must contain exactly one valid JSON object per non-empty line. Every line must share the same required key set declared by this skill or by the upstream schema.
+- CSV/TSV artifacts must include a header row. Header names and order are fixed. Quote fields when needed and keep one logical record per row.
+- YAML artifacts must be parseable YAML and must preserve the declared top-level keys. Generated config YAML must include enough comments or companion fields to trace each operator, field, or rule back to the source artifact named by this skill.
+- Directory artifacts must contain the declared files plus a `MANIFEST.json` or `manifest.jsonl` when the skill declares one. The manifest must enumerate relative paths, artifact type, source_type/source_name when applicable, producer skill name, and creation timestamp.
+- Validation or gate reports must include a fixed `verdict` value from `PASS`, `FAIL`, `WARNING`, `BLOCKED`, or `NEEDS_REVIEW`, plus `checked_artifacts`, `blocking_issues`, and `next_action` sections or keys.
+- Handoff artifacts consumed by downstream skills must be backward-compatible: add optional fields only under an `extras` section/key, never by changing or deleting required fields.
+- Before marking the skill complete, perform a format check against this contract and mention any deviation explicitly in the completion or gate report.

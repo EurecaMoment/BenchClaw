@@ -1,6 +1,6 @@
 ---
 name: benchmark-evalset-prototype-gen
-description: "Atomic module: stage1 Phase 5 评测集原型生成模块。只负责基于能力维度与数据源映射结果，为每个维度设计评测任务原型并定义指标体系，不负责生成最终评测集数据或执行评测。Use when user says '设计评测任务'、'generate evalset prototype'、'评测集原型'。"
+description: "Stage 1 Phase 5：评测集原型与模板草稿生成。基于本次 benchmark 的用户意图、能力维度、数据源映射和调研结论，为每个能力维度设计评测任务原型、指标草案和模板初稿；必须显式写入附属模板草稿目录，严禁抄袭、翻译抄袭或轻改已有模板。"
 argument-hint: [benchmark-context]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
 metadata:
@@ -10,163 +10,311 @@ metadata:
       bins: [python3]
 ---
 
+## `~/benchclaw` 只读约束
 
-## Workspace and File Access Boundary
-
-This skill must operate only inside the current run workspace.
-
-- Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
-- Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
-- Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
-- If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
-- Outputs must be written only to the active `WORKSPACE_ROOT` paths declared by this skill. Do not mirror or cache run artifacts into other workspaces or unrelated server folders.
-- If the user explicitly provides an external path, use it only when it is directly relevant to this skill, record it as a user-provided exception, and do not expand access to sibling or parent directories.
-
-This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 # Benchmark Eval-Set Prototype Generation
 
-Execute eval-set prototype design for: **$ARGUMENTS**
+面向：*$ARGUMENTS*
 
-This skill is an **atomic single-responsibility skill**.
-It must **only** do the work scoped to this module.
+本 skill 是 Stage 1 Phase 5 的原子模块，只负责生成评测集原型、指标草案和模板初稿。它不生成最终评测集数据，不实例化具体题目，不运行模型评测，也不替代 Stage 4 的正式模板审查与评测集合成。
 
----
+## Workspace 边界
 
-## Purpose
+- 只能读写当前 `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` 下的 `stage1/` 目录。
+- 可选只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/` 作为私有结构参考，但这些已有模板不是本次模板制造依据，不能在任何输出内容中显式提及、引用、命名或声明来源。
+- 不得读取其它 workspace 的模板、草稿或评测集产物，除非用户明确指定。
 
-- 本模块负责为每个能力维度设计评测任务原型，定义任务描述模板、输入输出规格、数据源类型、指标体系与难度分级。
-- 本模块抽象出本 benchmark 的评测集模板方向。
-- 本模块可以参考 `~/benchclaw/templates` 的结构经验，但必须根据用户意图、能力维度与数据源映射重新设计评测集模板，禁止全盘照抄。
-- 本模块位于 Stage 1 第五环节，直接产物是 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`。
-- 本模块不负责生成最终评测集数据、执行评测、草稿合成或计划生成。
+## 输入
 
----
+必须读取：
 
-## Inputs
+- `stage1/IDEA_TARGET.md`
+- `stage1/CAPABILITY_SCOPE.md`
+- `stage1/DATA_SOURCE_MAPPING.md`
 
-- `$ARGUMENTS`：评测集设计的补充要求或用户偏好（如偏好某种指标类型）。
-- 必需输入：`~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`、`~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md`。
-- 可选输入：`~/bench_workspace/workspace{i}/stage1/LITERATURE_REVIEW.md`（可借鉴的指标设计模式）。
-- 可选参考：`~/benchclaw/templates`（仅用于理解评测模板的组织方式、字段风格、质量检查思路；不得全盘复制模板正文、字段组合或任务结构）。
-- **若任一必需输入缺失，应立即停止并报告缺失文件。**
+可选读取：
 
----
+- `stage1/LITERATURE_REVIEW.md`
+- `stage1/SIMULATOR_MAPPING.md`
+- `stage1/DATASET_MAPPING.md`
+- `stage1/REALDATA_MAPPING.md`
+- `/home/maqiang/benchclaw/templates`（只读、私有参考）
+- `~/benchclaw/templates/`
 
-## Template Reference and Non-Copy Rule
+若任一必需输入缺失，必须停止并报告缺失路径，不得凭空生成模板初稿。
 
-- 中文任务优先：必须先用中文说明模板设计逻辑，英文仅作为字段名、术语或辅助说明。
-- 可以参考 `~/benchclaw/templates` 中已有模板的结构经验，例如章节组织、字段命名习惯、指标呈现方式和质量检查清单。
-- 不得照抄参考模板的任务文本、字段集合、指标描述、样例表达、任务结构或顺序；相似模板必须重新命名、重新定义槽位、重新推导输入输出与指标。
-- 模板设计必须从三类上游信息推导：用户原始意图与 `$ARGUMENTS`、`CAPABILITY_SCOPE.md` 中的能力维度、`DATA_SOURCE_MAPPING.md` 中的数据源覆盖情况。
-- 每个任务原型都要回答两个问题：为什么这个模板能测对应能力维度；它相对参考模板做了哪些面向本 benchmark 的改造。
+## 核心要求：模板初稿必须由本次分析合成
 
----
+本 phase 生成的模板初稿必须由以下本次上下文推导：
 
-## Procedure
+- 用户原始意图和 `IDEA_TARGET.md` 中的 benchmark 目标。
+- `CAPABILITY_SCOPE.md` 中的能力维度、子能力、边界和非目标。
+- `DATA_SOURCE_MAPPING.md` 中每个能力维度对应的 `simulator`、`existing_dataset`、`real_data` 数据源。
+- `LITERATURE_REVIEW.md` 中已有 benchmark 的局限、可借鉴设计和本 benchmark 的差异化定位。
 
-1. **读取上游产出**：读取 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 获取所有能力维度及其操作性定义，读取 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 获取每个维度的数据源分配与覆盖情况。
-2. **参考模板但不复制**：若 `~/benchclaw/templates` 可用，只提炼可迁移的设计思想，并记录参考来源；不得把任何模板原文、字段组合或任务结构直接迁入本产物。
-3. **基于能力维度重新设计任务原型**：为每个能力维度设计 1-3 个评测任务原型，每个原型必须从能力定义、用户意图和数据源可行性出发重新推导，并定义：
-   - **任务描述模板**：自然语言指令格式，包含可变槽位
-   - **输入规格**：场景配置、初始状态、提供给 agent 的信息
-   - **期望输出规格**：动作序列、状态变化、生成物的格式与约束
-   - **对应数据源**：来自 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 的分配结果
-   - **难度分级方式**：若适用，说明如何从同一模板生成不同难度的实例
-   - **能力映射理由**：说明该模板为什么能测对应能力维度
-   - **差异化设计**：说明相对参考模板或通用模板做出的本 benchmark 专属改造
-4. **设计指标体系**：
-   - **维度级指标**：每个维度的独立评分指标与计算方式
-   - **聚合指标**：跨维度的综合评分方式
-   - **辅助诊断指标**：用于分析失败模式的细粒度指标
-5. **校验**：
-   - 确认每个能力维度都有至少一个任务原型
-   - 确认每个任务原型的数据源分配与 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 一致
-   - 确认指标体系覆盖所有维度
-   - 确认所有模板参考都有差异化说明，且不存在照抄参考模板的内容
-6. **写入**：写入 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`。
+模板草稿不得是通用模板拼贴，也不得照搬 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`。这些已有模板只能作为私有参考，用于理解一般组织方式、命名习惯、质量检查思路和章节结构；它们不是模板制造依据，也不能作为 lineage、adaptation、reference、source 或 provenance 写入任何产物。最终模板初稿的任务目标、输入输出槽位、GT 需求、指标草案和质量约束必须只从本次用户意图、能力维度划分、论文调研分析和数据源映射中重新推导。
 
----
+## 已有模板私有参考规则
 
-## Expected Outputs
+允许只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，但必须遵守：
 
-- `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`
+- 这些模板只能作为私有参考，不是本次模板生成依据。
+- 任何输出文件中都不得出现已有模板路径、文件名、模板名、模板 ID、来源说明、重组说明、改编说明或“来自/参考/借鉴某模板”的表达。
+- 不得写“由哪些模板重组得到”“参考了哪些路径”“借鉴了哪个模板结构”“改写自某模板”等内容。
+- 产物中的 lineage 只能追溯到 `IDEA_TARGET.md`、`CAPABILITY_SCOPE.md`、`DATA_SOURCE_MAPPING.md` 和 `LITERATURE_REVIEW.md`。
+- 若需要说明非抄袭，只能说明模板是从本次 benchmark 目标、能力维度、数据映射和论文调研重新推导，不得披露私有参考模板信息。
 
-输出文件结构：
+## 禁止抄袭规则
+
+严禁以下行为：
+
+- 复制、翻译复制或轻微改写参考模板正文。
+- 复用参考模板的字段组合、任务结构、任务顺序、示例表达或评分描述。
+- 只替换能力维度名称，但保留参考模板的任务逻辑。
+- 把 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/` 中的模板当作本次模板初稿直接写入。
+- 在任何输出中显式说明模板来自已有模板、由已有模板重组、参考了某路径、改写自某模板或受某具体模板启发。
+- 没有写明本模板如何从本次能力维度和数据源映射推导而来。
+
+每个模板草稿必须包含 `non_copy_declaration`，说明：
+
+- 本模板为本 benchmark 做了哪些重新推导。
+- 为什么它不是对参考模板的照抄、翻译或轻改。
+- 本模板的依据只来自用户意图、能力维度、数据源映射和论文调研分析。
+- 不得列出、暗示或描述任何已有模板路径、名称、来源或重组关系。
+
+## 输出目录
+
+本 phase 必须输出主文档和附属模板草稿目录：
+
+```text
+stage1/
+  EVALSET_PROTOTYPE.md
+  evalset_template_drafts/
+    TEMPLATE_DRAFT_INDEX.md
+    TEMPLATE_DRAFT_LINEAGE.md
+    ANTI_COPY_DECLARATION.md
+    {capability_dimension_slug}/
+      {template_id}.yaml
+      {template_id}.md
+```
+
+`evalset_template_drafts/` 是本阶段的必需附属目录。它用于显式保存各类模板初稿，供 Stage2 模板细化和 Stage4 评测集模板发布审查使用。
+
+## 执行流程
+
+1. 读取 `IDEA_TARGET.md`，提取用户意图、评测目标、目标边界和非目标。
+2. 读取 `CAPABILITY_SCOPE.md`，列出所有能力维度和子能力。
+3. 读取 `DATA_SOURCE_MAPPING.md`，确定每个能力维度可用的数据源类型、source_name、GT/标注可用性和覆盖缺口。
+4. 若读取 `LITERATURE_REVIEW.md`，可以提取论文调研中的设计约束、已有 benchmark 局限和差异化定位。若只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，只能作为私有结构参考，不得复制内容，不得记录参考路径，不得在产物中披露模板来源或重组关系。
+5. 为每个能力维度设计 1-3 个任务原型，每个原型必须包含：
+   - instruction template
+   - input spec
+   - expected output spec
+   - GT / answer source
+   - data source binding
+   - difficulty levels
+   - capability rationale
+   - metric sketch
+   - quality constraints
+   - non-copy declaration
+6. 为每个任务原型写入一个 `.yaml` 和一个 `.md` 模板草稿文件。
+7. 写入 `EVALSET_PROTOTYPE.md`，总结所有任务原型、指标体系、模板草稿索引和非抄袭说明。
+8. 校验每个能力维度至少有一个任务原型；若无法设计，必须记录 blocking gap。
+
+## 模板草稿 YAML 格式
+
+每个 `evalset_template_drafts/{capability_dimension_slug}/{template_id}.yaml` 必须包含：
+
+```yaml
+template_id:
+template_name:
+capability_dimension:
+sub_capability:
+benchmark_goal_ref:
+source_bindings:
+  - source_type:
+    source_name:
+    required_fields:
+    gt_or_annotation_fields:
+instruction_template:
+input_spec:
+expected_output_spec:
+ground_truth_spec:
+metric_sketch:
+  primary_metric:
+  auxiliary_metrics: []
+difficulty_levels:
+  easy:
+  medium:
+  hard:
+quality_constraints:
+  requires_observation_to_answer: true
+  leakage_risks: []
+  shortcut_resistance_notes:
+  required_observation_files: []
+stage4_template_review_seed:
+  user_intent_fit:
+  discrimination_power:
+  shortcut_resistance:
+  capability_alignment:
+lineage:
+  idea_target_ref:
+  capability_scope_ref:
+  data_source_mapping_ref:
+  literature_review_ref:
+non_copy_declaration:
+  synthesis_basis:
+    user_intent:
+    capability_dimension:
+    data_source_mapping:
+    literature_analysis:
+  external_template_source_disclosure: forbidden
+  benchmark_specific_rederivation:
+  why_not_copy:
+```
+
+## 模板草稿 Markdown 格式
+
+每个 `{template_id}.md` 必须包含：
+
+```markdown
+# Template Draft: {template_id}
+
+## Capability Target
+
+## Benchmark-Specific Design Rationale
+
+## Task Instruction Draft
+
+## Input And Output Specification
+
+## Data Source Binding
+
+## GT / Answer Source
+
+## Difficulty Design
+
+## Metric Sketch
+
+## Quality And Shortcut-Resistance Notes
+
+## Non-Copy Declaration
+```
+
+## EVALSET_PROTOTYPE.md 格式
+
+`EVALSET_PROTOTYPE.md` 必须包含：
 
 ```markdown
 # Eval-Set Prototype
 
 ## Task Prototype Overview
-[任务原型总数、覆盖维度、难度分布]
+
+## Capability-To-Template Draft Map
+| Capability Dimension | Template Drafts | Source Types | Metric Sketch | Gaps |
+|----------------------|-----------------|--------------|---------------|------|
 
 ## Task Prototypes
 
 ### Dimension: [维度名称]
 
 #### Task Prototype 1: [任务名称]
-- **Instruction template**: [自然语言指令模板]
-- **Input spec**: [场景配置、初始状态]
-- **Expected output spec**: [期望输出格式]
-- **Data source**: [对应数据源类型与名称]
-- **Difficulty levels**: [难度分级]
-- **Capability rationale**: [为什么该任务能测该能力维度]
-- **Template adaptation**: [参考模板启发与本 benchmark 专属改造；若未参考模板则写 none]
-
-#### Task Prototype 2: [任务名称]
-...
-
-### Dimension: [维度名称]
-...
+- **Template draft files**: [yaml path], [md path]
+- **Instruction template**: [...]
+- **Input spec**: [...]
+- **Expected output spec**: [...]
+- **Data source**: [...]
+- **GT / answer source**: [...]
+- **Difficulty levels**: [...]
+- **Capability rationale**: [...]
+- **Metric sketch**: [...]
+- **Quality constraints**: [...]
+- **Benchmark-specific synthesis basis**: [...]
+- **Non-copy declaration**: [...]
 
 ## Metric System
 
 ### Dimension-Level Metrics
-| Dimension | Metric | Computation | Range |
-|-----------|--------|-------------|-------|
-| ...       | ...    | ...         | ...   |
+| Dimension | Metric | Computation | Range | Required GT |
+|-----------|--------|-------------|-------|-------------|
 
 ### Aggregate Metrics
-[跨维度综合评分方式]
 
 ### Diagnostic Metrics
-[细粒度诊断指标]
 
-## Template Reference and Adaptation Notes
-[参考 `~/benchclaw/templates` 或 workspace templates/ 的路径、只借鉴了哪些结构思想、做了哪些面向用户意图与能力维度的改造、如何确认没有照抄]
+## Template Draft Directory
+| Template ID | YAML | Markdown | Capability Dimension | Source Binding |
+|-------------|------|----------|----------------------|----------------|
+
+## Template Synthesis Basis
+
+## Anti-Copy Self-Check
+| Check | Result | Evidence |
+|-------|--------|----------|
 ```
 
----
+## TEMPLATE_DRAFT_INDEX.md 格式
 
-## Completion Criteria
+```markdown
+# Template Draft Index
 
-- [ ] `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` 已存在且非空。
-- [ ] 每个能力维度（来自 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`）都有至少 1 个任务原型。
-- [ ] 每个任务原型包含完整定义字段（instruction template、input spec、output spec、data source、difficulty levels、capability rationale、template adaptation）。
-- [ ] Metric System 包含维度级、聚合和诊断三个层级的指标定义。
-- [ ] 任务原型中引用的数据源与 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 的分配一致。
-- [ ] 若参考 `~/benchclaw/templates` 或 workspace templates/，必须写明参考路径、借鉴点、改造点和非照抄依据。
-- [ ] 若必需输入缺失，不得标记完成。
+| Template ID | Capability Dimension | YAML Path | Markdown Path | Source Types | Status |
+|-------------|----------------------|-----------|---------------|--------------|--------|
+```
 
----
+## TEMPLATE_DRAFT_LINEAGE.md 格式
 
-## Rules
+```markdown
+# Template Draft Lineage
 
-- 不生成最终评测集数据——本模块只设计原型框架，不实例化具体测试样本。
-- 不生成 `~/bench_workspace/workspace{i}/stage1/BENCHMARK_DRAFT.md`、`~/bench_workspace/workspace{i}/stage1/EXECUTION_PLAN.md` 或任何后续 phase 产物。
-- 不擅自改写 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 或 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md`。
-- 可以参考 `~/benchclaw/templates`，但不得照抄、翻译照抄或轻微改写式搬运；必须体现对用户意图和能力维度的重新思考。
-- 不把任务原型当作最终 stage4 评测集——原型会在 stage2-stage4 中迭代细化，其中 Stage 3 负责 Data-Juicer 清洗。
-- 指标计算方式必须足够具体，不能使用"合理性评估"等无法自动化的表述。
-- 出错时必须明确指出阻塞原因（如某维度在 DATA_SOURCE_MAPPING 中标记为 none 导致无法设计可执行任务）。
-- 如果 Write 因文件过大失败，立即 fallback 到 Bash 分块写入，不要询问用户许可。
+| Template ID | Derived From Capability | Data Source Evidence | Literature Analysis Basis | Benchmark-Specific Redesign |
+|-------------|-------------------------|----------------------|---------------------------|-----------------------------|
+```
 
----
+## ANTI_COPY_DECLARATION.md 格式
+
+```markdown
+# Anti-Copy Declaration
+
+## Generation Basis Policy
+
+All declarations must state only the run-specific basis: user intent, capability analysis, data-source mapping and literature-survey analysis. Do not name, cite, disclose, list as lineage, or describe any private reference template as the source of a generated template draft.
+
+## Per-Template Declarations
+| Template ID | User Intent Basis | Capability / Literature Basis | Data Source Basis | Benchmark-Specific Re-Derivation | Copy Risk Verdict |
+|-------------|-------------------|-------------------------------|-------------------|--------------------------------|-------------------|
+
+## Final Statement
+All template drafts are benchmark-specific initial drafts synthesized only from this run's user intent, capability analysis, data-source mapping and literature-survey analysis. They are not copied, translated, lightly rewritten, recombined from, or attributed to external templates.
+```
+
+## 完成标准
+
+- `stage1/EVALSET_PROTOTYPE.md` 存在且非空。
+- `stage1/evalset_template_drafts/` 存在。
+- 每个能力维度至少有一个模板草稿，或有明确 blocking gap。
+- 每个模板草稿同时有 `.yaml` 和 `.md` 文件。
+- 每个模板草稿都包含 `non_copy_declaration`。
+- `TEMPLATE_DRAFT_INDEX.md`、`TEMPLATE_DRAFT_LINEAGE.md`、`ANTI_COPY_DECLARATION.md` 均存在。
+- 所有模板草稿都能追溯到 `IDEA_TARGET.md`、`CAPABILITY_SCOPE.md`、`DATA_SOURCE_MAPPING.md`。
+- 若私有查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，不得在任何产物中写明参考路径、模板名称、借鉴点或重组关系；只能写本次用户意图、能力维度、数据源映射和论文调研如何支撑模板重新推导。
+
+## 规则
+
+- 不生成最终评测集数据，不实例化具体题目。
+- 不修改 `CAPABILITY_SCOPE.md` 或 `DATA_SOURCE_MAPPING.md`。
+- 不生成 Stage2、Stage3、Stage4 产物。
+- 不抄袭、翻译抄袭、轻改或拼贴参考模板。
+- 指标草案必须足够具体，不能只写“合理性评分”“人工评估”等无法自动化的描述。
+- 若某能力维度因为数据源缺失无法设计模板，必须在 `EVALSET_PROTOTYPE.md` 和 `TEMPLATE_DRAFT_INDEX.md` 中标记 `BLOCKED`。
 
 ## Downstream Handoff
 
-- `benchmark-draft-gen` 读取 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` 中的任务原型与指标体系写入草稿的评测集设计章节。
-- `benchmark-execution-plan-gen` 读取 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` 规划 Stage 4 的评测集构建任务分解。
-- stage4 evalset 构建分支参考 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` 的原型框架实例化最终测试样本。
-- 本模块只写交接关系，不调度下游模块.
+- `benchmark-draft-gen` 读取 `EVALSET_PROTOTYPE.md` 和 `evalset_template_drafts/`，写入 benchmark 草稿中的评测集设计章节。
+- `benchmark-execution-plan-gen` 读取模板草稿目录，规划 Stage2-Stage4 的模板细化、数据清洗和评测集合成工作。
+- Stage4 的 `/benchmark-evalset-plan-route` 可读取 `evalset_template_drafts/` 作为模板候选来源，但仍必须重新执行模板 fitness review。

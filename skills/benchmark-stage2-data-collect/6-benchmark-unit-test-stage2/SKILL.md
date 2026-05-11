@@ -1,117 +1,166 @@
 ---
 name: benchmark-unit-test-stage2
-description: "Stage 2 Phase 6：Stage 2 契约单元测试。验证三类数据源的盘点、方案、模板、脚本、数据目录和质量报告是否完整且可追溯。Use when user says 'stage2 单元测试', 'unit test stage2', '检查 Stage 2 产物'."
+description: "Stage 2 Phase 6：单元测试。检查原始数据采集契约、三类数据源并行处理、图片与 JSON 一一对应、RAW_DATA_COLLECTION_REPORT.md 和禁止清洗框架/过滤规则。"
 argument-hint: [stage2-dir]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
-metadata:
-  openclaw:
-    emoji: ""
-    requires:
-      bins: [python3]
 ---
 
+## `~/benchclaw` 只读约束
 
-## Workspace and File Access Boundary
+- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
+- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
+- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
-This skill must operate only inside the current run workspace.
+# Stage 2 单元测试
 
-- Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
-- Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
-- Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
-- If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
-- Outputs must be written only to the active `WORKSPACE_ROOT` paths declared by this skill. Do not mirror or cache run artifacts into other workspaces or unrelated server folders.
-- If the user explicitly provides an external path, use it only when it is directly relevant to this skill, record it as a user-provided exception, and do not expand access to sibling or parent directories.
+面向：*$ARGUMENTS*
 
-This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
+本 phase 生成并执行 `stage2/unit_tests/test_stage2_contract.py`，输出 `results.json` 和 `STAGE2_UNIT_TEST_REPORT.md`。
 
-# Stage 2 契约单元测试（三类数据同一 Skill 并行）
+## 测试输入
 
-面向：**$ARGUMENTS**
+- `stage2/SOURCE_CAPABILITY_SURVEY.md`
+- `stage2/COLLECTION_GUIDANCE_PLAN.md`
+- `stage2/TEMPLATE_REFINEMENT_REPORT.md`
+- `stage2/DATA_SCHEMA.md`
+- `stage2/collected_data/`
+- `stage2/RAW_DATA_COLLECTION_REPORT.md`
+- `stage1/DATA_SOURCE_MAPPING.md`
+- `~/benchclaw/simulator_cards/`
+- `~/benchclaw/dataset_cards/`
+- `~/benchclaw/realdata_cards/`
 
-本 skill 只生成并执行 Stage 2 产物契约测试，不修改数据、不重新采集。
+`~/benchclaw/` 只能作为只读测试输入。测试文件、结果、缓存、报告和临时文件都必须写入 `stage2/unit_tests/` 或其它当前 workspace 路径，不得写入 `~/benchclaw/`。
 
-重要约束：本 skill 是三类数据源共同使用的唯一 Phase 6 skill。不得拆成三套测试 skill；必须在同一份测试脚本和同一份测试报告中并行验证三类数据源契约。
+## 必测项
 
-## 输入
+### 1. 固定产物存在
 
-必需：
+检查 Stage 2 必需文件是否存在，不得要求旧兼容产物或清洗阶段报告。
 
-- `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md`
-- `~/bench_workspace/workspace{i}/stage2/SOURCE_CAPABILITY_SURVEY.md`
-- `~/bench_workspace/workspace{i}/stage2/COLLECTION_GUIDANCE_PLAN.md`
-- `~/bench_workspace/workspace{i}/stage2/TEMPLATE_REFINEMENT_REPORT.md`
-- `~/bench_workspace/workspace{i}/stage2/DATA_SCHEMA.md`
-- `~/bench_workspace/workspace{i}/stage2/DATA_QUALITY_REPORT.md`
-- `~/bench_workspace/workspace{i}/stage2/collected_data/`
-- `~/bench_workspace/workspace{i}/stage2/collect_scripts/`
-- `~/bench_workspace/workspace{i}/stage2/ingest_scripts/`
-- `~/bench_workspace/workspace{i}/stage2/register_scripts/`
-- `~/bench_workspace/workspace{i}/stage2/logs/`
-- `~/bench_workspace/workspace{i}/stage2/templates/`
+### 2. 三类数据源处理
 
-## 测试重点
+根据 `DATA_SOURCE_MAPPING.md` 中实际出现的 `source_type`，检查对应 source 是否在报告、脚本目录和 `collected_data/` 中有记录。未启用的类型必须在报告中说明，不得伪造数据。
 
-执行方式：测试脚本先读取 `DATA_SOURCE_MAPPING.md` 的全部 source，再按 `source_type` 并行构造测试用例。最终 verdict 必须覆盖三类数据源，并给出统一 Stage 2 verdict。
+### 3. 图片与 JSON 一一对应
 
-### 通用契约
+对每个 `collected_data/{source_type}/{source_name}/` 检查：
 
-- 每个 source 都有 `source_type`、`source_name`、`source_path`。
-- 每个 source 都能回溯到 `DATA_SOURCE_MAPPING.md`。
-- 每个样本都有 `sample_id`。
-- `DATA_SCHEMA.md` 覆盖实际 manifest 字段。
-- `DATA_QUALITY_REPORT.md` 覆盖所有 source。
-- 目录结构必须与 Stage 2 产物树一致：根目录保留报告文件，脚本放在 `collect_scripts/`、`ingest_scripts/`、`register_scripts/`，数据放在 `collected_data/{source_type}/{source_name}/`，日志放在 `logs/`，模板放在 `templates/`。
-- `SOURCE_CAPABILITY_SURVEY.md` 必须存在；若存在 simulator source，`SIM_CAPABILITY_SURVEY.md` 也必须存在或有兼容占位说明。
+- `images/` 下的每张图片都有同编号 `records/{sample_id}.json`。
+- `records/` 下的每个 JSON 都能对应到唯一图片。
+- `manifest.jsonl` 每行都能同时定位图片和 JSON。
+- `sample_id` 符合 `{source_type}_{source_name}_{000001}` 形式。
+- 不得用 town、scene、shard 等子目录替代 `images/` 的平铺编号；这些信息应写入 JSON 字段。
 
-### 仿真器 `simulator`
+### 4. 原始采集字段
 
-- 存在 `collected_data/simulator/{source_name}/`。
-- 存在 `collect_scripts/simulator/{source_name}/collect.py` 和 `README.md`。
-- 存在 `collected_data/simulator/{source_name}/manifest.jsonl`。
-- manifest 中有 `scene_id`、`frame_id`、GT 字段引用。
-- 若存在 `images/`，图片应按 `images/{scene_or_town}/{shard_or_run}/...` 或等价层级组织；例如 CARLA 可出现 `images/Town10HD_Opt/0/`。
-- 若存在跳过 town/scene，必须有 `skipped_towns.json` 或等价记录。
-- `logs/` 中必须有该 source 的采集或服务日志，除非报告明确说明该仿真器无需后台服务。
-- GT 对齐检查有结果。
-- 若未达标，报告中标记 `FAIL` 或 `NEEDS_REVIEW`。
+每个 JSON 至少包含：
 
-### 已有数据集 `existing_dataset`
+- `sample_id`
+- `source_type`
+- `source_name`
+- `source_path`
+- `capability_dimension`
+- `source_role`
+- `stage1_requirement_ref`
+- `source_card_path`
+- `source_card_fields_used`
+- `image_path`
+- `record_json_path`
+- `gt_availability`
+- `annotation_status`
+- `raw_observation_flags`
+- `integrity_notes`
+- `annotation_gap`
+- `needs_human_review`
+- `provenance`
+- `metadata`
 
-- 存在 `collected_data/existing_dataset/{source_name}/`。
-- 存在 `ingest_scripts/existing_dataset/{source_name}/ingest.py`、`field_mapping.yaml` 和 `README.md`。
-- 存在 `collected_data/existing_dataset/{source_name}/images/`。
-- 存在 `collected_data/existing_dataset/{source_name}/manifest.jsonl`。
-- 存在 `collected_data/existing_dataset/{source_name}/ingest_errors.jsonl`，即使为空也算有效。
-- 若 manifest 或 schema 含 QA/question type 字段，存在 `question_type_histogram.json`。
-- manifest 中有 `original_sample_id`、字段映射和 annotation provenance。
-- 缺失字段标记为 `missing_or_derived`。
-- 不要求仿真器 GT 对齐率。
+### 5. 禁止 Stage 2 清洗过滤
 
-### 真实数据 `real_data`
+测试必须扫描 Stage 2 产物，确认不存在以下行为声明或目录：
 
-- 若 `DATA_SOURCE_MAPPING.md` 选中 real_data source，存在 `register_scripts/real_data/{source_name}/register.py` 和 `collected_data/real_data/{source_name}/`。
-- 若未选中 real_data source，不要求 `collected_data/real_data/{source_name}/`，但 `register_scripts/README.md` 必须说明本轮无真实数据登记。
-- 对已选中的 real_data source，manifest 中有图片路径、metadata、quality flags。
-- 对已选中的 real_data source，存在 annotation gap 记录。
-- 对已选中的 real_data source，缺失 GT 标记为 `needs_annotation` 或 `not_observable`。
+- 清洗配置目录
+- `清洗阶段报告`
+- Stage 2 执行清洗框架。
+- Stage 2 清洗、过滤、质量拒收、去重删除可访问样本。
+- 使用质量通过阈值决定是否进入 Stage 3。
 
-## 输出
+允许出现“需要 Stage3 清洗/过滤/复核”的说明，但不能把这些动作作为 Stage2 已执行行为。
 
-- `~/bench_workspace/workspace{i}/stage2/unit_tests/test_stage2_contract.py`
-- `~/bench_workspace/workspace{i}/stage2/unit_tests/results.json`
-- `~/bench_workspace/workspace{i}/stage2/STAGE2_UNIT_TEST_REPORT.md`
+### 6. 数据源 card 契约
+
+对每个启用 source 检查：
+
+- `SOURCE_CAPABILITY_SURVEY.md`、`COLLECTION_GUIDANCE_PLAN.md`、模板、脚本配置、README、`RAW_DATA_COLLECTION_REPORT.md` 和样本 JSON/manifest 都记录同一个 `source_card_path`。
+- `source_card_path` 必须位于对应根目录：`simulator` 对应 `~/benchclaw/simulator_cards/`，`existing_dataset` 对应 `~/benchclaw/dataset_cards/`，`real_data` 对应 `~/benchclaw/realdata_cards/`。
+- 脚本和配置中的启动命令、endpoint、数据根目录、字段 schema、登记表、授权/隐私字段必须能追溯到 card 或显式用户 override。
+- 如果 card 缺失，source 必须被标为 `NEEDS_CARD`、`NEEDS_CARD_DETAIL`、`NEEDS_USER_INPUT` 或 `BLOCKED`，不得伪造路径、字段或运行方式。
+
+### 7. simulator 实采契约
+
+对每个 `source_type=simulator` 的启用 source 检查：
+
+- `RAW_DATA_COLLECTION_REPORT.md` 必须包含 `Simulator Runtime Evidence`，记录 `startup_command`、`simulator_started_at`、process/session、health check、`run_id/session_id` 和当前 run 样本数。
+- 样本 JSON 和 manifest 必须记录当前 `run_id/session_id`、frame_id、scene/map/task、sensor config 或 seed；不得只有静态图片路径。
+- `current_run_only` 必须为 `true`，`old_data_reuse` 必须为 `false`。
+- `image_path`、`record_json_path`、`original_source_ref` 不得指向其它 workspace、下载目录、缓存目录、历史 `collected_data/` 或 card 未声明的外部输出目录。
+- 如果 simulator 未启动、无 health check、无新 `run_id/session_id`，该 source 不能是 `PASS`。
+- 如果报告发现 pre-existing files 被计入成功样本，或从旧目录复制图片/JSON，verdict 必须为 `FAIL`。
+
+### 8. `~/benchclaw` 只读契约
+
+测试必须检查 Stage 2 的脚本、配置、README、报告、manifest 和日志中不存在把 `~/benchclaw/` 作为输出、缓存、日志、临时文件、采集结果或写入目标的行为。若发现任何增删改 `~/benchclaw/` 的计划、命令或实际证据，verdict 必须为 `FAIL`。
+
+## 报告格式
+
+`STAGE2_UNIT_TEST_REPORT.md` 必须包含：
+
+```markdown
+# Stage 2 Unit Test Report
 
 ## Verdict
+PASS / NEEDS_REVIEW / FAIL
 
-- `PASS`：三类数据源契约均满足，可进入 Stage 3。
-- `NEEDS_REVIEW`：真实数据标注缺口、已有数据集弱标注或仿真器局部缺口需要用户确认 waiver。
-- `FAIL`：缺失关键文件、source 无法追溯、schema 不匹配或仿真器 GT 对齐严重失败。
+## Raw-Only Contract
+| Check | Result | Evidence |
+|-------|--------|----------|
 
-## 规则
+## File Contract
+| Check | Result | Evidence |
+|-------|--------|----------|
 
-- 不修改原始数据。
-- 不自动补采。
-- 不用单一仿真器标准评判所有数据源。
-- 报告必须中文优先，英文只用于字段名和 verdict。
-- 三类数据源必须由同一个 `test_stage2_contract.py` 测试入口覆盖。
+## Image-Record One-To-One Contract
+| Source Type | Source Name | Images | Records | Manifest Rows | Result |
+|-------------|-------------|--------|---------|---------------|--------|
+
+## Source Coverage
+| Source Type | Expected | Observed | Result |
+|-------------|----------|----------|--------|
+
+## Source Card Contract
+| Source Type | Source Name | Card Path | Card Root Match | Card Referenced By Outputs | Runtime / Access Traceable | Result |
+|-------------|-------------|-----------|-----------------|----------------------------|----------------------------|--------|
+
+## Simulator Runtime Contract
+| Source Name | Startup Evidence | Health Check | Run ID / Session ID | Current Run Only | Old Data Reuse | Result |
+|-------------|------------------|--------------|---------------------|------------------|----------------|--------|
+
+## Benchclaw Read-Only Contract
+| Check | Result | Evidence |
+|-------|--------|----------|
+
+## Issues
+| Severity | Path | Problem | Required Fix |
+|----------|------|---------|--------------|
+
+## Handoff
+Stage 2 raw data can be handed to Stage 3 for cleaning, filtering, confidence improvement and readiness judgment.
+```
+
+## Verdict 规则
+
+- `PASS`：固定产物、目录格式、一一对应、raw-only 契约全部通过；启用的 simulator 均有本轮启动/session 证据且没有旧数据复用。
+- `NEEDS_REVIEW`：存在可解释缺口，但没有违反 raw-only 契约，用户可确认进入 Stage 3。
+- `FAIL`：缺少关键产物、图片 JSON 不对应、manifest 无法追溯，Stage 2 出现清洗、过滤、质量拒收行为，启用 source 缺少可追溯 source card 却仍被标为成功，或 simulator 未启动/未创建新 session 却复用旧数据。
