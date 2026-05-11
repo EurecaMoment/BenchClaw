@@ -1,0 +1,33 @@
+{
+  "template_id": "EGO_IMAGE_CENTER_AFTER_TURN",
+  "family": "egocentric_spatial",
+  "dimension": "SR-Projection",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "If the observer rotates {angle_deg} degrees to the {turn_dir}, which marked object would appear closest to the image center?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "none"
+  ],
+  "placeholders": {
+    "angle_deg": 90,
+    "turn_dir": "left"
+  },
+  "required_state": [
+    "agent_pose_world",
+    "camera_intrinsics",
+    "camera_extrinsics",
+    "object_pose_world"
+  ],
+  "answer_rule": "Apply rotation; project marked objects to image plane; choose object with projected x closest to image center among visible objects.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

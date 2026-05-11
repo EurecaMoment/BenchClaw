@@ -1,0 +1,29 @@
+{
+  "template_id": "FEAS_STEP_HEIGHT",
+  "family": "embodied_feasibility",
+  "dimension": "EMB-Feasibility",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Can the robot traverse the marked step or curb?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {
+    "distance_m": 2.0
+  },
+  "required_state": [
+    "agent_size",
+    "agent_kinematic_model",
+    "collision_mesh_or_navmesh",
+    "scene_geometry"
+  ],
+  "answer_rule": "Compare step/curb height with robot traversability threshold and contact constraints.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Use this family to distinguish embodied tasks from pure camera geometry."
+}

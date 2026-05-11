@@ -1,0 +1,27 @@
+{
+  "template_id": "EGO_FARTHEST_OBJECT",
+  "family": "egocentric_spatial",
+  "dimension": "SR-Metric",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Which marked object is farthest from the observer?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "agent_pose_world",
+    "marked_object_poses_world"
+  ],
+  "answer_rule": "Compute Euclidean distance; choose maximum.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

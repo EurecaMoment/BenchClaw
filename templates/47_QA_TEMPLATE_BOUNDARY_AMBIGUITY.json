@@ -1,0 +1,25 @@
+{
+  "template_id": "QA_TEMPLATE_BOUNDARY_AMBIGUITY",
+  "family": "quality_audit",
+  "dimension": "Process-Quality",
+  "scene_type": "any",
+  "task_type": "yes_no",
+  "question_template": "Is this sample too close to a decision boundary and therefore ambiguous?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "generated_sample_json",
+    "template_json"
+  ],
+  "answer_rule": "Check angular/distance/visibility margins against predefined thresholds.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Use these as reference checks in your manufacturing pipeline, not as model-facing tasks."
+}

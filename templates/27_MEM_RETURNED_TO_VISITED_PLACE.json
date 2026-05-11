@@ -1,0 +1,29 @@
+{
+  "template_id": "MEM_RETURNED_TO_VISITED_PLACE",
+  "family": "spatial_memory",
+  "dimension": "SR-Memory",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Has the observer returned to a previously visited place?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {
+    "object_id": "A"
+  },
+  "required_state": [
+    "episode_trajectory",
+    "agent_pose_sequence",
+    "object_instance_ids",
+    "object_pose_history"
+  ],
+  "answer_rule": "Compare current pose with prior trajectory poses under distance and heading thresholds.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Requires multi-frame or episode-level metadata, not a single image only."
+}

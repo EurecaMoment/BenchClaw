@@ -1,0 +1,29 @@
+{
+  "template_id": "EGO_DEPTH_ORDER_3",
+  "family": "egocentric_spatial",
+  "dimension": "SR-Metric",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Rank the marked objects from nearest to farthest.",
+  "options": [
+    "A-B-C",
+    "A-C-B",
+    "B-A-C",
+    "B-C-A",
+    "C-A-B",
+    "C-B-A"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "agent_pose_world",
+    "object_pose_world for A/B/C"
+  ],
+  "answer_rule": "Sort objects by distance from observer.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

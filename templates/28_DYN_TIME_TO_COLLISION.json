@@ -1,0 +1,31 @@
+{
+  "template_id": "DYN_TIME_TO_COLLISION",
+  "family": "dynamics",
+  "dimension": "SR-Dynamics",
+  "scene_type": "outdoor_ugv_or_driving",
+  "task_type": "single_choice",
+  "question_template": "If the agent and object '{object_id}' keep their current velocities for {horizon_s} seconds, will they collide?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {
+    "object_id": "A",
+    "horizon_s": 3.0
+  },
+  "required_state": [
+    "agent_velocity",
+    "object_velocities",
+    "object_bboxes_3d",
+    "lane_polygons_optional",
+    "future_tracks_optional"
+  ],
+  "answer_rule": "Predict/simulate future trajectories; test swept-volume intersection within horizon.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

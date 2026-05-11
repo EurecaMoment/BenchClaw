@@ -1,0 +1,38 @@
+{
+  "template_id": "EGO_AFTER_MOVE_DIRECTION",
+  "family": "counterfactual_egomotion",
+  "dimension": "SR-Dynamics",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Assume the observer moves {distance_m} meters forward, then rotates {angle_deg} degrees to the {turn_dir}. Where is object '{object_id}' relative to the new heading?",
+  "options": [
+    "front-left",
+    "front",
+    "front-right",
+    "left",
+    "right",
+    "behind"
+  ],
+  "placeholders": {
+    "distance_m": 2.0,
+    "angle_deg": 90,
+    "turn_dir": "left",
+    "object_id": "A"
+  },
+  "required_state": [
+    "agent_pose_world",
+    "action_sequence",
+    "camera_intrinsics",
+    "camera_extrinsics",
+    "object_pose_world",
+    "object_visibility_optional"
+  ],
+  "answer_rule": "Apply hypothetical egomotion; compute bearing from new pose to object; discretize direction.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

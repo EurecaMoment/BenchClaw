@@ -1,0 +1,32 @@
+{
+  "template_id": "ACTIVE_RELOCALIZATION",
+  "family": "active_perception",
+  "dimension": "ACTIVE-Spatial",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Based on the current view, which marked map location is the observer most likely at?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "placeholders": {
+    "object_id": "A"
+  },
+  "required_state": [
+    "occupancy_map_or_candidate_viewpoints",
+    "camera_model",
+    "agent_pose_world",
+    "object_pose_world",
+    "collision_check"
+  ],
+  "answer_rule": "Use ground-truth pose to select matching candidate location; candidates should be visually confusable but distinct.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

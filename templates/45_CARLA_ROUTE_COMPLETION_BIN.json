@@ -1,0 +1,31 @@
+{
+  "template_id": "CARLA_ROUTE_COMPLETION_BIN",
+  "family": "carla_driving",
+  "dimension": "EMB-Driving",
+  "scene_type": "outdoor_ugv",
+  "task_type": "single_choice",
+  "question_template": "If the UGV follows the proposed trajectory, what fraction of the route will it complete before an infraction?",
+  "options": [
+    "0-25%",
+    "25-50%",
+    "50-75%",
+    "75-100%"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "carla_map",
+    "route_plan",
+    "lane_polygons",
+    "traffic_light_state",
+    "ego_vehicle_state",
+    "dynamic_actor_states"
+  ],
+  "answer_rule": "Simulate proposed trajectory; compute route completion until collision/off-road/red-light infraction.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

@@ -1,0 +1,25 @@
+{
+  "template_id": "QA_TEMPLATE_VISIBILITY_DEFINED",
+  "family": "quality_audit",
+  "dimension": "Process-Quality",
+  "scene_type": "any",
+  "task_type": "yes_no",
+  "question_template": "Is the template explicit about whether it measures geometric FOV or rendered visibility?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "generated_sample_json",
+    "template_json"
+  ],
+  "answer_rule": "Check template metadata for visibility_mode in {frustum, rendered_occlusion}.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Use these as reference checks in your manufacturing pipeline, not as model-facing tasks."
+}

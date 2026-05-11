@@ -1,0 +1,31 @@
+{
+  "template_id": "SEM_GOAL_STATE_SATISFIED",
+  "family": "semantic_affordance",
+  "dimension": "SEM-Spatial",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Is the goal condition '{goal_text}' already satisfied in the current scene?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {
+    "category": "chair",
+    "object_id": "A",
+    "goal_text": "object A is on the table"
+  },
+  "required_state": [
+    "semantic_labels",
+    "scene_graph_or_symbolic_state",
+    "object_poses",
+    "navmesh_optional"
+  ],
+  "answer_rule": "Evaluate symbolic predicates in scene state against goal condition.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

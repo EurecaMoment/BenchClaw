@@ -1,0 +1,31 @@
+{
+  "template_id": "CARLA_DRIVABLE_ACTION",
+  "family": "carla_driving",
+  "dimension": "EMB-Driving",
+  "scene_type": "outdoor_ugv",
+  "task_type": "single_choice",
+  "question_template": "Which action keeps the UGV within the drivable area?",
+  "options": [
+    "go straight",
+    "turn left",
+    "turn right",
+    "stop"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "carla_map",
+    "route_plan",
+    "lane_polygons",
+    "traffic_light_state",
+    "ego_vehicle_state",
+    "dynamic_actor_states"
+  ],
+  "answer_rule": "Roll out candidate actions; choose action whose trajectory remains inside drivable area and avoids collision.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

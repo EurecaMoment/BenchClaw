@@ -1,0 +1,34 @@
+{
+  "template_id": "DYN_FIRST_CROSSING_OBJECT",
+  "family": "dynamics",
+  "dimension": "SR-Dynamics",
+  "scene_type": "outdoor_ugv_or_driving",
+  "task_type": "single_choice",
+  "question_template": "Which marked object will cross the agent's forward path first?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "none"
+  ],
+  "placeholders": {
+    "object_id": "A",
+    "horizon_s": 3.0
+  },
+  "required_state": [
+    "agent_velocity",
+    "object_velocities",
+    "object_bboxes_3d",
+    "lane_polygons_optional",
+    "future_tracks_optional"
+  ],
+  "answer_rule": "Compute crossing time for each dynamic object relative to agent future path; choose earliest valid.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

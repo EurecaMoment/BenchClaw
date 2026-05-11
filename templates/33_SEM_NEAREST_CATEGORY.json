@@ -1,0 +1,33 @@
+{
+  "template_id": "SEM_NEAREST_CATEGORY",
+  "family": "semantic_affordance",
+  "dimension": "SEM-Spatial",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Which marked object is the nearest {category} to the observer?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "placeholders": {
+    "category": "chair",
+    "object_id": "A",
+    "goal_text": "object A is on the table"
+  },
+  "required_state": [
+    "semantic_labels",
+    "scene_graph_or_symbolic_state",
+    "object_poses",
+    "navmesh_optional"
+  ],
+  "answer_rule": "Filter marked objects by semantic category; choose nearest.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

@@ -1,0 +1,29 @@
+{
+  "template_id": "CARLA_TRAFFIC_LIGHT_COMPLIANCE",
+  "family": "carla_driving",
+  "dimension": "EMB-Driving",
+  "scene_type": "outdoor_ugv",
+  "task_type": "single_choice",
+  "question_template": "According to the visible traffic signal and lane context, should the UGV proceed?",
+  "options": [
+    "yes",
+    "no"
+  ],
+  "placeholders": {},
+  "required_state": [
+    "carla_map",
+    "route_plan",
+    "lane_polygons",
+    "traffic_light_state",
+    "ego_vehicle_state",
+    "dynamic_actor_states"
+  ],
+  "answer_rule": "Use traffic light state affecting ego lane; proceed only if legally allowed and path is clear.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Reference template only. Adapt field names to your generator."
+}

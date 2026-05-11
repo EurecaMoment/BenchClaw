@@ -1,0 +1,32 @@
+{
+  "template_id": "MEM_REIDENTIFY_OBJECT",
+  "family": "spatial_memory",
+  "dimension": "SR-Memory",
+  "scene_type": "indoor_or_outdoor",
+  "task_type": "single_choice",
+  "question_template": "Which current marked object is the same physical instance as object '{object_id}' seen earlier?",
+  "options": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "none"
+  ],
+  "placeholders": {
+    "object_id": "A"
+  },
+  "required_state": [
+    "episode_trajectory",
+    "agent_pose_sequence",
+    "object_instance_ids",
+    "object_pose_history"
+  ],
+  "answer_rule": "Match simulator instance id across frames; distractors should share category when possible.",
+  "quality_checks": [
+    "answer must be in options",
+    "referenced objects must exist",
+    "ground truth must be generated from simulator state / geometry / navigation / rendering, not from LLM",
+    "avoid boundary cases where two options are nearly tied"
+  ],
+  "notes": "Requires multi-frame or episode-level metadata, not a single image only."
+}
