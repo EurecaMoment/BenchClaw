@@ -1,0 +1,3 @@
+[submodule "thirty_part/data-juicer"]
+	path = thirty_part/data-juicer
+	url = https://github.com/EurecaMoment/data-juicer.git
