@@ -1,3 +1,15 @@
-[submodule "thirty_part/data-juicer"]
-	path = thirty_part/data-juicer
-	url = https://github.com/EurecaMoment/data-juicer.git
+[submodule "thirty_part/annotationTools/data-juicer"]
+	path = thirty_part/annotationTools/data-juicer
+	url = https://github.com/EurecaAI/data-juicer.git
+[submodule "thirty_part/annotationTools/Depth-Anything-V2"]
+	path = thirty_part/annotationTools/Depth-Anything-V2
+	url = https://github.com/EurecaAI/Depth-Anything-V2.git
+[submodule "thirty_part/annotationTools/ultralytics"]
+	path = thirty_part/annotationTools/ultralytics
+	url = https://github.com/EurecaAI/ultralytics.git
+[submodule "thirty_part/annotationTools/sam3"]
+	path = thirty_part/annotationTools/sam3
+	url = https://github.com/EurecaAI/sam3.git
+[submodule "thirty_part/annotationTools/Depth-Anything-3"]
+	path = thirty_part/annotationTools/Depth-Anything-3
+	url = https://github.com/EurecaAI/Depth-Anything-3.git
