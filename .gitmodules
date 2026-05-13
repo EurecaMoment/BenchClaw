@@ -13,3 +13,6 @@
 [submodule "thirty_part/annotationTools/Depth-Anything-3"]
 	path = thirty_part/annotationTools/Depth-Anything-3
 	url = https://github.com/EurecaAI/Depth-Anything-3.git
+[submodule "thirty_part/annotationTools/yoloe"]
+	path = thirty_part/annotationTools/yoloe
+	url = https://github.com/EurecaAI/yoloe.git
