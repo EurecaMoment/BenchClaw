@@ -10,12 +10,12 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +23,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -125,8 +125,8 @@ Failures in these tests must target `Stage 4 Phase 1
   - `~/bench_workspace/workspace{i}/stage4/VALIDATION_REPORT.md`
   - `~/bench_workspace/workspace{i}/stage4/DRY_RUN_RESULTS.md`
 - 上游依赖->  - `~/bench_workspace/workspace{i}/stage3/final/STAGE4_INPUT_MANIFEST.jsonl`
-  - `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/`
-  - `~/bench_workspace/workspace{i}/stage3/final/CLEANED_DATA_SCHEMA.md`
+  - `~/bench_workspace/workspace{i}/stage3/final/evidence/`
+  - `~/bench_workspace/workspace{i}/stage3/final/EVIDENCE_SCHEMA.md`
   - `~/bench_workspace/workspace{i}/stage3/final/CLEANING_LINEAGE.jsonl`
   - `~/bench_workspace/workspace{i}/stage3/STAGE3_UNIT_TEST_REPORT.md` verdict 应为 PASS 或带 waiver
 若任一必需输入缺失，立即停止主测试，写入FAIL 报告，并列出缺失路径
@@ -146,7 +146,7 @@ Failures in these tests must target `Stage 4 Phase 1
 - schema/manifest 不一Stage 4 Phase 1 `/benchmark-evalset-generate`
 - 指标不可运行或不稳定 ->Stage 4 Phase 2 `/benchmark-metric-establish`
 - dry-run 失败 ->Stage 4 Phase 3 `/benchmark-validate-stage4`
-- Stage4 输入 manifest 或 cleaned data 字段不足 ->回退 Stage 3 Phase 5 `/benchmark-cleaning-validate`
+- Stage4 输入 manifest 或 evidence 字段不足 ->回退 Stage 3 Phase 5 `/benchmark-evidence-validate`
 
 ---
 
@@ -234,4 +234,4 @@ Mandatory rules:
 
 ## Downstream Handoff
 
-- 父级 stage orchestrator 读取本报告的 verdict 决定是否进入下一 stage- Stage 5 灰度评测定位回退时，读取 Stage 1-4 的单元测试报告作为优先证据- Stage 6 根因分析读取本报告中`Required Fix Target` 建立流程缺陷矩阵
+- 父级 stage orchestrator 读取本报告的 verdict 决定是否进入下一 stage- Stage 5 灰度评测定位回退时，读取 Stage 1-4 的单元测试报告作为优先证据- 后续若需要独立根因分析，可读取本报告中`Required Fix Target` 建立流程缺陷矩阵

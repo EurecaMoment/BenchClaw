@@ -1,22 +1,22 @@
 ---
 name: benchmark-stage4-build
-description: "Stage 4 子流程：评测集构建、模板审查、指标实现与联调验证。编排评测蓝图与路由 → 评测集批量合成 → 指标体系与可执行 metric library 建立 → 联调验证 → Stage 4 单元测试。基于 Stage 1 的能力维度和 benchmark 草稿、Stage 2 的模板、Stage 3 的 final cleaned data，构建 HuggingFace 友好的评测集和可执行评分协议；不负责数据采集、数据清洗或模型评测执行。"
+description: "Stage 4 子流程：评测集构建、模板审查、指标实现与联调验证。编排评测蓝图与路由 → 评测集批量合成 → 指标体系与可执行 metric library 建立 → 联调验证 → Stage 4 单元测试。基于 Stage 1 的能力维度和 benchmark 草稿、Stage 2 的模板、Stage 3 的 source-aware evidence pack，构建 HuggingFace 友好的评测集和可执行评分协议；不负责数据采集、数据清洗或模型评测执行。"
 argument-hint: [stage3-dir]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skill
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 # Benchmark Stage 4: 评测集构建与指标实现
 
 面向：*$ARGUMENTS*
 
-本 skill 是 Stage 4 的总控编排器，按 Stage1、Stage2、Stage3 同样的 phase-by-phase 方式调度 Stage 4 子 skill。Stage 4 的目标是把 Stage 3 的可信 cleaned data 路由到合适的评测模板和指标，生成 HuggingFace 友好的评测集，并实现可自动评分的 metric library。
+本 skill 是 Stage 4 的总控编排器，按 Stage1、Stage2、Stage3 同样的 phase-by-phase 方式调度 Stage 4 子 skill。Stage 4 的目标是把 Stage 3 的 source-aware evidence pack 路由到合适的评测模板和指标，按 truth level 和题型许可边界安全生成 HuggingFace 友好的评测集，并实现可自动评分的 metric library。
 
 Stage 4 不做数据采集，不做 Data-Juicer 清洗，不运行模型评测。模型评测属于 Stage 5。
 
@@ -52,8 +52,8 @@ STAGE4_SUMMARY.md
 - Stage 4 必须继承 `/benchmark-pipeline`、Stage 1、Stage 2 或 Stage 3 已经创建并使用的 active `WORKSPACE_ROOT`，不得自行创建新的 `workspace{i}`，不得自动切换到序号最高的旧 workspace。
 - 所有 Stage 4 中间过程文件、模板库、评测集、指标库、dry-run 输出、测试文件和报告都必须写入 `WORKSPACE_ROOT/stage4/`。
 - 只能读写当前 workspace 的 `stage1/`、`stage2/`、`stage3/`、`stage4/`。
-- 允许只读访问明确需要的全局资源，例如 `~/benchclaw/templates/`、`~/benchclaw/model_api/`、`~/benchclaw/skills/`。
-- `~/benchclaw/` 下任何内容都不能被创建、编辑、覆盖、删除、移动、重命名、复制写入或作为日志/缓存/临时输出目录；模板库、评测集、指标库和验证结果必须写入 `WORKSPACE_ROOT/stage4/`。
+- 允许只读访问明确需要的全局资源，例如 `BENCHCLAW_ROOT/templates/`、`BENCHCLAW_ROOT/model_api/`、`BENCHCLAW_ROOT/skills/`。
+- `BENCHCLAW_ROOT/` 下任何内容都不能被创建、编辑、覆盖、删除、移动、重命名、复制写入或作为日志/缓存/临时输出目录；模板库、评测集、指标库和验证结果必须写入 `WORKSPACE_ROOT/stage4/`。
 - 不得读取、复用、比较或借鉴其它 `workspace{j}` 的产物，除非用户明确指定路径和复用范围。
 - 不得把 Stage 4 运行产物写入 skill 源码目录、Downloads、当前项目目录、缓存目录或任意非 active workspace 路径。
 
@@ -64,7 +64,7 @@ STAGE4_SUMMARY.md
 - **HF_DATASET_REQUIRED = true**：最终评测集必须写入 `stage4/EVALSET_DATASET/`，并符合 HuggingFace 友好结构。
 - **EXECUTABLE_METRICS_REQUIRED = true**：指标必须有可导入、可运行、带测试的 Python 实现；不能只有文档。
 - **NO_GT_LEAKAGE = true**：答案、GT token、别名、坐标、计数、场景标签和可泄露 metadata 不得出现在模型可见输入、选项、文件名或路径中。
-- **NO_BENCHCLAW_WRITE = true**：`~/benchclaw/` 下所有内容只读，严禁增删改。
+- **NO_BENCHCLAW_WRITE = true**：`BENCHCLAW_ROOT/` 下所有内容只读，严禁增删改。
 - **STAGE_BOUNDARY_STOP = true**：Stage 4 完成 `STAGE4_SUMMARY.md` 后必须停止，由用户选择下一步；不得自动进入 Stage 5。
 
 ## Required Inputs
@@ -76,11 +76,12 @@ Stage 4 启动前必须读取：
 - `stage1/CAPABILITY_SCOPE.md`
 - `stage2/TEMPLATE_REFINEMENT_REPORT.md`
 - `stage2/templates/*.yaml`
-- `stage3/CLEANING_QUALITY_REPORT.md`
-- `stage3/final/CLEANED_DATA_SCHEMA.md`
+- `stage3/EVIDENCE_QUALITY_REPORT.md`
+- `stage3/final/EVIDENCE_SCHEMA.md`
 - `stage3/final/STAGE4_INPUT_MANIFEST.jsonl`
-- `stage3/final/cleaned_data/`
+- `stage3/final/evidence/`
 - `stage3/final/CLEANING_LINEAGE.jsonl`
+- `stage3/final/EVIDENCE_LINEAGE.jsonl`
 - `stage3/STAGE3_UNIT_TEST_REPORT.md`
 
 若 Stage 3 的清洗验证或单元测试 verdict 为 `FAIL`，不得进入 Stage 4。若为 `NEEDS_REVIEW`，必须有用户明确 waiver。
@@ -99,7 +100,7 @@ Stage 4 启动前必须读取：
 
 - Stage 1 能力维度、benchmark 草稿和评测集原型。
 - Stage 2 模板细化报告和模板文件。
-- Stage 3 final manifest、cleaned data schema、confidence evidence 和 cleaned data。
+- Stage 3 final manifest、evidence schema、truth level / template permission 标记和 final evidence。
 
 执行内容：
 
@@ -383,7 +384,7 @@ Stage 4 完成后必须停在这里，展示下一步选项：
 - **Executable metrics required.** 指标必须可运行、可测试、可供 Stage5 自动评分。
 - **Validation is mandatory.** `VALIDATION_REPORT.md` 失败时不能进入 Stage5。
 - **Trace lineage.** 模板、题目、GT、指标都必须能追溯到 Stage1/2/3 产物。
-- **Never write to `~/benchclaw/`.** 参考模板、model_api 和 skills 只能只读；所有发布模板、评测集、GT generator、metric library 和报告必须写入 active workspace。
+- **Never write to `BENCHCLAW_ROOT/`.** 参考模板、model_api 和 skills 只能只读；所有发布模板、评测集、GT generator、metric library 和报告必须写入 active workspace。
 - **Stage boundary stop.** Stage 4 完成后必须停住，展示下一步选项，等待用户选择；不得自动进入 Stage 5。
 
 ## Fixed Artifact Format Contract

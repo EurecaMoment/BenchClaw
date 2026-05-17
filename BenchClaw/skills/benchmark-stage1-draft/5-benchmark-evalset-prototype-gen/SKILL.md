@@ -10,12 +10,13 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- `BENCHCLAW_ROOT` 必须解析为当前 skill 所在 BenchClaw 仓库的根目录；只允许读取该根目录下、且被当前 skill 明确允许的子目录。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 # Benchmark Eval-Set Prototype Generation
 
@@ -26,7 +27,7 @@ metadata:
 ## Workspace 边界
 
 - 只能读写当前 `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` 下的 `stage1/` 目录。
-- 可选只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/` 作为私有结构参考，但这些已有模板不是本次模板制造依据，不能在任何输出内容中显式提及、引用、命名或声明来源。
+- 可选只读查看 `BENCHCLAW_ROOT/templates/` 作为私有结构参考，但这些已有模板不是本次模板制造依据，不能在任何输出内容中显式提及、引用、命名或声明来源。
 - 不得读取其它 workspace 的模板、草稿或评测集产物，除非用户明确指定。
 
 ## 输入
@@ -43,8 +44,7 @@ metadata:
 - `stage1/SIMULATOR_MAPPING.md`
 - `stage1/DATASET_MAPPING.md`
 - `stage1/REALDATA_MAPPING.md`
-- `/home/maqiang/benchclaw/templates`（只读、私有参考）
-- `~/benchclaw/templates/`
+- `BENCHCLAW_ROOT/templates/`（只读、私有参考）
 
 若任一必需输入缺失，必须停止并报告缺失路径，不得凭空生成模板初稿。
 
@@ -57,11 +57,11 @@ metadata:
 - `DATA_SOURCE_MAPPING.md` 中每个能力维度对应的 `simulator`、`existing_dataset`、`real_data` 数据源。
 - `LITERATURE_REVIEW.md` 中已有 benchmark 的局限、可借鉴设计和本 benchmark 的差异化定位。
 
-模板草稿不得是通用模板拼贴，也不得照搬 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`。这些已有模板只能作为私有参考，用于理解一般组织方式、命名习惯、质量检查思路和章节结构；它们不是模板制造依据，也不能作为 lineage、adaptation、reference、source 或 provenance 写入任何产物。最终模板初稿的任务目标、输入输出槽位、GT 需求、指标草案和质量约束必须只从本次用户意图、能力维度划分、论文调研分析和数据源映射中重新推导。
+模板草稿不得是通用模板拼贴，也不得照搬 `BENCHCLAW_ROOT/templates/`。这些已有模板只能作为私有参考，用于理解一般组织方式、命名习惯、质量检查思路和章节结构；它们不是模板制造依据，也不能作为 lineage、adaptation、reference、source 或 provenance 写入任何产物。最终模板初稿的任务目标、输入输出槽位、GT 需求、指标草案和质量约束必须只从本次用户意图、能力维度划分、论文调研分析和数据源映射中重新推导。
 
 ## 已有模板私有参考规则
 
-允许只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，但必须遵守：
+允许只读查看 `BENCHCLAW_ROOT/templates/`，但必须遵守：
 
 - 这些模板只能作为私有参考，不是本次模板生成依据。
 - 任何输出文件中都不得出现已有模板路径、文件名、模板名、模板 ID、来源说明、重组说明、改编说明或“来自/参考/借鉴某模板”的表达。
@@ -76,7 +76,7 @@ metadata:
 - 复制、翻译复制或轻微改写参考模板正文。
 - 复用参考模板的字段组合、任务结构、任务顺序、示例表达或评分描述。
 - 只替换能力维度名称，但保留参考模板的任务逻辑。
-- 把 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/` 中的模板当作本次模板初稿直接写入。
+- 把 `BENCHCLAW_ROOT/templates/` 中的模板当作本次模板初稿直接写入。
 - 在任何输出中显式说明模板来自已有模板、由已有模板重组、参考了某路径、改写自某模板或受某具体模板启发。
 - 没有写明本模板如何从本次能力维度和数据源映射推导而来。
 
@@ -110,7 +110,7 @@ stage1/
 1. 读取 `IDEA_TARGET.md`，提取用户意图、评测目标、目标边界和非目标。
 2. 读取 `CAPABILITY_SCOPE.md`，列出所有能力维度和子能力。
 3. 读取 `DATA_SOURCE_MAPPING.md`，确定每个能力维度可用的数据源类型、source_name、GT/标注可用性和覆盖缺口。
-4. 若读取 `LITERATURE_REVIEW.md`，可以提取论文调研中的设计约束、已有 benchmark 局限和差异化定位。若只读查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，只能作为私有结构参考，不得复制内容，不得记录参考路径，不得在产物中披露模板来源或重组关系。
+4. 若读取 `LITERATURE_REVIEW.md`，可以提取论文调研中的设计约束、已有 benchmark 局限和差异化定位。若只读查看 `BENCHCLAW_ROOT/templates/`，只能作为私有结构参考，不得复制内容，不得记录参考路径，不得在产物中披露模板来源或重组关系。
 5. 为每个能力维度设计 1-3 个任务原型，每个原型必须包含：
    - instruction template
    - input spec
@@ -302,7 +302,7 @@ All template drafts are benchmark-specific initial drafts synthesized only from 
 - 每个模板草稿都包含 `non_copy_declaration`。
 - `TEMPLATE_DRAFT_INDEX.md`、`TEMPLATE_DRAFT_LINEAGE.md`、`ANTI_COPY_DECLARATION.md` 均存在。
 - 所有模板草稿都能追溯到 `IDEA_TARGET.md`、`CAPABILITY_SCOPE.md`、`DATA_SOURCE_MAPPING.md`。
-- 若私有查看 `/home/maqiang/benchclaw/templates` 或 `~/benchclaw/templates/`，不得在任何产物中写明参考路径、模板名称、借鉴点或重组关系；只能写本次用户意图、能力维度、数据源映射和论文调研如何支撑模板重新推导。
+- 若私有查看 `BENCHCLAW_ROOT/templates/`，不得在任何产物中写明参考路径、模板名称、借鉴点或重组关系；只能写本次用户意图、能力维度、数据源映射和论文调研如何支撑模板重新推导。
 
 ## 规则
 

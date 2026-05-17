@@ -1,5 +1,5 @@
 ---
-name: benchmark-cleaning-validate
+name: benchmark-evidence-validate
 description: "Stage 3 Phase 5：三类数据同一套清洗与半监督标注验证及最终合并。并行验证 simulator、existing_dataset、real_data 的分流中间结果、GT/annotation 保护、pseudo annotation 状态、schema 兼容性和追溯链完整性，并合并为 Stage4 输入。Use when user says '验证清洗结果', 'cleaning validate', '检查 cleaned data'."
 argument-hint: [stage3-dir]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob
@@ -10,12 +10,12 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +23,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -32,29 +32,29 @@ This skill must operate only inside the current run workspace.
 
 This boundary overrides convenience behaviors such as auto-discovery, resume from latest workspace, reuse of previous artifacts, broad recursive grep/list, and fallback search.
 
-# 清洗验证（三类数据同一 Skill 并行）
+# 证据验证与真值分级（三类数据同一 Skill 并行）
 
 面向：**$ARGUMENTS**
 
-本 skill 验证清洗结果和半监督候选标注，并将三条线的结果合并为 Stage4 输入；不重新运行 Data-Juicer 或 annotation-tool，不修改原始数据。
+本 skill 验证证据编译结果和弱感知候选标注，并将三条线的结果合并为 Stage4 输入；不重新运行 Data-Juicer 或 annotation-tool，不修改原始数据。
 
 ## 重要约束
 
-本 skill 是三类数据源共同使用的唯一 Phase 5 skill。不得拆成三套验证 skill；必须在同一份 `CLEANING_QUALITY_REPORT.md` 中并行验证三类数据并给出统一 verdict，然后写出 `final/` 下的合并结果。
+本 skill 是三类数据源共同使用的唯一 Phase 5 skill。不得拆成三套验证 skill；必须在同一份 `EVIDENCE_QUALITY_REPORT.md` 中并行验证三类数据并给出统一 verdict，然后写出 `final/` 下的合并结果。
 
 ## 置信度门禁要求
 
-- 本阶段必须把“图文数据置信度是否足以进入 Stage4”作为核心 verdict 依据。
+- 本阶段必须把“证据是否具备足够来源信息、真值等级、题型许可和置信度以进入 Stage4”作为核心 verdict 依据。
 - 只有当样本具备可追溯原图/元数据、质量检查结果、图文或标注一致性证据、copy-only 字段保护证据、必要的人工复核状态时，才能写入 `stage4_ready_status=ready`。
 - 任何样本如果缺少置信度证据、只有工具候选标注但无人审、annotation provenance 不完整、图文对应关系可疑或质量检查失败，必须标记为 `NEEDS_REVIEW` 或 rejected。
-- `CLEANING_QUALITY_REPORT.md` 必须按 source 总结置信度提升证据，而不仅是文件存在性检查。
+- `EVIDENCE_QUALITY_REPORT.md` 必须按 source 总结置信度提升证据，而不仅是文件存在性检查。
 
 ## 输入
 
 必需：
 
-- `~/benchclaw/data-juicer_card/DATAJUICER_AGENT_CAPABILITY_SPEC.md`
-- `~/bench_workspace/workspace{i}/stage3/cleaned_data/`
+- `BENCHCLAW_ROOT/data-juicer_card/references/DATAJUICER_AGENT_CAPABILITY_SPEC.md`
+- `~/bench_workspace/workspace{i}/stage3/evidence/`
 - `~/bench_workspace/workspace{i}/stage3/source_work/`
 - `~/bench_workspace/workspace{i}/stage3/rejected_samples/`
 - `~/bench_workspace/workspace{i}/stage3/CLEANING_LINEAGE.jsonl`
@@ -62,7 +62,7 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 - `~/bench_workspace/workspace{i}/stage2/DATA_SCHEMA.md`
 - `~/bench_workspace/workspace{i}/stage2/templates/*.yaml`
 
-若 Data-Juicer 清洗产物无法追溯到 `DATAJUICER_AGENT_CAPABILITY_SPEC.md`，验证 verdict 不能为 PASS。
+若 Data-Juicer 证据编译产物无法追溯到 `DATAJUICER_AGENT_CAPABILITY_SPEC.md`，验证 verdict 不能为 PASS。
 
 可选：
 
@@ -72,20 +72,20 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 
 ## 三类验证策略
 
-验证必须优先读取 `source_work/{source_type}/{source_name}/` 下的中间产物；根目录 `cleaned_data/`、`rejected_samples/` 只能作为兼容镜像。
+验证必须优先读取 `source_work/{source_type}/{source_name}/` 下的中间产物；根目录 `evidence/`、`rejected_samples/` 只能作为兼容镜像，不得覆盖 source-aware evidence 判断。
 
 ### 仿真器 `simulator`
 
 - 验证 GT 字段未被修改。
-- 验证 cleaned sample 能回溯到 raw scene/frame。
+- 验证已编译样本能回溯到 raw scene/frame。
 - 验证 depth、pose、mask、trajectory 等引用仍可读。
-- 验证维度覆盖没有因清洗被破坏。
+- 验证维度覆盖没有因证据编译被破坏。
 - 若存在 simulator pseudo annotation，验证其必须是 `audit_only` 审计结果，且仅用于一致性检查或异常发现，未覆盖仿真器 GT。
 
 ### 已有数据集 `existing_dataset`
 
 - 验证 `original_sample_id`、split、annotation provenance 保留。
-- 验证 QA/caption/label 清洗后仍和图片对应。
+- 验证 QA/caption/label 规范化后仍和图片对应。
 - 验证缺失字段仍标记为 `missing_or_derived`。
 - 验证去重和过滤原因可解释。
 - 若存在 annotation-tool 输出，验证其标记为 `pseudo_annotation`，并保留原始 annotation provenance。
@@ -100,31 +100,31 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 
 ## 输出
 
-- `~/bench_workspace/workspace{i}/stage3/CLEANED_DATA_SCHEMA.md`
-- `~/bench_workspace/workspace{i}/stage3/CLEANING_QUALITY_REPORT.md`
+- `~/bench_workspace/workspace{i}/stage3/EVIDENCE_SCHEMA.md`
+- `~/bench_workspace/workspace{i}/stage3/EVIDENCE_QUALITY_REPORT.md`
 - `~/bench_workspace/workspace{i}/stage3/cleaning_audit_sample/`
-- `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/`
-- `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/{source_type}/{source_name}/images/{sample_id}.{ext}`
-- `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/{source_type}/{source_name}/metadata/{sample_id}.json`
-- `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/{source_type}/{source_name}/processed_images/{sample_id}_{derived_type}.{ext}`（按需）
+- `~/bench_workspace/workspace{i}/stage3/final/evidence/`
+- `~/bench_workspace/workspace{i}/stage3/final/evidence/{source_type}/{source_name}/images/{sample_id}.{ext}`
+- `~/bench_workspace/workspace{i}/stage3/final/evidence/{source_type}/{source_name}/metadata/{sample_id}.json`
+- `~/bench_workspace/workspace{i}/stage3/final/evidence/{source_type}/{source_name}/processed_images/{sample_id}_{derived_type}.{ext}`（按需）
 - `~/bench_workspace/workspace{i}/stage3/final/rejected_samples/`
 - `~/bench_workspace/workspace{i}/stage3/final/pseudo_annotations/`（按需）
-- `~/bench_workspace/workspace{i}/stage3/final/CLEANED_DATA_SCHEMA.md`
+- `~/bench_workspace/workspace{i}/stage3/final/EVIDENCE_SCHEMA.md`
 - `~/bench_workspace/workspace{i}/stage3/final/CLEANING_LINEAGE.jsonl`
 - `~/bench_workspace/workspace{i}/stage3/final/ANNOTATION_LINEAGE.jsonl`（按需）
 - `~/bench_workspace/workspace{i}/stage3/final/STAGE4_INPUT_MANIFEST.jsonl`
 
 ## 合并策略
 
-- 从 `source_work/simulator/{source_name}/cleaned_data/`、`source_work/existing_dataset/{source_name}/cleaned_data/`、`source_work/real_data/{source_name}/cleaned_data/` 汇总样本。
-- 统一写入 `final/cleaned_data/{source_type}/{source_name}/`，保持 source_type 和 source_name 层级。
-- 每个 source 的 final cleaned_data 目录必须包含 `images/`、`metadata/`，并在存在派生图片时包含 `processed_images/`。
+- 从 `source_work/simulator/{source_name}/evidence/`、`source_work/existing_dataset/{source_name}/evidence/`、`source_work/real_data/{source_name}/evidence/` 汇总样本。
+- 统一写入 `final/evidence/{source_type}/{source_name}/`，保持 source_type 和 source_name 层级。
+- 每个 source 的 final evidence 目录必须包含 `images/`、`metadata/`，并在存在派生图片时包含 `processed_images/`。
 - 每个进入 Stage4 的样本必须写出一张最终标准图片 `images/{sample_id}.{ext}` 和一个同 basename 的 `metadata/{sample_id}.json`；二者必须一一对应。
 - 若清洗或标注工具产生与原图不同的图片（如 YOLO 画框、深度图、mask overlay、裁剪/增强/诊断图），必须同时保留原图/标准图和派生图。派生图写入 `processed_images/{sample_id}_{derived_type}.{ext}`，并在 `metadata/{sample_id}.json` 的 `processed_images[]` 中记录。
-- `metadata/{sample_id}.json` 必须包含 `original_image_path`（Stage2 原图路径）、`final_image_path`（final/images 路径）、`record_json_path`（Stage2 单图 JSON）、`processed_images`（派生图数组）、`cleaned_path`、`lineage_id`、`confidence_evidence`、`confidence_status`、`review_reason`、`stage4_ready_status`。
+- `metadata/{sample_id}.json` 必须包含 `original_image_path`（Stage2 原图路径）、`final_image_path`（final/images 路径）、`record_json_path`（Stage2 单图 JSON）、`processed_images`（派生图数组）、`evidence_path`、`lineage_id`、`confidence_evidence`、`confidence_status`、`review_reason`、`stage4_ready_status`。
 - 合并 rejected samples 到 `final/rejected_samples/{source_type}_{source_name}_rejected.jsonl`。
 - 合并半监督候选标注到 `final/pseudo_annotations/{source_type}/{source_name}/`，但 simulator 的 `audit_only` 输出只能作为审计附件，不能进入评分 GT 字段。
-- 生成 `final/STAGE4_INPUT_MANIFEST.jsonl`，每条样本必须包含 `source_type`、`source_name`、`sample_id`、`image_path`、`original_image_path`、`final_image_path`、`record_json_path`、`metadata_json_path`、`processed_image_paths`、`cleaned_path`、`gt_availability`、`annotation_status`、`pseudo_annotation_path`（如有）、`lineage_id`、`confidence_evidence`、`confidence_status`、`review_reason`、`stage4_ready_status`。
+- 生成 `final/STAGE4_INPUT_MANIFEST.jsonl`，每条样本必须包含 `source_type`、`source_name`、`sample_id`、`image_path`、`original_image_path`、`final_image_path`、`record_json_path`、`metadata_json_path`、`processed_image_paths`、`evidence_path`、`gt_availability`、`annotation_status`、`pseudo_annotation_path`（如有）、`lineage_id`、`confidence_evidence`、`confidence_status`、`review_reason`、`stage4_ready_status`。
 - `image_path` 与 `record_json_path` 必须继承 Stage 2 的一一对应关系：图片位于 `collected_data/{source_type}/{source_name}/images/{sample_id}.{ext}`，JSON 位于 `collected_data/{source_type}/{source_name}/records/{sample_id}.json`，二者 basename 必须等于 `sample_id`。
 - `image_path` 为兼容字段，必须等于或可追溯到 `original_image_path`；Stage4 新逻辑应优先读取 `final_image_path` 和 `metadata_json_path`。
 - `processed_image_paths` 必须为数组；没有派生图片时写 `[]`，不得省略字段。
@@ -133,7 +133,7 @@ This boundary overrides convenience behaviors such as auto-discovery, resume fro
 ## 报告结构
 
 ```markdown
-# Cleaning Quality Report
+# Evidence Quality Report
 
 ## Verdict
 PASS / NEEDS_REVIEW / FAIL
@@ -160,7 +160,7 @@ PASS / NEEDS_REVIEW / FAIL
 [Stage 4 所需字段是否满足]
 
 ## Data-Juicer Spec Compliance
-[是否读取 `~/benchclaw/data-juicer_card/DATAJUICER_AGENT_CAPABILITY_SPEC.md`、配置/执行是否符合 spec、operator 是否可追溯、是否存在 CONFIG_SPEC_MISMATCH]
+[是否读取 `BENCHCLAW_ROOT/data-juicer_card/references/DATAJUICER_AGENT_CAPABILITY_SPEC.md`、配置/执行是否符合 spec、operator 是否可追溯、是否存在 CONFIG_SPEC_MISMATCH]
 
 ## Known Limitations
 [仍需人工复核或 waiver 的事项]
@@ -185,7 +185,7 @@ PASS / NEEDS_REVIEW / FAIL
 ## 规则
 
 - 不用仿真器 full GT 标准强行判定 existing_dataset / real_data。
-- 不把真实数据的 annotation gap 当作清洗失败；但必须标记评测可用性风险。
+- 不把真实数据的 annotation gap 当作证据编译失败；但必须标记评测可用性风险。
 - 不把半监督工具输出当作真值通过验证；缺少人工确认时只能是 `NEEDS_REVIEW` 或辅助候选。
 - 不允许将 YOLO 画框图、深度图、mask overlay 等派生图片当作原图交给 Stage4；Stage4 必须通过 metadata 读取这些派生关系。
 - 不把仿真器数据纳入常规半监督补标验证；仿真器应优先验证程序 GT 是否保留和可追溯。

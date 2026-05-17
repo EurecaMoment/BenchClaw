@@ -1,0 +1,47 @@
+[
+  {
+    "path": "1-benchmark-data-capability-survey/SKILL.md",
+    "lines": 101,
+    "chars": 2865
+  },
+  {
+    "path": "2-benchmark-collection-guidance/SKILL.md",
+    "lines": 91,
+    "chars": 3303
+  },
+  {
+    "path": "3-benchmark-template-refinement/SKILL.md",
+    "lines": 116,
+    "chars": 2533
+  },
+  {
+    "path": "4-benchmark-collect-codegen/SKILL.md",
+    "lines": 159,
+    "chars": 4237
+  },
+  {
+    "path": "5-benchmark-batch-collect/SKILL.md",
+    "lines": 148,
+    "chars": 4478
+  },
+  {
+    "path": "5a-benchmark-source-collect-worker/SKILL.md",
+    "lines": 129,
+    "chars": 4610
+  },
+  {
+    "path": "6-benchmark-unit-test-stage2/SKILL.md",
+    "lines": 175,
+    "chars": 4525
+  },
+  {
+    "path": "MODIFICATION_REPORT.md",
+    "lines": 57,
+    "chars": 1532
+  },
+  {
+    "path": "SKILL.md",
+    "lines": 171,
+    "chars": 5654
+  }
+]

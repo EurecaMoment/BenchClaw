@@ -10,12 +10,12 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +23,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -42,7 +42,7 @@ This skill is an **atomic single-responsibility skill**. It must only diagnose c
 
 ## Purpose
 
-- 本模块负责在 Stage 5 灰度评测失败后，定位问题应回退到哪些stage、phase、skill ->artifact- 本模块直接产物是 `~/bench_workspace/workspace{i}/stage5/CANARY_ROLLBACK_PLAN.md` ->`~/bench_workspace/workspace{i}/stage5/ROLLBACK_STATE_PATCH.json`- 本模块不负责执行回退、不负责改写上游产物、不负责修改 skill 源码；skill 源码的手术刀式修改由 Stage 6 负责
+- 本模块负责在 Stage 5 灰度评测失败后，定位问题应回退到哪些stage、phase、skill ->artifact- 本模块直接产物是 `~/bench_workspace/workspace{i}/stage5/CANARY_ROLLBACK_PLAN.md` ->`~/bench_workspace/workspace{i}/stage5/ROLLBACK_STATE_PATCH.json`- 本模块不负责执行回退、不负责改写上游产物、不负责修改 skill 源码；如需后续维护，应由用户另行发起独立诊断或修订流程
 ---
 
 ## Inputs
@@ -71,9 +71,9 @@ This skill is an **atomic single-responsibility skill**. It must only diagnose c
 | API 认证、endpoint、payload、rate limit 错误 | Stage 5 Phase 1 `/benchmark-build-eval-system-prompt` | 模型 API 配置 |
 | 输出格式大面积不可解| Stage 5 Phase 1 prompt/output schema | Stage 4 `EVALSET_SCHEMA.md` |
 | metric runtime 失败 | Stage 4 Phase 2 `/benchmark-metric-establish` | Stage 4 Phase 3 `/benchmark-validate-stage4` |
-| sample manifest/schema mismatch | Stage 4 Phase 1 `/benchmark-evalset-generate` | Stage 3 `CLEANED_DATA_SCHEMA.md` |
-| GT 缺失、错位、明显错| Stage 3 Phase 4 `/benchmark-cleaning-validate` | Stage 2 Phase 5 `/benchmark-batch-collect` |
-| 清洗后维度覆盖塌| Stage 3 Phase 1/2/3 | Stage 2 补采 |
+| sample manifest/schema mismatch | Stage 4 Phase 1 `/benchmark-evalset-generate` | Stage 3 `EVIDENCE_SCHEMA.md` |
+| GT 缺失、错位、明显错| Stage 3 Phase 5 `/benchmark-evidence-validate` | Stage 2 Phase 5 `/benchmark-batch-collect` |
+| 证据编译后维度覆盖塌| Stage 3 Phase 1/2/3 | Stage 2 补采 |
 | 任务设计与能力维度不一| Stage 1 Phase 3/5 | Stage 4 Phase 1 |
 | 灰度样本无法覆盖关键维度 | Stage 4 Phase 1 synthesis rules | Stage 2/3 数据不足 |
 | GT 泄露到模型输| Stage 4 Phase 1/3 | Stage 5 Phase 1 prompt packaging |
@@ -112,7 +112,7 @@ This skill is an **atomic single-responsibility skill**. It must only diagnose c
 1. Preserve: [artifacts to keep]
 2. Invalidate: [downstream artifacts to regenerate]
 3. Rerun from: [stage/phase/skill]
-4. Required modification before rerun: [artifact edits or skill issue to defer to Stage 6]
+4. Required modification before rerun: [artifact edits or skill issue to defer to a separate manual diagnosis/revision flow]
 5. Regression checks after rerun: [unit tests + canary]
 
 ## User-Facing Decision
@@ -164,4 +164,4 @@ Mandatory rules:
 
 ## Downstream Handoff
 
-- 父级 `benchmark-stage5-eval` ->`benchmark-pipeline` 合并 `ROLLBACK_STATE_PATCH.json` ->`pipeline_state.json`- 用户或父流程根据 `CANARY_ROLLBACK_PLAN.md` 回退到目录stage/phase- Stage 6 使用该报告判断是否需要修改对skill 的流程规则
+- 父级 `benchmark-stage5-eval` ->`benchmark-pipeline` 合并 `ROLLBACK_STATE_PATCH.json` ->`pipeline_state.json`- 用户或父流程根据 `CANARY_ROLLBACK_PLAN.md` 回退到目录stage/phase- 如需后续流程规则修订，可把该报告作为独立诊断输入

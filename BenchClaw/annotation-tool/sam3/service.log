@@ -23,3 +23,5 @@ SAM3 local service listening on http://127.0.0.1:8765
   import pkg_resources
 /home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmpoo0jdwa1: line 17: 1798281 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)

@@ -1,0 +1,1 @@
+{"image_path": "/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe/ultralytics/assets/bus.jpg", "prompt_type": "bboxes", "bboxes": [[22, 230, 805, 735]], "cls": [0], "class_names": ["object0"], "imgsz": 640, "conf": 0.15, "iou": 0.7, "annotated_output_path": "/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe/runs/skill_visual_bus.jpg"}

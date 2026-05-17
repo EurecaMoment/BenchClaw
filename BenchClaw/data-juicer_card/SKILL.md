@@ -1,77 +1,122 @@
 ---
 name: data-juicer-card
-description: Use this skill whenever the user needs substantial dataset cleaning, filtering, deduplication, transformation, analysis, tracing, export, multimodal preprocessing, RAG preparation, agent trace cleanup, or reproducible data pipelines. Trigger even when the user does not explicitly say "Data-Juicer" if the request is really about building or running a configurable data processing workflow over local files, Hugging Face datasets, JSONL/Parquet/CSV corpora, multimodal samples, or large-scale batch processing.
+description: Use this skill whenever the task is dataset cleaning, filtering, normalization, deduplication, dataset quality control, or reproducible data processing with Data-Juicer. This skill is self-contained: reading this file alone is enough to inspect local data, draft a runnable YAML, orchestrate Data-Juicer cleaning, execute the run, and verify outputs.
 ---
 
 # Data-Juicer Skill
 
-Treat Data-Juicer as the default execution engine for non-trivial dataset processing tasks in this workspace.
+This skill is the only document that needs to be read inside `data-juicer_card`.
 
-## Repository Location
+Do not rely on any other file in this skill directory. The `references/` directory is intentionally removed.
 
-- Main repo: `/home/maqiang/data-juicer`
-- Main README: `/home/maqiang/data-juicer/README.md`
-- Full capability reference: `/home/maqiang/benchclaw/data-juicer_card/references/DATAJUICER_AGENT_CAPABILITY_SPEC.md`
-- Quick reference: `/home/maqiang/benchclaw/data-juicer_card/references/quick-reference.md`
+## Hard Requirement
 
-## When To Use It
+The conda environment for this skill is already standardized as `data_juicer`.
 
-Use Data-Juicer when the task involves one or more of these:
-
-- Cleaning or normalizing dataset fields
-- Filtering low-quality, malformed, duplicated, or policy-risk samples
-- Converting raw corpora into training, SFT, DPO, RAG, eval, or benchmark data
-- Building reproducible YAML-based processing pipelines
-- Running multimodal preprocessing over text, image, audio, video, or mixed data
-- Processing agent trajectories, tool traces, or conversation logs
-- Large-scale or distributed dataset processing
-- Need for tracing, operator-level debugging, or dataset analysis visualizations
-
-Do not default to Data-Juicer for a tiny one-off string edit that is easier to do directly in Python or shell.
-
-## Core Entry Points
-
-Prefer these commands:
+Always execute Data-Juicer commands through that environment. Preferred form:
 
 ```bash
-uv pip install -e /home/maqiang/data-juicer
-dj-process --config /absolute/path/to/config.yaml
-dj-analyze --config /absolute/path/to/analyzer.yaml
-dj-mcp granular-ops --transport stdio
-dj-mcp recipe-flow --transport stdio
+conda run -n data_juicer <command>
 ```
 
-Available project scripts come from `/home/maqiang/data-juicer/pyproject.toml`:
+Use this rule for all package checks, CLI invocation, and smoke runs. Do not assume the current shell is already activated.
 
-- `dj-process`: execute a processing pipeline
-- `dj-analyze`: run dataset analysis workflows
-- `dj-install`: install optional dependencies for operators
-- `dj-mcp`: expose Data-Juicer through MCP in `granular-ops` or `recipe-flow` mode
+## Repository And Runtime
 
-## Default Working Pattern
+- Data-Juicer repo: `/home/maqiang/data-juicer`
+- Skill directory: `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card`
+- Standard conda env: `data_juicer`
 
-Follow this sequence unless the task clearly requires a different path:
+If `dj-process` is unavailable inside `data_juicer`, bootstrap it with:
 
-1. Inspect the source data schema and file format first.
-2. Decide whether the task is best solved by Data-Juicer YAML, Python API prototyping, analysis, or MCP mode.
-3. For production or repeatable processing, create a YAML config and run `dj-process`.
-4. For small prototype validation, optionally test on a tiny sample with Python API or a reduced config.
-5. Save configs next to the task outputs so the workflow remains reproducible.
-6. Verify outputs with spot checks, counts, and if useful `dj-analyze`.
+```bash
+conda run -n data_juicer pip install -e /home/maqiang/data-juicer
+```
 
-## Preferred Modes
+Then verify with one of these:
 
-### 1. YAML + `dj-process`
+```bash
+conda run -n data_juicer dj-process --help
+conda run -n data_juicer python -c "import data_juicer; print(data_juicer.__file__)"
+```
 
-This is the default for real work. Prefer YAML pipelines over ad hoc scripts when the user wants reproducibility or multi-step processing.
+## What This Skill Must Accomplish
 
-Minimum pattern:
+When used, this skill should be sufficient to:
+
+1. Inspect the input dataset path and sample schema.
+2. Choose a minimal set of valid Data-Juicer operators.
+3. Write a runnable YAML config with absolute paths.
+4. Run dataset cleaning through Data-Juicer in `data_juicer`.
+5. Verify that outputs were produced and inspect sample rows.
+6. Leave behind reproducible artifacts: config, input sample, output path, and command history.
+
+## When To Use This Skill
+
+Use it when the task is any of the following:
+
+- Text cleaning or normalization
+- Quality filtering
+- Dataset deduplication
+- Reproducible YAML-based data processing
+- Preprocessing JSONL, JSON, CSV, TSV, TXT, or Parquet datasets
+- Preparing cleaned outputs for later benchmark, training, or analysis stages
+
+Do not default to this skill for a trivial one-line string edit that does not need a data pipeline.
+
+## Mandatory Workflow
+
+Follow this order unless the user explicitly asks for something else:
+
+1. Confirm the input path exists.
+2. Read a small sample of the dataset and identify the text-bearing fields.
+3. Pick the smallest operator list that solves the requested cleaning task.
+4. Write a YAML config with absolute `dataset_path` and `export_path`.
+5. Run the config with `conda run -n data_juicer dj-process --config <config>`.
+6. Read the output file and compare a few rows before and after cleaning.
+7. Report what changed, where the config lives, and where the cleaned data was written.
+
+## Minimal Operator Set You Can Use Safely
+
+These operators are confirmed in the local Data-Juicer docs and are stable CPU text operators suitable for default cleaning:
+
+### `clean_html_mapper`
+
+- Purpose: strip HTML tags and convert HTML text to plain text.
+- Parameters: none required.
+
+### `clean_links_mapper`
+
+- Purpose: remove URLs from text.
+- Parameters:
+  - `pattern`: optional
+  - `repl`: optional, default empty string
+
+### `text_length_filter`
+
+- Purpose: keep rows whose text length is within a character range.
+- Parameters:
+  - `min_len`
+  - `max_len`
+
+### `words_num_filter`
+
+- Purpose: keep rows whose word count is within a range.
+- Parameters:
+  - `lang`
+  - `tokenization`
+  - `min_num`
+  - `max_num`
+
+## Default Config Pattern
+
+Prefer this template for local text cleaning:
 
 ```yaml
-project_name: 'datajuicer-task'
+project_name: 'data-juicer-cleaning'
 dataset_path: '/absolute/path/to/input.jsonl'
-export_path: '/absolute/path/to/output/result.jsonl'
-np: 4
+export_path: '/absolute/path/to/output/cleaned.jsonl'
+np: 1
 
 process:
   - clean_html_mapper: {}
@@ -79,112 +124,105 @@ process:
   - text_length_filter:
       min_len: 10
       max_len: 10000
+  - words_num_filter:
+      lang: en
+      tokenization: false
+      min_num: 3
+      max_num: 2000
 ```
 
 Rules:
 
-- Always use real absolute paths when possible.
-- Confirm the input file or directory exists before running.
-- Write outputs to a directory the user can inspect.
-- Only use operator names and parameters that actually exist in the installed repo/docs.
-- If an operator needs GPU, model weights, API keys, or extra packages, check that before committing to it.
+- Always use absolute paths in configs written by this skill.
+- Do not overwrite raw input files.
+- Keep the pipeline minimal.
+- Prefer `np: 1` for smoke runs and small local verification.
+- Only add heavier operators if the task actually needs them.
 
-### 2. Python API
+## Execution Commands
 
-Use this for quick validation on a small sample, not as the main implementation for large workflows.
+### Inspect runtime
 
-```python
-from data_juicer.core.data import NestedDataset
-from data_juicer.ops.filter import TextLengthFilter
-from data_juicer.ops.mapper import WhitespaceNormalizationMapper
-
-ds = NestedDataset.from_dict({
-    "text": ["Short", "This passes the filter.", "Text   with   spaces"]
-})
-
-res_ds = ds.process([
-    TextLengthFilter(min_len=10),
-    WhitespaceNormalizationMapper(),
-])
+```bash
+conda run -n data_juicer python -c "import data_juicer; print('ok')"
 ```
 
-### 3. MCP Mode
+### Run a cleaning config
 
-Use `dj-mcp` when the agent needs to expose Data-Juicer capabilities as tools for another MCP-capable workflow.
+```bash
+conda run -n data_juicer dj-process --config /absolute/path/to/process.yaml
+```
 
-- `granular-ops`: operator-level tool access
-- `recipe-flow`: recipe-oriented workflow access
+### Alternative source-run path
 
-### 4. `dj-analyze`
+If the CLI script is missing but the repo exists, run:
 
-Use for dataset profiling, operator effect analysis, and quality inspection after processing or while debugging a pipeline design.
+```bash
+conda run -n data_juicer python /home/maqiang/data-juicer/tools/process_data.py --config /absolute/path/to/process.yaml
+```
 
-## How To Choose Operators
+## Output Verification Checklist
 
-Pick the smallest pipeline that solves the actual task.
+After each run, verify all of the following:
 
-- Cleaning/normalization: prefer mapper operators such as HTML/link/email cleanup, whitespace normalization, text cleanup
-- Quality gating: prefer filter operators such as text length, token count, repetition, special characters, language quality, perplexity, relevance, or image/video/audio quality filters
-- Deduplication: use document/image/video deduplicators, and prefer Ray variants for larger data
-- Selection/sampling: use selector operators for subsampling, balancing, or field-based selection
-- Synthesis/transformation: use generators or format conversion tools only when the user actually wants new derived data
-- Multimodal tasks: use image, audio, video, or multimodal operators only if the environment has the required dependencies and models
+1. The export file exists.
+2. The export file is non-empty.
+3. At least two rows were spot-checked.
+4. The observed changes match the intended operators.
 
-If you are unsure whether an operator exists, check `/home/maqiang/data-juicer/docs/Operators.md` and then the specific operator doc under `/home/maqiang/data-juicer/docs/operators/`.
+If the run fails, classify the failure as one of:
 
-## Execution Guidance
+- environment not bootstrapped
+- wrong input path
+- invalid YAML
+- invalid operator name
+- operator parameter mismatch
+- runtime dependency issue
 
-Before running a pipeline:
+Then fix the smallest blocking issue and rerun.
 
-- Check input schema and representative rows
-- Check disk paths and output destination
-- Check whether dependencies for chosen operators are installed
-- Check whether the requested scale suggests `executor_type: ray` or `ray_partitioned`
+## Self-Contained Example In This Directory
 
-After running a pipeline:
+This directory is expected to contain an executable local example so the skill can be validated without external skill docs.
 
-- Verify row counts and output files
-- Inspect a few output samples
-- If results look off, reduce the pipeline to the smallest failing config and rerun
-- Use tracing or analysis if the task requires explainability
+Example input:
 
-## Useful Local References
+- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_input.jsonl`
 
-Read these on demand:
+Example config:
 
-- `/home/maqiang/data-juicer/docs/tutorial/QuickStart.md`
-- `/home/maqiang/data-juicer/docs/DatasetCfg.md`
-- `/home/maqiang/data-juicer/docs/Operators.md`
-- `/home/maqiang/data-juicer/docs/Distributed.md`
-- `/home/maqiang/data-juicer/docs/Tracing.md`
-- `/home/maqiang/data-juicer/docs/Export.md`
+- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_process.yaml`
 
-Use the demos as templates when drafting configs:
+Expected run command:
 
-- `/home/maqiang/data-juicer/demos/process_simple/process.yaml`
-- `/home/maqiang/data-juicer/demos/process_quick_local/process_quick.yaml`
-- `/home/maqiang/data-juicer/demos/process_on_ray/configs/demo.yaml`
-- `/home/maqiang/data-juicer/demos/analyze_simple/analyzer.yaml`
+```bash
+conda run -n data_juicer dj-process --config /home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_process.yaml
+```
 
-## Output Expectations
+Expected output path:
 
-When you use this skill for a user task, prefer to leave behind:
+- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/output/minimal_cleaned.jsonl`
 
-- A runnable YAML config or explicit command history
-- Output files in a clear location
-- A short note on which operators were chosen and why
-- Any dependency assumptions or environment requirements that affected the solution
+## Example Validation Standard
 
-## Failure Handling
+The local example is considered valid when:
 
-If a run fails:
+- HTML tags are removed from the first sample.
+- Links are removed from samples that contain URLs.
+- Very short text is filtered out.
+- The cleaned output file exists under `examples/output/`.
 
-1. Identify whether the failure is path/config/operator/dependency/runtime related.
-2. Reduce the pipeline to the smallest failing case.
-3. Verify operator names and config keys against local docs.
-4. Switch to a lighter operator set if the environment lacks required models or packages.
-5. Tell the user exactly what blocked the run if the environment is the limiting factor.
+## Reporting Format
+
+When this skill is used, leave a concise report that includes:
+
+- input dataset path
+- output dataset path
+- config path
+- exact command executed through `conda run -n data_juicer`
+- operators used and why
+- result summary from spot checks
 
 ## Important Constraint
 
-Do not claim Data-Juicer supports a specific operator or parameter unless it is verified from the local repo, docs, demos, or installed code.
+Do not claim a Data-Juicer operator or parameter is supported unless it is verified from the local repo or local docs under `/home/maqiang/data-juicer`.

@@ -4,6 +4,8 @@
 
 ERQA 是一个面向真实场景的多模态问答评测数据集，重点考察机器人/具身智能相关的空间推理、世界知识理解与视觉定位能力。当前本地数据目录对应的是由原始 TFRecord 转换后的可访问版本，来源于 [embodiedreasoning/ERQA](https://github.com/embodiedreasoning/ERQA)。
 
+- 本地数据路径：`/home/maqiang/benchmarkData/ERQA`
+
 - 数据划分：`test`
 - 样本数量：400
 - 数据规模：约 91 MB

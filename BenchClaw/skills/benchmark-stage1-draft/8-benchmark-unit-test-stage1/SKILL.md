@@ -10,12 +10,13 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- `BENCHCLAW_ROOT` 必须解析为当前 skill 所在 BenchClaw 仓库的根目录；只允许读取该根目录下、且被当前 skill 明确允许的子目录。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +24,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, which must stay inside `BENCHCLAW_ROOT/`, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -81,7 +82,9 @@ This skill is an **atomic single-responsibility skill**. It must only validate S
 - `CAPABILITY_SCOPE.md`、`EVALSET_PROTOTYPE.md`、`BENCHMARK_DRAFT.md`、`EXECUTION_PLAN.md` 中维度编号和名称可对齐。
 - `DATA_SOURCE_MAPPING.md` 与 `data_source_selection/SIMULATOR_MAPPING.md`、`data_source_selection/DATASET_MAPPING.md`、`data_source_selection/REALDATA_MAPPING.md` 中维度映射一致，且每个必须覆盖的维度至少映射到一个 simulator / dataset / real-world 数据来源，或显式 waiver。
 - 检查 `SIMULATOR_MAPPING.md`、`DATASET_MAPPING.md`、`REALDATA_MAPPING.md` 不得直接出现在 `stage1/` 根目录；它们只能位于 `stage1/data_source_selection/`。
-- Stage 2 能从执行计划中读出采集目标、数据 schema 预期、模板种子和最低采集规模。
+- `BENCHMARK_DRAFT.md` 必须在数据构造章节中为每个选定数据源列出计划采集数量与单位。
+- Stage 2 能从执行计划中读出按数据源拆分的采集目标、数据 schema 预期、模板种子和最低采集规模。
+- `BENCHMARK_DRAFT.md` 与 `EXECUTION_PLAN.md` 中按数据源列出的计划采集数量不得相互冲突。
 
 4. **记录机器可读结果**：写入 `~/bench_workspace/workspace{i}/stage1/unit_tests/results.json`，每条测试记录 `id`、`status`、`evidence`、`blocking`、`fix_target`。
 5. **生成报告**：写入 `~/bench_workspace/workspace{i}/stage1/STAGE1_UNIT_TEST_REPORT.md`。
@@ -187,4 +190,4 @@ Mandatory rules:
 
 - 父级 stage orchestrator 读取本报告的 verdict 决定是否进入下一 stage。
 - Stage 5 灰度评测定位回退时，读取 Stage 1-4 的单元测试报告作为优先证据。
-- Stage 6 根因分析读取本报告中的 `Required Fix Target` 建立流程缺陷矩阵。
+- 后续若需要独立根因分析，可读取本报告中的 `Required Fix Target` 建立流程缺陷矩阵。

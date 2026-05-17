@@ -10,12 +10,13 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- `BENCHCLAW_ROOT` 必须解析为当前 skill 所在 BenchClaw 仓库的根目录；只允许读取该根目录下、且被当前 skill 明确允许的子目录。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +24,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, which must stay inside `BENCHCLAW_ROOT/`, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -75,7 +76,7 @@ It must **only** do the work scoped to this module.
 2. **确定 Benchmark 名称与定位**：基于 `~/bench_workspace/workspace{i}/stage1/IDEA_TARGET.md` 的定位语句，提炼简洁的 benchmark 名称和一句话定位。
 3. **撰写动机章节**：基于 `~/bench_workspace/workspace{i}/stage1/LITERATURE_REVIEW.md` 的结构性缺口和重叠风险，构建"为什么需要这个 benchmark"的论证。
 4. **整合能力维度体系**：从 `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` 引用维度体系，突出 novel dimensions。
-5. **撰写数据构造方案**：从 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 引用仿真器、已有数据集、真实数据的组合选择与补充方案。
+5. **撰写数据构造方案**：从 `~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md` 引用仿真器、已有数据集、真实数据的组合选择与补充方案，并明确列出每个选定数据源在 stage2 计划采集的目标数量（如样本数、轨迹数、片段数或任务实例数）。
 6. **撰写评测集设计**：从 `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` 引用任务原型与指标体系。
 7. **撰写对比定位**：基于 `~/bench_workspace/workspace{i}/stage1/LITERATURE_REVIEW.md` 的 Related Benchmarks 表，构建与已有 benchmark 的对比表。
 8. **补齐未决项**：将上游产出中尚未定稿但必须在草稿中体现的内容，统一整理为“待下游确认”的说明，不使用标记模板。
@@ -106,6 +107,11 @@ It must **only** do the work scoped to this module.
 [已有数据集复用方案]
 ### 3.3 Real-Data Integration
 [真实采集数据接入与补充方案]
+
+### 3.4 Planned Collection Quotas by Source
+| Source Type | Source Name | Planned Collection Amount | Unit | Rationale |
+|-------------|-------------|---------------------------|------|-----------|
+| ...         | ...         | ...                       | ...  | ...       |
 
 ## 4. Eval-Set Design
 ### 4.1 Task Design
@@ -150,6 +156,7 @@ Mandatory rules:
 - [ ] 文档包含完整的 7 个章节。
 - [ ] Benchmark 名称与定位语句清晰且与 `~/bench_workspace/workspace{i}/stage1/IDEA_TARGET.md` 一致。
 - [ ] 能力维度、数据源、任务原型、指标体系之间的追溯链完整——每个引用都可追溯到对应的上游产出文件。
+- [ ] `## 3. Data Construction` 明确列出每个选定数据源的计划采集数量，且不得只写“适量”“若干”这类模糊表述。
 - [ ] Comparison with Existing Benchmarks 包含至少 3 个已有 benchmark 的对比条目。
 - [ ] Downstream Handoff Notes 明确标注了每个后续完善项对应的 stage。
 - [ ] 若任一必需输入缺失，不得标记完成。
@@ -162,6 +169,7 @@ Mandatory rules:
 - 不擅自改写任何上游产出文件（`~/bench_workspace/workspace{i}/stage1/IDEA_TARGET.md`、`~/bench_workspace/workspace{i}/stage1/LITERATURE_REVIEW.md`、`~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md`、`~/bench_workspace/workspace{i}/stage1/DATA_SOURCE_MAPPING.md`、`~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md`）。
 - 不把草稿当作最终 benchmark 定义——stage2-stage5 会继续完善未决项并可能修订草稿。
 - 不在草稿中虚构上游产出中不存在的维度、数据源或指标。
+- 草稿中的数据构造章节必须为每个选定数据源写出明确采集目标数量和计量单位，允许标注为估算值，但不得省略。
 - 出错时必须明确指出阻塞文件或不一致条件。
 - 如果 Write 因文件过大失败，立即 fallback 到 Bash 分块写入，不要询问用户许可。
 

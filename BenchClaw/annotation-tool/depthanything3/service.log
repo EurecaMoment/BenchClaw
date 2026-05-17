@@ -181,3 +181,114 @@ CUDA cleanup: freed 2.79GB, available: 33.06GB/39.38GB
 CUDA cleanup: freed 0.00GB, available: 33.06GB/39.38GB
 [CLEANUP] Task cleanup completed. Total tasks: 1, Active tasks: 0
 INFO:     127.0.0.1:41610 - "GET /task/f857ec06-e758-426d-b7e7-0184b1d913a3 HTTP/1.1" 200 OK
+/tmp/tmptbiyaham: line 17: 1904987 Killed                  da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+ERROR conda.cli.main_run:execute(142): `conda run da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery` failed. (See above for error)
+============================================================
+🚀 Starting Depth Anything 3 Backend Server
+============================================================
+Model directory: /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1
+Device: cuda
+Gallery directory: /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+
+📡 Server URLs (Ctrl/CMD+Click to open):
+  🏠 Home:      http://127.0.0.1:8008
+  📊 Dashboard: http://127.0.0.1:8008/dashboard
+  📈 API Status: http://127.0.0.1:8008/status
+  🎨 Gallery:   http://127.0.0.1:8008/gallery/
+============================================================
+INFO:     Started server process [3118117]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8008 (Press CTRL+C to quit)
+Starting Depth Anything 3 Backend...
+Model directory: /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1
+Device: cuda
+Server: http://127.0.0.1:8008
+Dashboard: http://127.0.0.1:8008/dashboard
+API Status: http://127.0.0.1:8008/status
+Gallery: http://127.0.0.1:8008/gallery/
+============================================================
+Backend is running! You can now:
+  • Open home page: http://127.0.0.1:8008
+  • Open dashboard: http://127.0.0.1:8008/dashboard
+  • Check API status: http://127.0.0.1:8008/status
+  • Browse gallery: http://127.0.0.1:8008/gallery/
+  • Submit inference tasks via API
+============================================================
+INFO:     127.0.0.1:58412 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60690 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35054 - "GET /status HTTP/1.1" 200 OK
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Starting inference on 1 frames
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Pre-inference cleanup...
+INFO:     127.0.0.1:35058 - "POST /inference HTTP/1.1" 200 OK
+CUDA cleanup: freed 0.00GB, available: 39.38GB/39.38GB
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Memory check passed: 39.38GB available, 2.05GB required
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Loading model...
+Loading model from /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1...
+INFO:     127.0.0.1:35068 - "GET /status HTTP/1.1" 200 OK
+[97m[INFO ] using SwiGLU layer as FFN[0m
+[97m[INFO ] using MLP layer as FFN[0m
+Loading weights from local directory
+Model loaded successfully in 58.22s
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Model loaded successfully
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Running model inference...
+[97m[INFO ] Processed Images Done taking 0.5562183856964111 seconds. Shape:  torch.Size([1, 3, 406, 504])[0m
+[97m[INFO ] Model Forward Pass Done. Time: 5.835021257400513 seconds[0m
+[97m[INFO ] Conversion to Prediction Done. Time: 0.0008907318115234375 seconds[0m
+[97m[INFO ] Export Results Done. Time: 0.0003192424774169922 seconds[0m
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Inference completed in 6.40s (6.40s per image)
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Post-inference cleanup...
+CUDA cleanup: freed 2.08GB, available: 33.04GB/39.38GB
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Task completed successfully
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Total time: 65.65s, Inference time: 6.40s, Avg per image: 6.40s
+[164ecb34-a01a-48fb-bd24-355bcc76bf16] Final cleanup in finally block...
+CUDA cleanup: freed 0.00GB, available: 33.04GB/39.38GB
+[CLEANUP] Task cleanup completed. Total tasks: 1, Active tasks: 0
+INFO:     127.0.0.1:35330 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35338 - "POST /inference HTTP/1.1" 200 OK
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Starting inference on 1 frames
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Pre-inference cleanup...
+CUDA cleanup: freed 0.00GB, available: 33.04GB/39.38GB
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Memory check passed: 33.04GB available, 2.05GB required
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Loading model...
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Model loaded successfully
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Running model inference...
+[97m[INFO ] Processed Images Done taking 0.031938791275024414 seconds. Shape:  torch.Size([1, 3, 504, 280])[0m
+[97m[INFO ] Model Forward Pass Done. Time: 0.7672767639160156 seconds[0m
+[97m[INFO ] Conversion to Prediction Done. Time: 0.0003376007080078125 seconds[0m
+[97m[INFO ] Export Results Done. Time: 0.00030732154846191406 seconds[0m
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Inference completed in 0.80s (0.80s per image)
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Post-inference cleanup...
+CUDA cleanup: freed 2.00GB, available: 33.04GB/39.38GB
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Task completed successfully
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Total time: 1.19s, Inference time: 0.80s, Avg per image: 0.80s
+[0e9e5608-1cb5-435f-8a41-01237a4ad8af] Final cleanup in finally block...
+CUDA cleanup: freed 0.00GB, available: 33.04GB/39.38GB
+INFO:     127.0.0.1:38688 - "GET /status HTTP/1.1" 200 OK
+[CLEANUP] Task cleanup completed. Total tasks: 2, Active tasks: 0
+INFO:     127.0.0.1:60654 - "GET /status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60660 - "POST /inference HTTP/1.1" 200 OK
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Starting inference on 1 frames
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Pre-inference cleanup...
+CUDA cleanup: freed 0.00GB, available: 33.04GB/39.38GB
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Memory check passed: 33.04GB available, 2.05GB required
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Loading model...
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Model loaded successfully
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Running model inference...
+[97m[INFO ] Processed Images Done taking 0.0862116813659668 seconds. Shape:  torch.Size([1, 3, 280, 504])[0m
+[97m[INFO ] Model Forward Pass Done. Time: 0.23360848426818848 seconds[0m
+[97m[INFO ] Conversion to Prediction Done. Time: 0.00032210350036621094 seconds[0m
+[97m[INFO ] Export Results Done. Time: 0.000274658203125 seconds[0m
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Inference completed in 0.32s (0.32s per image)
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Post-inference cleanup...
+CUDA cleanup: freed 1.96GB, available: 33.04GB/39.38GB
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Task completed successfully
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Total time: 0.73s, Inference time: 0.32s, Avg per image: 0.32s
+[a3f3c3e7-c374-42a2-9297-cdc4d0b618b7] Final cleanup in finally block...
+CUDA cleanup: freed 0.00GB, available: 33.04GB/39.38GB
+[CLEANUP] Task cleanup completed. Total tasks: 3, Active tasks: 0
+INFO:     127.0.0.1:38484 - "GET /v1/models HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:47332 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47344 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47358 - "POST /v1/models HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:47374 - "GET /openapi.json HTTP/1.1" 200 OK

@@ -17,6 +17,8 @@ The deployment is backed by:
 
 The goal is to preserve as much of DA3's checked-in capability surface as the local code reliably exposes.
 
+This local skill now treats depth outputs as absolute depth by default. Calls made through the backend wrapper request metric depth silently, instead of falling back to relative depth.
+
 ## When to use
 
 Use this skill when the task needs any of the following:
@@ -62,6 +64,7 @@ This mode reaches the DA3 FastAPI backend at `127.0.0.1:8008` and supports:
 - reload the loaded model
 - clean up historical tasks
 - access integrated gallery output if the gallery directory exists
+- request absolute depth silently by default
 
 ### 2. CLI wrapper mode
 
@@ -316,5 +319,6 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthan
 - Prefer `auto` for most user tasks because it preserves DA3's own input detection and preprocessing.
 - Prefer `submit` when you already have concrete image paths and want direct task queue control.
 - Prefer backend status and task endpoints when you want to keep the model hot on GPU across multiple jobs.
+- This skill silently requests metric/absolute depth by default. If the underlying model/input cannot resolve metric depth, the run should fail instead of returning relative depth.
 - If the task requires exact preservation of every advanced DA3 flag, verify that the checked-in backend actually forwards that option before relying on the port API.
 - Do not assume a fixed output directory unless the current task explicitly needs one.

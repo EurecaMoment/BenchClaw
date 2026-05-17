@@ -13,35 +13,104 @@ import numpy as np
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Collect RGB frames from one or more CARLA maps.")
+    parser = argparse.ArgumentParser(
+        description="Collect RGB frames from one or more CARLA maps."
+    )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5000)
     parser.add_argument("--tm-port", type=int, default=5800)
     parser.add_argument("--output-dir", default="output_rgb")
-    parser.add_argument("--maps", default="", help="Comma separated map names. Empty means current map only.")
-    parser.add_argument("--all-maps", action="store_true", help="Iterate all drivable Town maps.")
+    parser.add_argument(
+        "--maps",
+        default="",
+        help="Comma separated map names. Empty means current map only.",
+    )
+    parser.add_argument(
+        "--all-maps", action="store_true", help="Iterate all drivable Town maps."
+    )
     parser.add_argument("--frames-per-map", type=int, default=30)
-    parser.add_argument("--save-every", type=int, default=1, help="Save one frame every N world ticks.")
-    parser.add_argument("--warmup-ticks", type=int, default=40, help="Ticks to let the vehicle start moving before sampling.")
-    parser.add_argument("--min-save-distance", type=float, default=8.0, help="Minimum ego travel distance in meters between saved frames.")
-    parser.add_argument("--min-speed-mps", type=float, default=2.0, help="Do not save until ego speed reaches this threshold.")
-    parser.add_argument("--max-idle-ticks", type=int, default=200, help="Respawn the vehicle if it stays too slow for too long.")
-    parser.add_argument("--max-respawns", type=int, default=3, help="Maximum vehicle respawns when traffic is blocked.")
-    parser.add_argument("--speed-diff", type=float, default=-35.0, help="TrafficManager percentage speed difference. Negative makes ego faster than limit.")
-    parser.add_argument("--lead-distance", type=float, default=5.0, help="TrafficManager following distance in meters.")
-    parser.add_argument("--cameras", default="front,side_left,side_right,rear,top", help="Comma separated camera names to attach. Default: all 5 angles.")
-    parser.add_argument("--metadata-cameras", default="all", help="Comma separated camera names that should compute visible object metadata. Use 'all' or a subset like 'front,top'.")
-    parser.add_argument("--save-instance-maps", action="store_true", help="Save raw instance segmentation images alongside RGB outputs.")
+    parser.add_argument(
+        "--save-every", type=int, default=1, help="Save one frame every N world ticks."
+    )
+    parser.add_argument(
+        "--warmup-ticks",
+        type=int,
+        default=40,
+        help="Ticks to let the vehicle start moving before sampling.",
+    )
+    parser.add_argument(
+        "--min-save-distance",
+        type=float,
+        default=8.0,
+        help="Minimum ego travel distance in meters between saved frames.",
+    )
+    parser.add_argument(
+        "--min-speed-mps",
+        type=float,
+        default=2.0,
+        help="Do not save until ego speed reaches this threshold.",
+    )
+    parser.add_argument(
+        "--max-idle-ticks",
+        type=int,
+        default=200,
+        help="Respawn the vehicle if it stays too slow for too long.",
+    )
+    parser.add_argument(
+        "--max-respawns",
+        type=int,
+        default=3,
+        help="Maximum vehicle respawns when traffic is blocked.",
+    )
+    parser.add_argument(
+        "--speed-diff",
+        type=float,
+        default=-35.0,
+        help="TrafficManager percentage speed difference. Negative makes ego faster than limit.",
+    )
+    parser.add_argument(
+        "--lead-distance",
+        type=float,
+        default=5.0,
+        help="TrafficManager following distance in meters.",
+    )
+    parser.add_argument(
+        "--cameras",
+        default="front,side_left,side_right,rear,top",
+        help="Comma separated camera names to attach. Default: all 5 angles.",
+    )
+    parser.add_argument(
+        "--metadata-cameras",
+        default="all",
+        help="Comma separated camera names that should compute visible object metadata. Use 'all' or a subset like 'front,top'.",
+    )
+    parser.add_argument(
+        "--save-instance-maps",
+        action="store_true",
+        help="Save raw instance segmentation images alongside RGB outputs.",
+    )
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=360)
     parser.add_argument("--fov", type=int, default=90)
-    parser.add_argument("--min-visible-pixels", type=int, default=12, help="Minimum visible pixels for an actor to be kept in visible_objects.")
+    parser.add_argument(
+        "--min-visible-pixels",
+        type=int,
+        default=12,
+        help="Minimum visible pixels for an actor to be kept in visible_objects.",
+    )
     parser.add_argument("--delta-seconds", type=float, default=0.05)
     parser.add_argument("--format", choices=["png", "jpg"], default="jpg")
     parser.add_argument("--jpeg-quality", type=int, default=90)
     parser.add_argument("--seed", type=int, default=12345)
-    parser.add_argument("--restart-per-map", action="store_true", help="Start a fresh CARLA server process for each map.")
-    parser.add_argument("--server-script", default="/home/maqiang/simulators/CARLA/start_carla_offscreen.sh")
+    parser.add_argument(
+        "--restart-per-map",
+        action="store_true",
+        help="Start a fresh CARLA server process for each map.",
+    )
+    parser.add_argument(
+        "--server-script",
+        default="/home/maqiang/simulators/CARLA/start_carla_offscreen.sh",
+    )
     parser.add_argument("--server-start-timeout", type=float, default=90.0)
     parser.add_argument("--server-ready-timeout", type=float, default=60.0)
     parser.add_argument("--load-wait-seconds", type=float, default=3.0)
@@ -115,13 +184,17 @@ def connect_client(host, port, ready_timeout):
         except RuntimeError as exc:
             last_error = exc
             time.sleep(1.0)
-    raise TimeoutError(f"Timed out waiting for CARLA RPC readiness on {host}:{port}: {last_error}")
+    raise TimeoutError(
+        f"Timed out waiting for CARLA RPC readiness on {host}:{port}: {last_error}"
+    )
 
 
 def start_server(args, rpc_port, map_name):
     log_dir = os.path.abspath(args.output_dir)
     os.makedirs(log_dir, exist_ok=True)
-    log_path = os.path.join(log_dir, f"server_{normalize_map_name(map_name)}_{rpc_port}.log")
+    log_path = os.path.join(
+        log_dir, f"server_{normalize_map_name(map_name)}_{rpc_port}.log"
+    )
     log_handle = open(log_path, "w", encoding="utf-8")
 
     state_root = f"/tmp/carla_capture_{rpc_port}"
@@ -132,7 +205,9 @@ def start_server(args, rpc_port, map_name):
     os.makedirs(env["XDG_CACHE_HOME"], exist_ok=True)
 
     command = [os.path.abspath(args.server_script), f"-carla-rpc-port={rpc_port}"]
-    process = subprocess.Popen(command, stdout=log_handle, stderr=subprocess.STDOUT, env=env)
+    process = subprocess.Popen(
+        command, stdout=log_handle, stderr=subprocess.STDOUT, env=env
+    )
 
     try:
         wait_for_port(args.host, rpc_port, args.server_start_timeout)
@@ -158,7 +233,9 @@ def bootstrap_maps(args):
     rpc_port = reserve_port_block(args.host, args.port)
     bootstrap_args = argparse.Namespace(**vars(args))
     bootstrap_args.port = rpc_port
-    process, log_handle, log_path, client = start_server(bootstrap_args, rpc_port, "bootstrap")
+    process, log_handle, log_path, client = start_server(
+        bootstrap_args, rpc_port, "bootstrap"
+    )
     try:
         world = client.get_world()
         maps = resolve_maps(client, world, args)
@@ -182,7 +259,9 @@ def ensure_map_loaded(client, map_name, wait_seconds, load_world_timeout):
 def destroy_actors(client, actors):
     actor_ids = [actor.id for actor in actors if actor is not None]
     if actor_ids:
-        client.apply_batch([carla.command.DestroyActor(actor_id) for actor_id in actor_ids])
+        client.apply_batch(
+            [carla.command.DestroyActor(actor_id) for actor_id in actor_ids]
+        )
 
 
 def sensor_actors(camera_sensors):
@@ -197,7 +276,9 @@ def location_distance(a, b):
 
 
 def speed_mps(velocity):
-    return (velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z) ** 0.5
+    return (
+        velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z
+    ) ** 0.5
 
 
 def serialize_location(location):
@@ -227,7 +308,9 @@ def resolve_metadata_cameras(args, camera_names):
     value = args.metadata_cameras.strip().lower()
     if value == "all":
         return set(camera_names)
-    selected = {name.strip() for name in args.metadata_cameras.split(",") if name.strip()}
+    selected = {
+        name.strip() for name in args.metadata_cameras.split(",") if name.strip()
+    }
     return {name for name in selected if name in camera_names}
 
 
@@ -285,16 +368,31 @@ def project_actor_bbox_3d(actor, camera_actor, width, height, fov):
         "ymax": min(height - 1, int(max(ys))),
     }
 
-    edge_pairs = [[0, 1], [1, 3], [3, 2], [2, 0], [0, 4], [4, 5], [5, 1], [5, 7], [7, 6], [6, 4], [6, 2], [7, 3]]
+    edge_pairs = [
+        [0, 1],
+        [1, 3],
+        [3, 2],
+        [2, 0],
+        [0, 4],
+        [4, 5],
+        [5, 1],
+        [5, 7],
+        [7, 6],
+        [6, 4],
+        [6, 2],
+        [7, 3],
+    ]
     for start, end in edge_pairs:
         p1 = get_image_point(vertices[start], k, world_to_camera)
         p2 = get_image_point(vertices[end], k, world_to_camera)
         if p1 is None or p2 is None:
             continue
-        edges.append([
-            [round(float(p1[0]), 3), round(float(p1[1]), 3)],
-            [round(float(p2[0]), 3), round(float(p2[1]), 3)],
-        ])
+        edges.append(
+            [
+                [round(float(p1[0]), 3), round(float(p1[1]), 3)],
+                [round(float(p2[0]), 3), round(float(p2[1]), 3)],
+            ]
+        )
 
     return {
         "bbox_2d_from_3d": projected_bbox,
@@ -303,7 +401,9 @@ def project_actor_bbox_3d(actor, camera_actor, width, height, fov):
 
 
 def decode_instance_segmentation(image):
-    img = np.frombuffer(image.raw_data, dtype=np.uint8).reshape((image.height, image.width, 4))
+    img = np.frombuffer(image.raw_data, dtype=np.uint8).reshape(
+        (image.height, image.width, 4)
+    )
     semantic_labels = img[..., 2]
     actor_ids = img[..., 1].astype(np.uint32) + (img[..., 0].astype(np.uint32) << 8)
     return semantic_labels, actor_ids
@@ -311,7 +411,9 @@ def decode_instance_segmentation(image):
 
 def actor_speed(actor):
     velocity = actor.get_velocity()
-    return math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z)
+    return math.sqrt(
+        velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z
+    )
 
 
 def collect_visible_actor_metadata(camera_info, instance_image, world):
@@ -367,7 +469,10 @@ def collect_visible_actor_metadata(camera_info, instance_image, world):
                     "actor_pose": serialize_transform(actor.get_transform()),
                     "speed_mps": round(actor_speed(actor), 3),
                     "distance_to_camera_m": round(
-                        actor.get_transform().location.distance(camera_info["actor"].get_transform().location), 3
+                        actor.get_transform().location.distance(
+                            camera_info["actor"].get_transform().location
+                        ),
+                        3,
                     ),
                     "bbox_3d_projected": projected_3d,
                 }
@@ -422,7 +527,9 @@ def camera_mounts(vehicle):
     }
 
 
-def setup_vehicle_and_camera(world, traffic_manager, blueprints, spawn_points, args, rng):
+def setup_vehicle_and_camera(
+    world, traffic_manager, blueprints, spawn_points, args, rng
+):
     vehicle_bp = rng.choice(list(blueprints.filter("vehicle.*")))
     vehicle = spawn_vehicle(world, vehicle_bp, spawn_points, rng)
 
@@ -483,7 +590,9 @@ def setup_vehicle_and_camera(world, traffic_manager, blueprints, spawn_points, a
                 "rotation": serialize_rotation(camera_defs[cam_name]["rot"]),
             },
         }
-        print(f"  camera {cam_name} attached at loc={camera_defs[cam_name]['loc']} rot={camera_defs[cam_name]['rot']}")
+        print(
+            f"  camera {cam_name} attached at loc={camera_defs[cam_name]['loc']} rot={camera_defs[cam_name]['rot']}"
+        )
 
     vehicle.set_autopilot(True, traffic_manager.get_port())
     traffic_manager.distance_to_leading_vehicle(vehicle, args.lead_distance)
@@ -529,6 +638,10 @@ def capture_map(client, world, map_name, args, rng):
     configure_world(world, traffic_manager, args.delta_seconds)
     traffic_manager.global_percentage_speed_difference(args.speed_diff)
 
+    # Pulse world after enabling synchronous mode so sensor listeners get frames
+    for _ in range(5):
+        world.tick()
+
     blueprints = world.get_blueprint_library()
     spawn_points = world.get_map().get_spawn_points()
     if not spawn_points:
@@ -541,13 +654,19 @@ def capture_map(client, world, map_name, args, rng):
         nonlocal vehicle, camera_sensors
         if camera_sensors:
             for cam_name, info in camera_sensors.items():
-                try: info["actor"].stop()
-                except Exception: pass
-                try: info["inst_actor"].stop()
-                except Exception: pass
+                try:
+                    info["actor"].stop()
+                except Exception:
+                    pass
+                try:
+                    info["inst_actor"].stop()
+                except Exception:
+                    pass
         destroy_actors(
             client,
-            sensor_actors(camera_sensors) + [info["inst_actor"] for info in camera_sensors.values()] + [vehicle],
+            sensor_actors(camera_sensors)
+            + [info["inst_actor"] for info in camera_sensors.values()]
+            + [vehicle],
         )
         vehicle, camera_sensors = setup_vehicle_and_camera(
             world, traffic_manager, blueprints, spawn_points, args, rng
@@ -572,10 +691,14 @@ def capture_map(client, world, map_name, args, rng):
         for _ in range(args.warmup_ticks):
             world.tick()
             for cam_name, info in camera_sensors.items():
-                try: info["queue"].get(timeout=3.0)
-                except Exception: pass
-                try: info["inst_queue"].get(timeout=3.0)
-                except Exception: pass
+                try:
+                    info["queue"].get(timeout=3.0)
+                except Exception:
+                    pass
+                try:
+                    info["inst_queue"].get(timeout=3.0)
+                except Exception:
+                    pass
 
         while saved_frames < args.frames_per_map:
             tick_start = time.time()
@@ -587,10 +710,14 @@ def capture_map(client, world, map_name, args, rng):
             images = {}
             instance_images = {}
             for cam_name, info in camera_sensors.items():
-                try: images[cam_name] = info["queue"].get(timeout=3.0)
-                except Exception: images[cam_name] = None
-                try: instance_images[cam_name] = info["inst_queue"].get(timeout=3.0)
-                except Exception: instance_images[cam_name] = None
+                try:
+                    images[cam_name] = info["queue"].get(timeout=3.0)
+                except Exception:
+                    images[cam_name] = None
+                try:
+                    instance_images[cam_name] = info["inst_queue"].get(timeout=3.0)
+                except Exception:
+                    instance_images[cam_name] = None
 
             transform = vehicle.get_transform()
             velocity = vehicle.get_velocity()
@@ -601,8 +728,10 @@ def capture_map(client, world, map_name, args, rng):
                 total_distance += location_distance(current_loc, last_location)
             last_location = carla.Location(current_loc.x, current_loc.y, current_loc.z)
 
-            if current_speed < args.min_speed_mps: idle_ticks += 1
-            else: idle_ticks = 0
+            if current_speed < args.min_speed_mps:
+                idle_ticks += 1
+            else:
+                idle_ticks = 0
 
             if idle_ticks >= args.max_idle_ticks:
                 if respawn_count >= args.max_respawns:
@@ -612,39 +741,57 @@ def capture_map(client, world, map_name, args, rng):
                 respawn_count += 1
                 idle_ticks = 0
                 last_location = None
-                print(f"respawn {normalize_map_name(map_name)} blocked vehicle count={respawn_count}")
+                print(
+                    f"respawn {normalize_map_name(map_name)} blocked vehicle count={respawn_count}"
+                )
                 for cam_name in camera_sensors:
                     try:
                         while not camera_sensors[cam_name]["queue"].empty():
                             camera_sensors[cam_name]["queue"].get_nowait()
-                    except Exception: pass
+                    except Exception:
+                        pass
                 respawn_rig()
                 for _ in range(args.warmup_ticks):
                     world.tick()
                     for cam_name, info in camera_sensors.items():
-                        try: info["queue"].get(timeout=3.0)
-                        except Exception: pass
-                        try: info["inst_queue"].get(timeout=3.0)
-                        except Exception: pass
+                        try:
+                            info["queue"].get(timeout=3.0)
+                        except Exception:
+                            pass
+                        try:
+                            info["inst_queue"].get(timeout=3.0)
+                        except Exception:
+                            pass
                 continue
 
-            if tick_count % args.save_every != 0: continue
-            if current_speed < args.min_speed_mps: continue
-            if total_distance - last_saved_distance < args.min_save_distance: continue
+            if tick_count % args.save_every != 0:
+                continue
+            if current_speed < args.min_speed_mps:
+                continue
+            if total_distance - last_saved_distance < args.min_save_distance:
+                continue
 
             # Save frame for each camera
             cam_dirs = []
             for cam_name, info in camera_sensors.items():
                 cam_dir = os.path.join(map_dir, cam_name)
                 os.makedirs(cam_dir, exist_ok=True)
-                fname = f"{normalize_map_name(map_name)}_{saved_frames:05d}.{args.format}"
+                fname = (
+                    f"{normalize_map_name(map_name)}_{saved_frames:05d}.{args.format}"
+                )
                 path = os.path.join(cam_dir, fname)
                 if images.get(cam_name) is not None:
                     images[cam_name].save_to_disk(path)
-                if args.save_instance_maps and info["collect_metadata"] and instance_images.get(cam_name) is not None:
+                if (
+                    args.save_instance_maps
+                    and info["collect_metadata"]
+                    and instance_images.get(cam_name) is not None
+                ):
                     inst_dir = os.path.join(map_dir, f"{cam_name}_instance")
                     os.makedirs(inst_dir, exist_ok=True)
-                    instance_images[cam_name].save_to_disk(os.path.join(inst_dir, fname))
+                    instance_images[cam_name].save_to_disk(
+                        os.path.join(inst_dir, fname)
+                    )
                 cam_dirs.append(cam_name)
 
             saved_frames += 1
@@ -652,7 +799,9 @@ def capture_map(client, world, map_name, args, rng):
 
             rec = {
                 "frame_index": saved_frames - 1,
-                "sim_frame": next((image.frame for image in images.values() if image is not None), 0),
+                "sim_frame": next(
+                    (image.frame for image in images.values() if image is not None), 0
+                ),
                 "ego_pose": serialize_transform(transform),
                 "speed_mps": round(current_speed, 3),
                 "distance_since_start": round(total_distance, 3),
@@ -665,7 +814,10 @@ def capture_map(client, world, map_name, args, rng):
                             info,
                             instance_images[cam_name],
                             world,
-                        ) if info["collect_metadata"] and instance_images.get(cam_name) is not None else None,
+                        )
+                        if info["collect_metadata"]
+                        and instance_images.get(cam_name) is not None
+                        else None,
                     }
                     for cam_name, info in camera_sensors.items()
                 },
@@ -677,13 +829,19 @@ def capture_map(client, world, map_name, args, rng):
             )
     finally:
         for cam_name, info in camera_sensors.items():
-            try: info["actor"].stop()
-            except Exception: pass
-            try: info["inst_actor"].stop()
-            except Exception: pass
+            try:
+                info["actor"].stop()
+            except Exception:
+                pass
+            try:
+                info["inst_actor"].stop()
+            except Exception:
+                pass
         destroy_actors(
             client,
-            sensor_actors(camera_sensors) + [info["inst_actor"] for info in camera_sensors.values()] + [vehicle],
+            sensor_actors(camera_sensors)
+            + [info["inst_actor"] for info in camera_sensors.values()]
+            + [vehicle],
         )
         reset_world(world, traffic_manager)
 
@@ -695,16 +853,26 @@ def capture_map(client, world, map_name, args, rng):
         "elapsed_seconds": round(elapsed, 3),
         "capture_fps": round(saved_frames / elapsed, 3) if elapsed else None,
         "tick_fps": round(tick_count / elapsed, 3) if elapsed else None,
-        "mean_tick_seconds": round(sum(tick_durations) / len(tick_durations), 4) if tick_durations else None,
+        "mean_tick_seconds": round(sum(tick_durations) / len(tick_durations), 4)
+        if tick_durations
+        else None,
         "distance_travelled_m": round(total_distance, 3),
         "respawn_count": respawn_count,
         "frames_per_camera": {n: saved_frames for n in camera_sensors},
         "frame_records": frame_records,
         "output_dir": map_dir,
         "camera_names": list(camera_sensors.keys()),
-        "metadata_cameras": sorted([cam_name for cam_name, info in camera_sensors.items() if info["collect_metadata"]]),
+        "metadata_cameras": sorted(
+            [
+                cam_name
+                for cam_name, info in camera_sensors.items()
+                if info["collect_metadata"]
+            ]
+        ),
         "save_instance_maps": args.save_instance_maps,
-        "camera_mounts": {cam_name: info["mount"] for cam_name, info in camera_sensors.items()},
+        "camera_mounts": {
+            cam_name: info["mount"] for cam_name, info in camera_sensors.items()
+        },
     }
 
 
@@ -742,14 +910,23 @@ def main():
     if args.restart_per_map:
         for index, map_name in enumerate(maps):
             rpc_port = reserve_port_block(args.host, args.port + index * 10)
-            tm_port = reserve_port_block(args.host, args.tm_port + index * 10, block_size=1)
+            tm_port = reserve_port_block(
+                args.host, args.tm_port + index * 10, block_size=1
+            )
             run_args = argparse.Namespace(**vars(args))
             run_args.port = rpc_port
             run_args.tm_port = tm_port
 
-            process, log_handle, log_path, client = start_server(run_args, rpc_port, map_name)
+            process, log_handle, log_path, client = start_server(
+                run_args, rpc_port, map_name
+            )
             try:
-                world = ensure_map_loaded(client, map_name, run_args.load_wait_seconds, run_args.load_world_timeout)
+                world = ensure_map_loaded(
+                    client,
+                    map_name,
+                    run_args.load_wait_seconds,
+                    run_args.load_world_timeout,
+                )
                 result = capture_map(client, world, map_name, run_args, rng)
                 result["server_log"] = log_path
                 result["rpc_port"] = rpc_port
@@ -759,7 +936,9 @@ def main():
                 stop_server(process, log_handle)
     else:
         for map_name in maps:
-            world = ensure_map_loaded(client, map_name, args.load_wait_seconds, args.load_world_timeout)
+            world = ensure_map_loaded(
+                client, map_name, args.load_wait_seconds, args.load_world_timeout
+            )
             summary["results"].append(capture_map(client, world, map_name, args, rng))
 
     summary_path = os.path.join(args.output_dir, "collection_manifest.json")

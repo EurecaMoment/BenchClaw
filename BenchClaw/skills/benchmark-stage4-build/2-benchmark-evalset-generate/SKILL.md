@@ -10,12 +10,12 @@ metadata:
       bins: [python3]
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 
 ## Workspace and File Access Boundary
@@ -23,7 +23,7 @@ metadata:
 This skill must operate only inside the current run workspace.
 
 - Before reading or writing any run artifact, resolve and record the active `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}` from the current task, parent stage, or pipeline state.
-- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `~/benchclaw/simulator_cards/`, `~/benchclaw/dataset_cards/`, `~/benchclaw/realdata_cards/`, `~/benchclaw/templates/`, `~/benchclaw/model_api/`, `~/benchclaw/data-juicer_card/`, `~/benchclaw/annotation-tool/`, or `~/benchclaw/skills/` when the current skill explicitly requires them.
+- Read and write only files under the active `WORKSPACE_ROOT` and the explicitly required global resource roots named by this skill, such as `BENCHCLAW_ROOT/simulatorCards/`, `BENCHCLAW_ROOT/benchmarkDatasetCards/`, `BENCHCLAW_ROOT/realdata_cards/`, `BENCHCLAW_ROOT/templates/`, `BENCHCLAW_ROOT/model_api/`, `BENCHCLAW_ROOT/data-juicer_card/`, `BENCHCLAW_ROOT/annotation-tool/`, or `BENCHCLAW_ROOT/skills/` when the current skill explicitly requires them.
 - Never read, list, grep, summarize, compare, copy, or infer from any other `~/bench_workspace/workspace{j}` where `j != i`, even if the current artifact is missing or another workspace appears newer or more complete.
 - Never scan broad server directories such as `~`, `/`, `/home`, `/mnt`, `/data`, `/tmp`, `C:\Users`, `C:\`, or arbitrary project/download folders to discover context. Only inspect the exact current workspace paths and exact allowlisted resource roots needed for this skill.
 - If an expected input is missing from the active workspace or an allowlisted resource root, stop and report the missing path. Do not search unrelated folders or borrow replacement artifacts from another workspace.
@@ -127,11 +127,11 @@ quarantine directory with an explicit waiver. Do not silently include it.
   - `~/bench_workspace/workspace{i}/stage4/CAPABILITY_TEMPLATE_METRIC_MAP.json`
   - `~/bench_workspace/workspace{i}/stage4/STAGE3_TO_EVALSET_ROUTING.jsonl`
 - `$ARGUMENTS`：合成的补充要求（如采样比例偏好、难度分布偏好）- 必需输入->  - `~/bench_workspace/workspace{i}/stage1/EVALSET_PROTOTYPE.md` ->评测集模板草稿与指标设计草稿（追溯起点）
-  - `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` ->能力维度列表及操作性定义  - `~/bench_workspace/workspace{i}/stage1/BENCHMARK_DRAFT.md` ->任务目标、能力边界、场景覆盖约->  - `~/bench_workspace/workspace{i}/stage2/templates/{sim_name}_EVAL_TEMPLATE.yaml` ->修整后的仿真器评测模板  - `~/bench_workspace/workspace{i}/stage3/final/CLEANED_DATA_SCHEMA.md` ->数据存储结构、GT/annotation 标注格式
+  - `~/bench_workspace/workspace{i}/stage1/CAPABILITY_SCOPE.md` ->能力维度列表及操作性定义  - `~/bench_workspace/workspace{i}/stage1/BENCHMARK_DRAFT.md` ->任务目标、能力边界、场景覆盖约->  - `~/bench_workspace/workspace{i}/stage2/templates/{sim_name}_EVAL_TEMPLATE.yaml` ->修整后的仿真器评测模板  - `~/bench_workspace/workspace{i}/stage3/final/EVIDENCE_SCHEMA.md` ->证据存储结构、truth_level、题型许可与 GT/annotation 标注格式
   - `~/bench_workspace/workspace{i}/stage3/final/STAGE4_INPUT_MANIFEST.jsonl` ->Stage 4 权威样本索引
-  - `~/bench_workspace/workspace{i}/stage3/final/cleaned_data/` ->Stage 3 合并后的可用数据
+  - `~/bench_workspace/workspace{i}/stage3/final/evidence/` ->Stage 3 合并后的可用证据
 - 可选输入：
-  - `~/bench_workspace/workspace{i}/stage2/TEMPLATE_REFINEMENT_REPORT.md` ->模板修整变更记录（用于追溯链->  - `~/bench_workspace/workspace{i}/stage3/CLEANING_QUALITY_REPORT.md` ->数据质量状况与已知缺陷（用于质量过滤- **若任一必需输入缺失，应立即停止并报告缺失文件，提示用户先完成对stage*
+  - `~/bench_workspace/workspace{i}/stage2/TEMPLATE_REFINEMENT_REPORT.md` ->模板修整变更记录（用于追溯链->  - `~/bench_workspace/workspace{i}/stage3/EVIDENCE_QUALITY_REPORT.md` ->证据质量状况、truth-level 风险与已知缺陷（用于质量过滤- **若任一必需输入缺失，应立即停止并报告缺失文件，提示用户先完成对stage*
 
 ---
 
@@ -144,7 +144,7 @@ quarantine directory with an explicit waiver. Do not silently include it.
 
 1. **读取上游产出**->   - ->`EVALSET_PROTOTYPE.md` 提取任务原型结构（指令模板、输入输出规格、难度分级草稿）
    - ->`CAPABILITY_SCOPE.md` 提取能力维度列表
-   - ->`BENCHMARK_DRAFT.md` 提取场景覆盖约束与数据构造方法   - ->`templates/*.yaml` 提取各数据源的最终模板字段   - ->`final/CLEANED_DATA_SCHEMA.md` 提取 GT/annotation 标注格式与目录结构   - ->`final/STAGE4_INPUT_MANIFEST.jsonl` 扫描实际可用数据规模、source_type/source_name 分布和 stage4_ready_status
+   - ->`BENCHMARK_DRAFT.md` 提取场景覆盖约束与数据构造方法   - ->`templates/*.yaml` 提取各数据源的最终模板字段   - ->`final/EVIDENCE_SCHEMA.md` 提取 truth_level、题型许可、GT/annotation 标注格式与目录结构   - ->`final/STAGE4_INPUT_MANIFEST.jsonl` 扫描实际可用数据规模、source_type/source_name 分布和 stage4_ready_status
 2. **构建任务专属模板库（子步1.1*->   - ->`EVALSET_PROTOTYPE.md` 的任务原型为起点，结合仿真器模板，为每个能力维度 × 仿真器组合生成最终评测任务模板   - 每个模板定义：任务指令格式、输入字段列表（从采集数据取哪些字段）、期望输出格式、GT 参考答案来源字段   - 记录模板`EVALSET_PROTOTYPE.md` ->`TEMPLATE_REFINEMENT_REPORT.md` ->本模板的变更链，写入 `TEMPLATE_LINEAGE.md`
    - Before writing any template to `EVALSET_TEMPLATE_LIBRARY/`, verify its upstream `template_review.verdict=PASS` in `CAPABILITY_TEMPLATE_METRIC_MAP.json`.
    - Re-check and record `template_review` in the template YAML: user-intent fit, discrimination power, shortcut resistance, and capability alignment.

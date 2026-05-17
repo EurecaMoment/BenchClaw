@@ -176,6 +176,7 @@ def cmd_submit(args):
         "process_res": args.process_res,
         "process_res_method": args.process_res_method,
         "export_feat_layers": [int(item) for item in args.export_feat.split(",") if item.strip()],
+        "require_metric_depth": True,
         "align_to_input_ext_scale": args.align_to_input_ext_scale,
         "use_ray_pose": args.use_ray_pose,
         "ref_view_strategy": args.ref_view_strategy,

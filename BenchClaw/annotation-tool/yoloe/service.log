@@ -1,0 +1,61 @@
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: [Errno 2] No such file or directory: 'mobileclip_blt.pt'
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+YOLOE service error on /prompt-free-infer: 
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: 'list' object has no attribute 'items'
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe/ultralytics/models/yolo/yoloe/predict_vp.py:72: UserWarning: Using a non-tuple sequence for multidimensional indexing is deprecated and will be changed in pytorch 2.9; use x[tuple(seq)] instead of x[seq]. In pytorch 2.9 this will be interpreted as tensor index, x[torch.tensor(seq)], which will result either in an error or a different result (Triggered internally at /pytorch/torch/csrc/autograd/python_variable_indexing.cpp:347.)
+  cls = self.prompts["cls"]
+YOLOE service error on /text-infer: TypeError("new(): invalid data type 'str'")
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+YOLOE service error on /visual-infer: RuntimeError("shape '[1, 65, -1]' is invalid for input of size 422400")
+Terminated
+ERROR conda.cli.main_run:execute(142): `conda run python /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py --host 127.0.0.1 --port 8766` failed. (See above for error)
+/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+YOLOE service listening on http://127.0.0.1:8766
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: RuntimeError("shape '[1, 68, -1]' is invalid for input of size 422400")
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: RuntimeError("shape '[1, 65, -1]' is invalid for input of size 422400")
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: RuntimeError("shape '[1, 68, -1]' is invalid for input of size 422400")
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: RuntimeError("shape '[1, 68, -1]' is invalid for input of size 422400")

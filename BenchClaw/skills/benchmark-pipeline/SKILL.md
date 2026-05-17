@@ -5,12 +5,13 @@ argument-hint: [benchmark-idea]
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skill
 ---
 
-## `~/benchclaw` 只读约束
+## `BENCHCLAW_ROOT` 只读约束
 
-- **BENCHCLAW_READONLY = true**：`~/benchclaw/` 只能作为共享只读资源根。
-- 严禁在 `~/benchclaw/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
+- **BENCHCLAW_READONLY = true**：`BENCHCLAW_ROOT/` 只能作为 BenchClaw 仓库内共享只读资源根，必须从当前 skill 所在的 BenchClaw 仓库位置解析，不能依赖固定 home 路径或机器绝对路径。
+- `BENCHCLAW_ROOT` 必须解析为当前 skill 所在 BenchClaw 仓库的根目录；只允许读取该根目录下、且被当前 skill 明确允许的子目录。
+- 严禁在 `BENCHCLAW_ROOT/` 下创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化 git、提交、打 tag、写日志、写缓存或写临时文件。
 - 所有派生产物、补丁、快照、报告、脚本、配置、日志和测试输出必须写入 active `WORKSPACE_ROOT`。
-- 如必须修改 `~/benchclaw/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
+- 如必须修改 `BENCHCLAW_ROOT/` 中的资源，只能在 workspace 中生成 patch 或修改建议，等待用户在外部处理；当前 skill 不得直接应用。
 
 # Benchmark Pipeline Orchestrator
 
@@ -23,12 +24,12 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skil
 - 当前运行目录为 `WORKSPACE_ROOT = ~/bench_workspace/workspace{i}`，其中 `i` 是递增整数。
 - 初始化流水线时，必须先创建新的 active workspace：扫描 `~/bench_workspace/workspace*`，取现有最大编号 `max_i`，创建 `~/bench_workspace/workspace{max_i+1}`；若不存在任何 workspace，则创建 `~/bench_workspace/workspace1`。
 - 若用户或父流程已经显式传入 `WORKSPACE_ROOT`，必须沿用该目录，不得重新选择“最新 workspace”或另建目录。
-- 初始阶段必须在 active workspace 下创建 `stage1/` 到 `stage6/` 目录；后续阶段只能在这些目录内写入产物。
+- 初始阶段必须在 active workspace 下创建 `stage1/` 到 `stage5/` 目录；后续阶段只能在这些目录内写入产物。
 - 所有中间过程文件、阶段产物、日志、临时 manifest、生成脚本、测试文件和报告都必须写在 active `WORKSPACE_ROOT` 下。
-- 只能读写当前 workspace 的 `stage1/` 到 `stage6/` 目录。
+- 只能读写当前 workspace 的 `stage1/` 到 `stage5/` 目录。
 - 不得读取、复用、比较或借鉴其它 `workspace{j}` 的产物，除非用户明确给出路径和复用范围。
-- 共享资源只允许读取明确列出的全局目录，例如 `~/benchclaw/simulator_cards/`、`~/benchclaw/dataset_cards/`、`~/benchclaw/realdata_cards/`、`~/benchclaw/templates/`、`~/benchclaw/model_api/`、`~/benchclaw/skills/`；不得向这些共享资源目录写入本轮中间产物。
-- `~/benchclaw/` 是全局不可变共享资源根，只能只读访问；严禁在其中创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化仓库、提交、打 tag 或写入任何日志/缓存/临时文件。
+- 共享资源只允许读取明确列出的 BenchClaw 仓库内目录，例如 `BENCHCLAW_ROOT/simulatorCards/`、`BENCHCLAW_ROOT/benchmarkDatasetCards/`、`BENCHCLAW_ROOT/realdata_cards/`、`BENCHCLAW_ROOT/templates/`、`BENCHCLAW_ROOT/model_api/`、`BENCHCLAW_ROOT/skills/`；不得向这些共享资源目录写入本轮中间产物。
+- `BENCHCLAW_ROOT/` 是全局不可变共享资源根，只能只读访问；严禁在其中创建、编辑、覆盖、删除、移动、重命名、复制写入、初始化仓库、提交、打 tag 或写入任何日志/缓存/临时文件。
 - 不得把运行产物写入 skill 源码目录、Downloads、当前项目目录、缓存目录或任意非 active workspace 路径。
 
 ## Workspace 初始化
@@ -40,7 +41,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skil
 2. List only BENCH_WORKSPACE_ROOT/workspace*
 3. Parse numeric suffix i
 4. Create WORKSPACE_ROOT = ~/bench_workspace/workspace{max_i+1}
-5. Create stage1/, stage2/, stage3/, stage4/, stage5/, stage6/
+5. Create stage1/, stage2/, stage3/, stage4/, stage5/
 6. Pass this exact WORKSPACE_ROOT to every downstream stage skill
 ```
 
@@ -71,10 +72,9 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, WebSearch, WebFetch, Skil
 ```text
 /benchmark-stage1-draft
 -> /benchmark-stage2-data-collect
--> /benchmark-stage3-data-clean
+-> /benchmark-stage3-evidence-compiler
 -> /benchmark-stage4-build
 -> /benchmark-stage5-eval
--> /benchmark-stage6-diagnosis-maintenance
 -> BENCHMARK_PIPELINE_REPORT.md
 ```
 
@@ -167,31 +167,36 @@ Stage 2 的三类数据源 `simulator`、`existing_dataset`、`real_data` 必须
 
 Gate 2：Stage 2 单元测试只检查原始采集契约、文件格式、可追溯性和禁止过滤规则；不得因为数据质量低、缺少 GT、重复、模糊或需要标注而阻断进入 Stage 3。Stage 2 结束后必须停止，展示 `STAGE2_SUMMARY.md`、`STAGE2_UNIT_TEST_REPORT.md`、`RAW_DATA_COLLECTION_REPORT.md` 和下一步选项，等待用户选择是否进入 Stage 3、回退重采、审查数据或暂停。
 
-## Stage 3: 数据清洗 + 置信度提升 + 单元测试
+## Stage 3: 多源证据化标注与质量编译 + 单元测试
 
 调用：
 
 ```text
-/benchmark-stage3-data-clean "$STAGE2_DIR"
+/benchmark-stage3-evidence-compiler "$STAGE2_DIR"
 ```
 
-Stage 3 的核心目的，是提升 Stage 2 采集到的图文数据的可信度、可用性、一致性和可评测性。清洗、过滤、去重、异常处理、半自动标注、Data-Juicer 配置与执行、样本拒收、Stage4 readiness 判断都属于 Stage 3。
+Stage 3 的核心目的，是把 Stage 2 的三类异构数据编译成 source-aware evidence pack。它不仅做清洗、去重、异常处理、半自动标注和 Stage4 readiness 判断，还必须根据来源真值强度区分强 GT 证据、计算型证据、旧 QA 验证证据和弱模型标注证据，并明确题型许可边界。
 
-Stage 3 必须保持图像与元数据一一对应。如果处理后的图片与原图不同，例如 YOLO 画框、深度图生成、掩码叠加、裁剪增强等，必须同时保存原图和处理后图片，并在元数据 JSON 中明确对应关系、处理代码、参数和来源。
+Stage 3 必须保持图像与元数据一一对应。如果处理后的图片与原图不同，例如 YOLO 画框、深度图生成、掩码叠加、裁剪增强等，必须同时保存原图和处理后图片，并在元数据 JSON 中明确对应关系、处理代码、参数和来源。更关键的是，每条证据都必须说明它来自哪类 source、真值等级有多高、允许支持什么题型、不能支持什么题型。
 
 必需产物包括：
 
-- `stage3/CLEANING_PLAN.md`
+- `stage3/EVIDENCE_COMPILATION_PLAN.md`
 - `stage3/datajuicer_configs/`
 - `stage3/clean_scripts/`
-- `stage3/cleaned_data/{source_type}/{source_name}/images/`
-- `stage3/cleaned_data/{source_type}/{source_name}/records/`
-- `stage3/cleaned_data/{source_type}/{source_name}/manifest.jsonl`
-- `stage3/CONFIDENCE_IMPROVEMENT_REPORT.md`
+- `stage3/normalized/{source_type}_samples.jsonl`
+- `stage3/annotations/`
+- `stage3/evidence/evidence_pack.all.jsonl`
+- `stage3/evidence/evidence_pack.hard_gt.jsonl`
+- `stage3/evidence/evidence_pack.computed_gt.jsonl`
+- `stage3/evidence/evidence_pack.inherited_qa_verified.jsonl`
+- `stage3/evidence/evidence_pack.weak_model_annotation.jsonl`
+- `stage3/evidence/evidence_pack.rejected.jsonl`
+- `stage3/EVIDENCE_QUALITY_REPORT.md`
 - `stage3/STAGE3_UNIT_TEST_REPORT.md`
 - `stage3/STAGE3_SUMMARY.md`
 
-Gate 3：只有通过 Stage3 readiness 检查的数据才具备进入 Stage 4 的条件。Stage 3 结束后必须停止，展示 `STAGE3_SUMMARY.md`、`STAGE3_UNIT_TEST_REPORT.md`、`CLEANING_QUALITY_REPORT.md` 和下一步选项，等待用户选择是否进入 Stage 4、回退重清洗、审查 final 数据或暂停。
+Gate 3：只有通过 Stage3 readiness 检查、完成来源归类、真值等级编译和题型许可标注的证据才具备进入 Stage 4 的条件。Stage 3 结束后必须停止，展示 `STAGE3_SUMMARY.md`、`STAGE3_UNIT_TEST_REPORT.md`、`EVIDENCE_QUALITY_REPORT.md` 和下一步选项，等待用户选择是否进入 Stage 4、回退重编译、审查 evidence pack 或暂停。
 
 ## Stage 4: 评测集构建 + 模板发布检查
 
@@ -272,7 +277,7 @@ Stage 4 artifacts
 - `stage1/CAPABILITY_SCOPE.md`
 - `stage2/STAGE2_UNIT_TEST_REPORT.md`
 - `stage3/STAGE3_UNIT_TEST_REPORT.md`
-- `stage5/MODEL_API_CONFIG.json` 或 workspace 根目录下的 `MODEL_API_CONFIG.json`；若缺失，可只按 Stage5 skill 明确允许的 `LOCAL_MODEL_API_AWARE` 规则读取 `~/benchclaw/model_api/`
+- `stage5/MODEL_API_CONFIG.json` 或 workspace 根目录下的 `MODEL_API_CONFIG.json`；若缺失，可只按 Stage5 skill 明确允许的 `LOCAL_MODEL_API_AWARE` 规则读取 `BENCHCLAW_ROOT/model_api/`
 
 必需产物：
 
@@ -314,104 +319,17 @@ Gate 5：
 - `CANARY_VERDICT.json.verdict = PASS`，或 `NEEDS_REVIEW` 且用户确认 waiver，才允许全量评测。
 - 全量评测完成时，`RAW_MODEL_OUTPUTS.jsonl`、`SCORES.jsonl`、`AGGREGATED_METRICS.json`、`SCORE_CHECK_REPORT.md`、`FAILURE_CASES.md`、`EVALUATION_REPORT.md` 和 `STAGE5_SUMMARY.md` 必须存在。
 - 若灰度失败，必须存在 `CANARY_ROLLBACK_PLAN.md` 和 `ROLLBACK_STATE_PATCH.json`，且不得存在被标记为完成的全量评测结果。
-- 只有 `STAGE5_SUMMARY.md` 明确写明 `handoff_to_stage6 = allowed`，才具备进入 Stage 6 的条件。
-- Stage 5 结束后必须停止，展示 `STAGE5_SUMMARY.md`、`CANARY_EVAL_REPORT.md`、`EVALUATION_REPORT.md` 或 `CANARY_ROLLBACK_PLAN.md`，以及下一步选项，等待用户选择是否进入 Stage 6、按回退计划修复、审查评测结果或暂停。
-
-## Stage 6: 诊断维护 + 回归测试
-
-调用：
-
-```text
-/benchmark-stage6-diagnosis-maintenance "$STAGE5_DIR"
-```
-
-Stage 6 负责评价整个 Stage 1-5 流程本身，定位流程缺陷、测试缺口和 skill 规则缺口，并在用户确认后对 skill 做最小手术刀式修订与回归验证。Stage 6 不是再次评测模型，也不得改写 Stage 1-5 的历史评测结果。
-
-内部链路：
-
-```text
-Stage 1-5 artifacts
--> /benchmark-process-evaluate - 全流程质量评价
--> /benchmark-root-cause-analyze - 根因定位到 stage/phase/skill/artifact/rule gap
--> /benchmark-skill-version-control - 建立 skill 修改前版本控制基线
--> /benchmark-skill-surgical-revision - 手术刀式 skill 修改（需用户确认）
--> /benchmark-skill-regression-verify - 修改后回归验证
--> STAGE6_SUMMARY.md
-```
-
-启动前必需输入：
-
-- `stage1/STAGE1_SUMMARY.md`
-- `stage1/STAGE1_UNIT_TEST_REPORT.md`
-- `stage2/STAGE2_SUMMARY.md`
-- `stage2/STAGE2_UNIT_TEST_REPORT.md`
-- `stage3/STAGE3_SUMMARY.md`
-- `stage3/STAGE3_UNIT_TEST_REPORT.md`
-- `stage4/STAGE4_SUMMARY.md`
-- `stage4/STAGE4_UNIT_TEST_REPORT.md`
-- `stage5/STAGE5_SUMMARY.md`
-- `stage5/CANARY_EVAL_REPORT.md`
-- `stage5/CANARY_ROLLBACK_PLAN.md`（灰度失败或回退模式）
-- `stage5/EVALUATION_REPORT.md`
-- `stage5/SCORE_CHECK_REPORT.md`
-- `stage5/FAILURE_CASES.md`
-
-Stage 6 可以在两种模式下运行：
-
-- `post-full-eval mode`：全量评测完成后，基于完整 Stage 1-5 证据做流程复盘和 skill 维护。
-- `rollback-diagnosis mode`：灰度失败、全量中断或 Gate 5 阻塞时，基于失败证据提前定位根因和维护建议。
-
-必需产物：
-
-- `stage6/PROCESS_EVALUATION_REPORT.md`
-- `stage6/PROCESS_METRICS.json`
-- `stage6/ROOT_CAUSE_ANALYSIS.md`
-- `stage6/DEFECT_TRIAGE_MATRIX.json`
-- `stage6/SKILL_FIX_CANDIDATES.md`
-- `stage6/VERSION_CONTROL_LOG.md`
-- `stage6/SKILL_BASELINE_MANIFEST.json`
-- `stage6/GIT_BASELINE.diff`
-- `stage6/ALLOWED_SKILL_EDIT_LIST.txt`
-- `stage6/SKILL_REVISION_PLAN.md`（若执行 skill 修改）
-- `stage6/SKILL_PATCH.diff`（若执行 skill 修改）
-- `stage6/SKILL_CHANGELOG.md`（若执行 skill 修改）
-- `stage6/UPDATED_SKILL_MANIFEST.json`（若执行 skill 修改）
-- `stage6/SKILL_REGRESSION_REPORT.md`
-- `stage6/REGRESSION_COMMANDS.sh`
-- `stage6/REGRESSION_RESULTS.json`
-- `stage6/VERSION_CONTROL_BLOCKED.md`（版本控制不可用时）
-- `stage6/STAGE6_SUMMARY.md`
-
-Stage 6 必须遵守：
-
-- **Diagnose process, not model only.** 评价对象是流程质量，包括阶段契约、数据 lineage、单元测试有效性、灰度门控、评测集覆盖、指标可执行性、成本和失败案例诊断力。
-- **Evidence chain required.** 每个根因必须引用具体证据路径，定位到 `stage -> phase -> skill -> artifact -> rule gap`。
-- **No broad rewrite.** skill 修改必须是最小范围，默认单轮最多触碰 `MAX_SURGICAL_FILES` 个文件；不得大面积重写无关 skill。
-- **User confirmation before edits.** 根因报告和修改计划必须展示给用户；未经确认不得执行 skill 源码修改。
-- **Version control baseline first.** 修改前必须记录 git baseline、dirty worktree、分支、diff 和允许修改白名单。
-- **Do not overwrite user changes.** 若 skill repo 存在用户未确认的 dirty changes，只能记录 baseline 和阻塞原因，不得覆盖。
-- **Regression required.** 修改后必须生成并执行回归验证计划，至少覆盖 frontmatter、allowed-tools、I/O 契约、相关 stage gate、灰度失败定位链路和未触碰文件检查。
-- **No commit on failed regression.** 回归未通过时不得提交或标记版本完成，只保留 patch、报告和下一步建议。
-
-Gate 6：
-
-- `PROCESS_EVALUATION_REPORT.md` 和 `PROCESS_METRICS.json` 必须覆盖 Stage 1-5。
-- `ROOT_CAUSE_ANALYSIS.md` 必须把缺陷定位到最小负责单位，并标出证据强度；证据不足时不得强行修 skill。
-- 若执行 skill 修改，`SKILL_PATCH.diff`、`SKILL_CHANGELOG.md`、`UPDATED_SKILL_MANIFEST.json` 必须存在。
-- `SKILL_REGRESSION_REPORT.md` 必须给出 `PASS | FAIL | NEEDS_REVIEW | BLOCKED` verdict。
-- `STAGE6_SUMMARY.md` 必须说明下一轮 pipeline 应如何使用修改后的 skill，以及是否允许发布/合并本轮修订。
-- Stage 6 结束后必须停止，展示 `STAGE6_SUMMARY.md`、`PROCESS_EVALUATION_REPORT.md`、`ROOT_CAUSE_ANALYSIS.md`、`SKILL_REGRESSION_REPORT.md` 和下一步选项，等待用户选择是否发布/合并修订、继续修复、开启新 pipeline 或暂停。
+- Stage 5 结束后必须停止，展示 `STAGE5_SUMMARY.md`、`CANARY_EVAL_REPORT.md`、`EVALUATION_REPORT.md` 或 `CANARY_ROLLBACK_PLAN.md`，以及下一步选项，等待用户选择是否按回退计划修复、审查评测结果、基于当前结果手动开展后续诊断维护，或暂停。
 
 ## 全局固定格式规则
 
-- 每个阶段都必须写入对应的阶段总结：`STAGE1_SUMMARY.md` 到 `STAGE6_SUMMARY.md`。
-- Stage 1-4 必须写入 `STAGE{N}_UNIT_TEST_REPORT.md`；Stage 5 必须写入 `CANARY_EVAL_REPORT.md`、`SCORE_CHECK_REPORT.md` 和 `EVALUATION_REPORT.md`；Stage 6 必须写入 `PROCESS_EVALUATION_REPORT.md`、`ROOT_CAUSE_ANALYSIS.md` 和 `SKILL_REGRESSION_REPORT.md`。
+- 每个阶段都必须写入对应的阶段总结：`STAGE1_SUMMARY.md` 到 `STAGE5_SUMMARY.md`。
+- Stage 1-4 必须写入 `STAGE{N}_UNIT_TEST_REPORT.md`；Stage 5 必须写入 `CANARY_EVAL_REPORT.md`、`SCORE_CHECK_REPORT.md` 和 `EVALUATION_REPORT.md`。
 - 每个阶段的主要产物文件名必须固定，不得用临时名称代替。
 - 样本级图像数据必须通过 manifest 与 JSON 记录一一对应。
 - Stage 2 不得出现清洗、过滤、质量拒收作为执行行为。
 - Stage 3 必须明确践行“提升图文数据置信度”的目标。
 - Stage 4 必须在发布模板前完成模板质量自检。
 - Stage 5 必须先灰度再全量；灰度失败不得启动全量评测。
-- Stage 6 必须先根因定位和版本控制基线，再做最小 skill 修改和回归验证。
 - 每个大 Stage 结束后必须停止并等待用户选择下一步；不得自动串联进入下一 Stage。
-- `~/benchclaw/` 下任何内容全局只读，所有需要保存的补丁、报告、快照、临时文件和运行产物都必须写入 active `WORKSPACE_ROOT`，不得对 `~/benchclaw/` 做任何增删改。
+- `BENCHCLAW_ROOT/` 下任何内容全局只读，所有需要保存的补丁、报告、快照、临时文件和运行产物都必须写入 active `WORKSPACE_ROOT`，不得对 `BENCHCLAW_ROOT/` 做任何增删改。
