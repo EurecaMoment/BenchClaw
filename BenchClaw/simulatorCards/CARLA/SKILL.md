@@ -2,9 +2,10 @@
 
 ## Core Path
 
+- BenchClaw root: resolve `BENCHCLAW_ROOT` as the BenchClaw directory that contains `skills/` and `simulatorCards/`.
 - Simulator root: `/home/maqiang/simulators/CARLA`
-- Main capture script: `/home/maqiang/benchclaw/simulator_cards/CARLA/quick_capture.py`
-- Health check script: `/home/maqiang/benchclaw/simulator_cards/CARLA/test_connect.py`
+- Main capture script: `BENCHCLAW_ROOT/simulatorCards/CARLA/quick_capture.py`
+- Health check script: `BENCHCLAW_ROOT/simulatorCards/CARLA/test_connect.py`
 - Stable server launcher: `/home/maqiang/simulators/CARLA/start_carla_offscreen.sh`
 
 ## Goal
@@ -55,7 +56,7 @@ tmux new-session -d -s carla_skill 'cd /home/maqiang/simulators/CARLA && ./start
 Run these checks exactly:
 
 ```bash
-cd /home/maqiang/benchclaw/simulator_cards/CARLA
+cd BENCHCLAW_ROOT/simulatorCards/CARLA
 ss -ltnp | grep -E ':2000|:2001'
 python test_connect.py
 ```
@@ -72,7 +73,7 @@ If `test_connect.py` fails with `failed to generate map`, the current CARLA worl
 The validated script is:
 
 ```bash
-/home/maqiang/benchclaw/simulator_cards/CARLA/quick_capture.py
+BENCHCLAW_ROOT/simulatorCards/CARLA/quick_capture.py
 ```
 
 It supports:
@@ -112,7 +113,7 @@ The current top camera is intentionally configured as high-altitude overhead:
 This exact command was validated on a clean CARLA server:
 
 ```bash
-cd /home/maqiang/benchclaw/simulator_cards/CARLA
+cd BENCHCLAW_ROOT/simulatorCards/CARLA
 python quick_capture.py \
   --port 2000 \
   --tm-port 8000 \
@@ -129,13 +130,13 @@ python quick_capture.py \
 This writes:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/CARLA/output_rgb_visiblemeta_final/
+BENCHCLAW_ROOT/simulatorCards/CARLA/output_rgb_visiblemeta_final/
 ```
 
 ## Validated Multi-Frame Example
 
 ```bash
-cd /home/maqiang/benchclaw/simulator_cards/CARLA
+cd BENCHCLAW_ROOT/simulatorCards/CARLA
 python quick_capture.py \
   --port 2000 \
   --tm-port 8000 \
@@ -318,7 +319,7 @@ Use this when you need to debug object visibility or inspect actor IDs directly.
 The following manifest was produced successfully:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/CARLA/output_rgb_visiblemeta_final/collection_manifest.json
+BENCHCLAW_ROOT/simulatorCards/CARLA/output_rgb_visiblemeta_final/collection_manifest.json
 ```
 
 It contains:
@@ -355,7 +356,7 @@ Town10HD_Opt_00001.jpg
 If you need stable multi-map collection, prefer:
 
 ```bash
-python /home/maqiang/benchclaw/simulator_cards/CARLA/quick_capture.py --restart-per-map --maps Town01_Opt,Town02_Opt --frames-per-map 10 --format jpg
+python BENCHCLAW_ROOT/simulatorCards/CARLA/quick_capture.py --restart-per-map --maps Town01_Opt,Town02_Opt --frames-per-map 10 --format jpg
 ```
 
 Reason:
@@ -379,7 +380,7 @@ Fix:
 
 1. Kill the CARLA tmux session.
 2. Start a fresh one.
-3. Run `/home/maqiang/benchclaw/simulator_cards/CARLA/test_connect.py` again.
+3. Run `BENCHCLAW_ROOT/simulatorCards/CARLA/test_connect.py` again.
 
 ### 3. `VK_ERROR_OUT_OF_DEVICE_MEMORY`
 
@@ -407,8 +408,8 @@ If an agent only reads this file, the required execution sequence is:
 1. Activate `carla_py310`.
 2. Start CARLA with `/home/maqiang/simulators/CARLA/start_carla_offscreen.sh` in tmux.
 3. Verify ports with `ss -ltnp | grep -E ':2000|:2001'`.
-4. Verify map health with `/home/maqiang/benchclaw/simulator_cards/CARLA/test_connect.py`.
-5. Run `/home/maqiang/benchclaw/simulator_cards/CARLA/quick_capture.py` with explicit `--port 2000 --tm-port 8000` unless a different healthy server is intentionally used.
+4. Verify map health with `BENCHCLAW_ROOT/simulatorCards/CARLA/test_connect.py`.
+5. Run `BENCHCLAW_ROOT/simulatorCards/CARLA/quick_capture.py` with explicit `--port 2000 --tm-port 8000` unless a different healthy server is intentionally used.
 6. Read `<output_dir>/collection_manifest.json`.
 7. Confirm `camera_mounts`, `ego_pose`, and `camera_poses` are present.
 
@@ -426,6 +427,6 @@ After capture, verify with any JSON reader that:
 
 ## Notes
 
-1. The archived `/home/maqiang/benchclaw/simulator_cards/CARLA/CARLA_LEGACY.md` is not the execution source of truth.
+1. The archived `BENCHCLAW_ROOT/simulatorCards/CARLA/CARLA_LEGACY.md` is not the execution source of truth.
 2. This file is the new self-contained execution skill.
 3. The simulator root has already moved to `/home/maqiang/simulators/CARLA`.

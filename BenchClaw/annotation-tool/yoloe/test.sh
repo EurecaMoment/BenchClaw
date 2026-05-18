@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe"
-ASSET="/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe/ultralytics/assets/bus.jpg"
-RUNS="/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe/runs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BENCHCLAW_ROOT="${BENCHCLAW_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+BENCHCLAW_PARENT="$(cd "$BENCHCLAW_ROOT/.." && pwd)"
+THIRD_PARTY_ROOT="${THIRD_PARTY_ROOT:-$BENCHCLAW_PARENT/thirty_part}"
+
+ROOT="$BENCHCLAW_ROOT/annotation-tool/yoloe"
+ASSET="$THIRD_PARTY_ROOT/annotationTools/yoloe/ultralytics/assets/bus.jpg"
+RUNS="$THIRD_PARTY_ROOT/annotationTools/yoloe/runs"
 REQ="$ROOT/visual_smoke_request.json"
 
 python3 "$ROOT/yoloe_client.py" ensure-server

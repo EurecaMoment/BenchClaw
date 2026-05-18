@@ -1,0 +1,474 @@
+{
+  "stage": "stage4",
+  "default_workspace": "WORKSPACE_ROOT",
+  "input_roots": {
+    "stage1_node_09": "WORKSPACE_ROOT/stage1/09-initial-template-metric-set",
+    "stage3_node_18": "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt",
+    "stage3_node_19": "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt",
+    "stage3_node_20": "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack",
+    "stage4_input_path_override": "WORKSPACE_ROOT/config/stage4_input_paths.json"
+  },
+  "node_contracts": {
+    "09": {
+      "parents": [],
+      "may_read": [
+        "WORKSPACE_ROOT/stage1/09-initial-template-metric-set/**",
+        "WORKSPACE_ROOT/config/stage4_input_paths.json",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/source_manifest.jsonl",
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/source_summary.md",
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/DONE.json",
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "18": {
+      "parents": [],
+      "may_read": [
+        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
+        "WORKSPACE_ROOT/config/stage4_input_paths.json",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/source_manifest.jsonl",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/source_summary.md",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/DONE.json",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "19": {
+      "parents": [],
+      "may_read": [
+        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
+        "WORKSPACE_ROOT/config/stage4_input_paths.json",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/source_manifest.jsonl",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/source_summary.md",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/DONE.json",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "20": {
+      "parents": [],
+      "may_read": [
+        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**",
+        "WORKSPACE_ROOT/config/stage4_input_paths.json",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/source_manifest.jsonl",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/source_summary.md",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/DONE.json",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "28": {
+      "parents": [
+        "09"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/template_contract.schema.json",
+        "schemas/metric_contract.schema.json",
+        "templates/template_contract.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/template_contracts.json",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/metric_contracts.json",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/evidence_contracts.json",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/normalization_report.md",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/DONE.json",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "29": {
+      "parents": [
+        "18",
+        "19",
+        "20"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/evidence_record.schema.json",
+        "templates/evidence_record.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_pool.jsonl",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_manifest.json",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/source_balance_report.md",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/DONE.json",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "30": {
+      "parents": [
+        "28",
+        "29"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/evidence_binding.schema.json",
+        "templates/evidence_binding.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/template_evidence_bindings.jsonl",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_rejection_log.jsonl",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_summary.md",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/DONE.json",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "31": {
+      "parents": [
+        "30"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/question_blueprint.schema.json",
+        "templates/question_blueprint.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/question_blueprints.jsonl",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/blueprint_manifest.json",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/distractor_policy.md",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/DONE.json",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "32": {
+      "parents": [
+        "30"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/metric_contract.schema.json",
+        "templates/answer_program_registry.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/answer_programs.py",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/metric_registry.json",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/scoring_interface.md",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/unit_test_plan.md",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/DONE.json",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "33": {
+      "parents": [
+        "31",
+        "32"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/WAIVED.json",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/README_EMPTY.md",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/DONE.json",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "34": {
+      "parents": [
+        "33"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/WAIVED.json",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/README_EMPTY.md",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/DONE.json",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "35": {
+      "parents": [
+        "31",
+        "32",
+        "34"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/quality_filter_spec.schema.json",
+        "templates/quality_filter_spec.example.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/quality_filter_spec.json",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/selection_plan.json",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/deferred_pilot_hooks.md",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/quality_gate_report.md",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/DONE.json",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "36": {
+      "parents": [
+        "31",
+        "32",
+        "35"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**",
+        "dag.json",
+        "contracts/node_io_contracts.json",
+        "schemas/eval_item.schema.json",
+        "tools/full_synth_skeleton.py"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/eval_dataset.jsonl",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/eval_dataset_manifest.json",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/item_traceability.jsonl",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/synthesis_log.md",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/DONE.json",
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/**"
+      ]
+    },
+    "37": {
+      "parents": [
+        "36"
+      ],
+      "may_read": [
+        "WORKSPACE_ROOT/stage4/36-full-scale-synthesis/**",
+        "dag.json",
+        "contracts/node_io_contracts.json"
+      ],
+      "must_write": [
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/eval_dataset.jsonl",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/metric_registry.json",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/answer_programs.py",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/FINAL_BENCHMARK_CARD.md",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/STAGE4_REPORT.md",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/DONE.json",
+        "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/USED_INPUTS.json"
+      ],
+      "must_not_read": [
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/**",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/**",
+        "WORKSPACE_ROOT/stage4/28-template-contract-normalization/**",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/**",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/**",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/**",
+        "WORKSPACE_ROOT/stage4/32-answer-program-metric-code/**",
+        "WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder/**",
+        "WORKSPACE_ROOT/stage4/34-gray-test-placeholder/**",
+        "WORKSPACE_ROOT/stage4/35-quality-filter-and-selection/**"
+      ]
+    }
+  },
+  "waived_nodes": {
+    "33": "small-batch synthesis intentionally blank",
+    "34": "gray test intentionally blank"
+  }
+}

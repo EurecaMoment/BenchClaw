@@ -1,15 +1,15 @@
-============================================================
-🚀 Starting Depth Anything 3 Backend Server
+﻿============================================================
+馃殌 Starting Depth Anything 3 Backend Server
 ============================================================
 Model directory: /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1
 Device: cuda
-Gallery directory: /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+Gallery directory: BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
 
-📡 Server URLs (Ctrl/CMD+Click to open):
-  🏠 Home:      http://127.0.0.1:8008
-  📊 Dashboard: http://127.0.0.1:8008/dashboard
-  📈 API Status: http://127.0.0.1:8008/status
-  🎨 Gallery:   http://127.0.0.1:8008/gallery/
+馃摗 Server URLs (Ctrl/CMD+Click to open):
+  馃彔 Home:      http://127.0.0.1:8008
+  馃搳 Dashboard: http://127.0.0.1:8008/dashboard
+  馃搱 API Status: http://127.0.0.1:8008/status
+  馃帹 Gallery:   http://127.0.0.1:8008/gallery/
 ============================================================
 INFO:     Started server process [1897981]
 INFO:     Waiting for application startup.
@@ -24,11 +24,11 @@ API Status: http://127.0.0.1:8008/status
 Gallery: http://127.0.0.1:8008/gallery/
 ============================================================
 Backend is running! You can now:
-  • Open home page: http://127.0.0.1:8008
-  • Open dashboard: http://127.0.0.1:8008/dashboard
-  • Check API status: http://127.0.0.1:8008/status
-  • Browse gallery: http://127.0.0.1:8008/gallery/
-  • Submit inference tasks via API
+  鈥?Open home page: http://127.0.0.1:8008
+  鈥?Open dashboard: http://127.0.0.1:8008/dashboard
+  鈥?Check API status: http://127.0.0.1:8008/status
+  鈥?Browse gallery: http://127.0.0.1:8008/gallery/
+  鈥?Submit inference tasks via API
 ============================================================
 INFO:     127.0.0.1:53516 - "GET /status HTTP/1.1" 200 OK
 INFO:     127.0.0.1:43236 - "GET /status HTTP/1.1" 200 OK
@@ -109,19 +109,19 @@ INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
 INFO:     Finished server process [1897981]
 Terminated
-ERROR conda.cli.main_run:execute(142): `conda run da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery` failed. (See above for error)
+ERROR conda.cli.main_run:execute(142): `conda run da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery` failed. (See above for error)
 ============================================================
-🚀 Starting Depth Anything 3 Backend Server
+馃殌 Starting Depth Anything 3 Backend Server
 ============================================================
 Model directory: /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1
 Device: cuda
-Gallery directory: /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+Gallery directory: BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
 
-📡 Server URLs (Ctrl/CMD+Click to open):
-  🏠 Home:      http://127.0.0.1:8008
-  📊 Dashboard: http://127.0.0.1:8008/dashboard
-  📈 API Status: http://127.0.0.1:8008/status
-  🎨 Gallery:   http://127.0.0.1:8008/gallery/
+馃摗 Server URLs (Ctrl/CMD+Click to open):
+  馃彔 Home:      http://127.0.0.1:8008
+  馃搳 Dashboard: http://127.0.0.1:8008/dashboard
+  馃搱 API Status: http://127.0.0.1:8008/status
+  馃帹 Gallery:   http://127.0.0.1:8008/gallery/
 ============================================================
 INFO:     Started server process [1904987]
 INFO:     Waiting for application startup.
@@ -136,11 +136,11 @@ API Status: http://127.0.0.1:8008/status
 Gallery: http://127.0.0.1:8008/gallery/
 ============================================================
 Backend is running! You can now:
-  • Open home page: http://127.0.0.1:8008
-  • Open dashboard: http://127.0.0.1:8008/dashboard
-  • Check API status: http://127.0.0.1:8008/status
-  • Browse gallery: http://127.0.0.1:8008/gallery/
-  • Submit inference tasks via API
+  鈥?Open home page: http://127.0.0.1:8008
+  鈥?Open dashboard: http://127.0.0.1:8008/dashboard
+  鈥?Check API status: http://127.0.0.1:8008/status
+  鈥?Browse gallery: http://127.0.0.1:8008/gallery/
+  鈥?Submit inference tasks via API
 ============================================================
 INFO:     127.0.0.1:52858 - "GET /status HTTP/1.1" 200 OK
 INFO:     127.0.0.1:49190 - "GET /status HTTP/1.1" 200 OK
@@ -181,20 +181,20 @@ CUDA cleanup: freed 2.79GB, available: 33.06GB/39.38GB
 CUDA cleanup: freed 0.00GB, available: 33.06GB/39.38GB
 [CLEANUP] Task cleanup completed. Total tasks: 1, Active tasks: 0
 INFO:     127.0.0.1:41610 - "GET /task/f857ec06-e758-426d-b7e7-0184b1d913a3 HTTP/1.1" 200 OK
-/tmp/tmptbiyaham: line 17: 1904987 Killed                  da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
-ERROR conda.cli.main_run:execute(142): `conda run da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery` failed. (See above for error)
+/tmp/tmptbiyaham: line 17: 1904987 Killed                  da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+ERROR conda.cli.main_run:execute(142): `conda run da3 backend --model-dir /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1 --device cuda --host 127.0.0.1 --port 8008 --gallery-dir BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery` failed. (See above for error)
 ============================================================
-🚀 Starting Depth Anything 3 Backend Server
+馃殌 Starting Depth Anything 3 Backend Server
 ============================================================
 Model directory: /home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1
 Device: cuda
-Gallery directory: /home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
+Gallery directory: BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3/workspace/gallery
 
-📡 Server URLs (Ctrl/CMD+Click to open):
-  🏠 Home:      http://127.0.0.1:8008
-  📊 Dashboard: http://127.0.0.1:8008/dashboard
-  📈 API Status: http://127.0.0.1:8008/status
-  🎨 Gallery:   http://127.0.0.1:8008/gallery/
+馃摗 Server URLs (Ctrl/CMD+Click to open):
+  馃彔 Home:      http://127.0.0.1:8008
+  馃搳 Dashboard: http://127.0.0.1:8008/dashboard
+  馃搱 API Status: http://127.0.0.1:8008/status
+  馃帹 Gallery:   http://127.0.0.1:8008/gallery/
 ============================================================
 INFO:     Started server process [3118117]
 INFO:     Waiting for application startup.
@@ -209,11 +209,11 @@ API Status: http://127.0.0.1:8008/status
 Gallery: http://127.0.0.1:8008/gallery/
 ============================================================
 Backend is running! You can now:
-  • Open home page: http://127.0.0.1:8008
-  • Open dashboard: http://127.0.0.1:8008/dashboard
-  • Check API status: http://127.0.0.1:8008/status
-  • Browse gallery: http://127.0.0.1:8008/gallery/
-  • Submit inference tasks via API
+  鈥?Open home page: http://127.0.0.1:8008
+  鈥?Open dashboard: http://127.0.0.1:8008/dashboard
+  鈥?Check API status: http://127.0.0.1:8008/status
+  鈥?Browse gallery: http://127.0.0.1:8008/gallery/
+  鈥?Submit inference tasks via API
 ============================================================
 INFO:     127.0.0.1:58412 - "GET /status HTTP/1.1" 200 OK
 INFO:     127.0.0.1:60690 - "GET /status HTTP/1.1" 200 OK

@@ -1,0 +1,1 @@
+{"sample_id":"sim_000001","gt_field":"agent_pose","gt_value_path_or_inline":{"x":0,"y":0,"z":0,"yaw":0},"gt_source":"simulator_privileged_state","simulator_query":"get_agent_pose()","confidence":1.0,"timestamp_or_frame_id":"0"}

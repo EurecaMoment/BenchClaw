@@ -1,0 +1,16 @@
+stage2_handoff:
+  benchmark_name: ""
+  capability_dimensions: []
+  capability_checkpoints: []
+  simulator_routing: {}
+  annotation_tool_routing: {}
+  template_routing: {}
+  q_matrix_ref: ""
+  evidence_contracts: {}
+  quality_gates:
+    feasibility: []
+    intent_alignment: []
+    evidence_grounding: []
+    metric_executability: []
+  parallel_jobs: []
+  blocking_jobs: []

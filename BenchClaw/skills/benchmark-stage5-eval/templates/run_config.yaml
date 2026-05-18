@@ -1,0 +1,15 @@
+workspace: WORKSPACE_ROOT
+stage4_package: WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack
+stage5_output: WORKSPACE_ROOT/stage5/38-evaluation-run
+scoring_mode: auto
+prediction_source:
+  mode: materialized_predictions_or_model_calls
+  predictions_dir: WORKSPACE_ROOT/stage5/predictions
+models:
+  - name: example_model
+    endpoint: null
+    prediction_file: null
+metric_fields:
+  sample_id_candidates: [sample_id, id, qid]
+  gold_candidates: [answer, gold, label, target]
+  dimension_candidates: [dimension, capability, skill, category]

@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "required": [
+    "node_id",
+    "status",
+    "inputs_read",
+    "outputs_written",
+    "blocked_by",
+    "quality_gates"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "done",
+        "blocked",
+        "failed"
+      ]
+    },
+    "inputs_read": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs_written": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blocked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quality_gates": {
+      "type": "object"
+    }
+  }
+}

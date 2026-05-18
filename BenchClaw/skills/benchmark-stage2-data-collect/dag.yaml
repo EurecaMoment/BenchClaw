@@ -1,0 +1,44 @@
+stage: stage2
+stage_name: 数据采集
+version: 2.0-opencode-ready
+principle: "DAG/ready-set scheduling; circled numbers are node IDs, not a serial order."
+
+nodes:
+  "13":
+    name: stage1-execution-plan-ingest
+    skill: skills/13-stage1-execution-plan-ingest/SKILL.md
+    parents: []
+    output_dir: WORKSPACE_ROOT/stage2/13-execution-plan-ingest
+  "14":
+    name: simulator-skill-registry
+    skill: skills/14-simulator-skill-registry/SKILL.md
+    parents: []
+    output_dir: WORKSPACE_ROOT/stage2/14-simulator-skill-registry
+  "15":
+    name: real-image-acquisition
+    skill: skills/15-real-image-acquisition/SKILL.md
+    parents: ["13"]
+    output_dir: WORKSPACE_ROOT/stage2/15-real-image-acquisition
+  "16":
+    name: existing-benchmark-acquisition
+    skill: skills/16-existing-benchmark-acquisition/SKILL.md
+    parents: ["13"]
+    output_dir: WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition
+  "17":
+    name: simulator-multimodal-gt-acquisition
+    skill: skills/17-simulator-multimodal-gt-acquisition/SKILL.md
+    parents: ["13", "14"]
+    output_dir: WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition
+
+terminal_nodes: ["15", "16", "17"]
+
+ready_set:
+  initial: ["13", "14"]
+  after_13_only: ["15", "16"]
+  after_13_and_14: ["15", "16", "17"]
+
+forbidden:
+  - "Do not serialize as 13→14→15→16→17."
+  - "Do not make 15/16 depend on 14."
+  - "Do not make 17 depend on 15/16."
+  - "Do not add a Stage2 merge node unless explicitly requested."

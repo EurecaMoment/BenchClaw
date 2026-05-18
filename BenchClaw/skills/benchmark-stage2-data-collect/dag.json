@@ -1,0 +1,85 @@
+{
+  "stage": "stage2",
+  "stage_name": "data-collect",
+  "version": "2.0-opencode-ready",
+  "principle": "DAG/ready-set scheduling. Circled numbers are node IDs, not a serial execution order.",
+  "nodes": {
+    "13": {
+      "name": "stage1-execution-plan-ingest",
+      "skill": "skills/13-stage1-execution-plan-ingest/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage2/13-execution-plan-ingest",
+      "role": "Validate and copy Stage1 node-13 execution-plan artifacts into the Stage2 workspace."
+    },
+    "14": {
+      "name": "simulator-skill-registry",
+      "skill": "skills/14-simulator-skill-registry/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage2/14-simulator-skill-registry",
+      "role": "Inventory available simulator skills from BENCHCLAW_ROOT/simulatorCards and normalize callable interfaces."
+    },
+    "15": {
+      "name": "real-image-acquisition",
+      "skill": "skills/15-real-image-acquisition/SKILL.md",
+      "parents": [
+        "13"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage2/15-real-image-acquisition",
+      "role": "Collect real images and target annotation requirements without treating LLM descriptions as GT."
+    },
+    "16": {
+      "name": "existing-benchmark-acquisition",
+      "skill": "skills/16-existing-benchmark-acquisition/SKILL.md",
+      "parents": [
+        "13"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition",
+      "role": "Collect existing benchmark samples, labels, licenses, splits, and expected extra annotation needs."
+    },
+    "17": {
+      "name": "simulator-multimodal-gt-acquisition",
+      "skill": "skills/17-simulator-multimodal-gt-acquisition/SKILL.md",
+      "parents": [
+        "13",
+        "14"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition",
+      "role": "Run simulator skills to collect multimodal observations, trajectories, and privileged simulator GT."
+    }
+  },
+  "terminal_nodes": [
+    "15",
+    "16",
+    "17"
+  ],
+  "ready_set_examples": [
+    {
+      "when": "nothing_done",
+      "ready": [
+        "13",
+        "14"
+      ]
+    },
+    {
+      "when": "13_done_14_not_done",
+      "ready": [
+        "15",
+        "16"
+      ]
+    },
+    {
+      "when": "13_and_14_done",
+      "ready": [
+        "15",
+        "16",
+        "17"
+      ]
+    }
+  ],
+  "forbidden_interpretations": [
+    "Do not run 13->14->15->16->17 as a serial chain.",
+    "Do not make node 15 or 16 depend on node 14.",
+    "Do not make node 17 depend on node 15 or 16.",
+    "Do not add a merge node unless the user explicitly asks for one."
+  ]
+}

@@ -1,0 +1,1 @@
+{"sample_id":"bench_000001","benchmark_name":"example","raw_data_path":"raw/example/000001.json","modalities":["image","text"],"question":"", "answer":"", "split":"test","target_dimensions":["D1"],"official_label_available":true,"license":"", "provenance":{"source_url_or_path":"","original_id":"", "hash_sha256":""}}

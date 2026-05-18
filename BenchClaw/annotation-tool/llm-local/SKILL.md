@@ -29,8 +29,8 @@ Use this skill when the task needs any of the following:
 Always do this before sending generation requests:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py health
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py models
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py models
 ```
 
 Expected runtime:
@@ -43,7 +43,7 @@ Expected runtime:
 ### 1. Health check
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py health
 ```
 
 Returns direct service status data.
@@ -51,7 +51,7 @@ Returns direct service status data.
 ### 2. List models
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py models
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py models
 ```
 
 Returns direct model metadata such as:
@@ -67,7 +67,7 @@ Returns direct model metadata such as:
 One-shot chat request:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py chat \
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py chat \
   --system "You are a precise assistant." \
   --user "Summarize the key idea in one sentence."
 ```
@@ -75,7 +75,7 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_cl
 Or send a full OpenAI-compatible request from JSON:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py chat-request \
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py chat-request \
   --request-file /abs/path/to/request.json
 ```
 
@@ -100,7 +100,7 @@ For strict short answers or strict JSON, set `temperature` low and state the out
 If a task specifically wants completion-style prompting:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/llm-local/llm_local_client.py completion \
+python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py completion \
   --prompt "Write a concise title for a report about road segmentation."
 ```
 

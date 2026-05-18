@@ -1,0 +1,15 @@
+{
+  "source_record_id": "sim_000001",
+  "source_branch": "simulator",
+  "media": [
+    "images/frame_0001.png"
+  ],
+  "gt_fields": {
+    "agent_pose": "...",
+    "object_pose": "..."
+  },
+  "provenance": {
+    "gt_source_type": "simulator_privileged_gt",
+    "stage3_node": "20"
+  }
+}

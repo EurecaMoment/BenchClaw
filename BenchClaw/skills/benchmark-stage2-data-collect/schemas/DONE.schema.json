@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stage2 DONE marker",
+  "type": "object",
+  "required": [
+    "node_id",
+    "status",
+    "outputs"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "done",
+        "skipped_with_reason"
+      ]
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "terminal": {
+      "type": "boolean"
+    },
+    "next_ready_hint": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

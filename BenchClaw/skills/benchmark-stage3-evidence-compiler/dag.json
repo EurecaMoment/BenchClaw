@@ -1,0 +1,167 @@
+{
+  "stage": "stage3",
+  "stage_name": "evidence-compiler",
+  "version": "3.0-opencode-ready",
+  "principle": "DAG/ready-set scheduling. Stage2 nodes 15, 16, and 17 are ingested as Stage3 roots. Nodes 18, 19, and 20 are Stage3 terminal deliverables.",
+  "nodes": {
+    "15": {
+      "name": "stage2-real-image-source-ingest",
+      "skill": "skills/15-stage2-real-image-source-ingest/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest",
+      "role": "Ingest Stage2 node-15 real-image acquisition output as a read-only Stage3 source."
+    },
+    "16": {
+      "name": "stage2-existing-benchmark-source-ingest",
+      "skill": "skills/16-stage2-existing-benchmark-source-ingest/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest",
+      "role": "Ingest Stage2 node-16 existing-benchmark acquisition output as a read-only Stage3 source."
+    },
+    "17": {
+      "name": "stage2-simulator-gt-source-ingest",
+      "skill": "skills/17-stage2-simulator-gt-source-ingest/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest",
+      "role": "Ingest Stage2 node-17 simulator observations and privileged GT as a read-only Stage3 source."
+    },
+    "21": {
+      "name": "real-image-unified-format",
+      "skill": "skills/21-real-image-unified-format/SKILL.md",
+      "parents": [
+        "15"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/21-real-image-unified-format",
+      "role": "Convert real-image records into the Stage3 unified multimodal-record schema."
+    },
+    "22": {
+      "name": "benchmark-unified-format",
+      "skill": "skills/22-benchmark-unified-format/SKILL.md",
+      "parents": [
+        "16"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/22-benchmark-unified-format",
+      "role": "Convert existing benchmark records and official labels or QA into the Stage3 unified multimodal-record schema."
+    },
+    "23": {
+      "name": "simulator-unified-format",
+      "skill": "skills/23-simulator-unified-format/SKILL.md",
+      "parents": [
+        "17"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/23-simulator-unified-format",
+      "role": "Convert simulator observations, trajectories, poses, and privileged GT into the Stage3 unified multimodal-record schema."
+    },
+    "24": {
+      "name": "real-image-data-juicer-cleaning",
+      "skill": "skills/24-real-image-data-juicer-cleaning/SKILL.md",
+      "parents": [
+        "21"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning",
+      "role": "Run Data-Juicer-style quality filters on real-image unified records."
+    },
+    "25": {
+      "name": "benchmark-data-juicer-cleaning",
+      "skill": "skills/25-benchmark-data-juicer-cleaning/SKILL.md",
+      "parents": [
+        "22"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning",
+      "role": "Run Data-Juicer-style deduplication, legality, metadata, and image/text filters on existing benchmark records."
+    },
+    "26": {
+      "name": "simulator-data-juicer-cleaning",
+      "skill": "skills/26-simulator-data-juicer-cleaning/SKILL.md",
+      "parents": [
+        "23"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning",
+      "role": "Run Data-Juicer-style sensor, trajectory, GT-completeness, and provenance filters on simulator records."
+    },
+    "27": {
+      "name": "semi-supervised-tool-registry",
+      "skill": "skills/27-semi-supervised-tool-registry/SKILL.md",
+      "parents": [],
+      "output_dir": "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry",
+      "role": "Register semi-supervised annotation tools from BENCHCLAW_ROOT/annotation-tool with explicit output contracts."
+    },
+    "18": {
+      "name": "real-image-semi-supervised-gt",
+      "skill": "skills/18-real-image-semi-supervised-gt/SKILL.md",
+      "parents": [
+        "24",
+        "27"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt",
+      "role": "Produce real-image records plus semi-supervised GT candidates with confidence, provenance, and audit reports."
+    },
+    "19": {
+      "name": "benchmark-image-semi-supervised-gt",
+      "skill": "skills/19-benchmark-image-semi-supervised-gt/SKILL.md",
+      "parents": [
+        "25",
+        "27"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt",
+      "role": "Produce existing-benchmark image records plus official labels and semi-supervised GT candidates."
+    },
+    "20": {
+      "name": "simulator-clean-gt-pack",
+      "skill": "skills/20-simulator-clean-gt-pack/SKILL.md",
+      "parents": [
+        "26"
+      ],
+      "output_dir": "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack",
+      "role": "Produce cleaned simulator records plus privileged GT. No small-model annotation may override simulator GT."
+    }
+  },
+  "terminal_nodes": [
+    "18",
+    "19",
+    "20"
+  ],
+  "ready_set_examples": [
+    {
+      "when": "nothing_done",
+      "ready": [
+        "15",
+        "16",
+        "17",
+        "27"
+      ]
+    },
+    {
+      "when": "15_16_17_done",
+      "ready": [
+        "21",
+        "22",
+        "23"
+      ]
+    },
+    {
+      "when": "21_22_23_done",
+      "ready": [
+        "24",
+        "25",
+        "26"
+      ]
+    },
+    {
+      "when": "24_25_26_and_27_done",
+      "ready": [
+        "18",
+        "19",
+        "20"
+      ]
+    }
+  ],
+  "forbidden_interpretations": [
+    "Do not run 15->16->17->18->19->20 as a serial chain.",
+    "Do not make 18 depend on 19 or 20.",
+    "Do not make 19 depend on 18 or 20.",
+    "Do not make 20 depend on 18 or 19.",
+    "Do not let YOLOE, SAM3, or Depth Anything 3 overwrite simulator privileged GT in node 20.",
+    "Do not treat an LLM-generated description as ground truth."
+  ]
+}

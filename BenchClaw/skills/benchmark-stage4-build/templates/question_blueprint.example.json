@@ -1,0 +1,22 @@
+{
+  "blueprint_id": "bp_000001",
+  "template_id": "spatial_relation_mcq_v1",
+  "binding_id": "bind_000001",
+  "question": "Where is the highlighted object relative to the agent body heading?",
+  "options": [
+    "front",
+    "left",
+    "right",
+    "back"
+  ],
+  "gt_answer": "left",
+  "answer_program_id": "egocentric_direction_v1",
+  "metric_id": "single_choice_exact_match",
+  "capability_tags": [
+    "egocentric_spatial_reasoning"
+  ],
+  "source_trace": {
+    "source_record_id": "sim_000001",
+    "gt_source_type": "simulator_privileged_gt"
+  }
+}

@@ -1,0 +1,172 @@
+stage: stage4
+stage_name: 评测集合成、指标代码与质量过滤
+version: 4.0-opencode-ready
+principle: DAG/ready-set scheduling. 09/18/19/20 are roots. Small-batch synthesis and gray test are preserved as graph nodes but intentionally blank per user instruction; all other nodes are normal Stage4 skill contracts.
+source_diagram_interpretation:
+  09: Stage1 的初版模板集与指标集，图中作为“模板”来源进入 Stage4。
+  18: Stage3 的真实图片+半监督 GT。
+  19: Stage3 的已有 benchmark 图文/QA/标签+半监督 GT。
+  20: Stage3 的仿真器多模态数据+清洗后的 privileged GT。
+  模板: 把 09 规范化为模板契约、证据契约和指标契约。
+  对象/关系/能力/题型选择: 从 18/19/20 的 evidence pool 中为模板选择可证明的对象、空间关系、动作/属性约束、题型与干扰项。
+  小批量合成+灰度测试: 按用户要求留空，但保留图中节点位置与 DONE/WAIVED 契约。
+  质量检查: 结构性检查正常实现；CTT/IRT、CDM/Q-matrix、Qwen-scope/Gemma-scope/Llama-scope 等需要 pilot/model-response 的检查作为 deferred hooks 输出。
+  全量合成: 使用通过质量过滤的 blueprint 与 answer program 生成全量 evalset。
+nodes:
+  09:
+    name: stage1-template-metric-ingest
+    skill: skills/09-stage1-template-metric-ingest/SKILL.md
+    parents:
+
+    output_dir: WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest
+    role: Ingest Stage1 node-09 initial template set and metric set as read-only Stage4 source.
+  18:
+    name: stage3-real-image-gt-ingest
+    skill: skills/18-stage3-real-image-gt-ingest/SKILL.md
+    parents:
+
+    output_dir: WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest
+    role: Ingest Stage3 node-18 real-image records with semi-supervised GT.
+  19:
+    name: stage3-benchmark-image-gt-ingest
+    skill: skills/19-stage3-benchmark-image-gt-ingest/SKILL.md
+    parents:
+
+    output_dir: WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest
+    role: Ingest Stage3 node-19 existing-benchmark records with official labels/QA and semi-supervised GT.
+  20:
+    name: stage3-simulator-clean-gt-ingest
+    skill: skills/20-stage3-simulator-clean-gt-ingest/SKILL.md
+    parents:
+
+    output_dir: WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest
+    role: Ingest Stage3 node-20 simulator records with privileged GT.
+  28:
+    name: template-contract-normalization
+    skill: skills/28-template-contract-normalization/SKILL.md
+    parents:
+      - 09
+    output_dir: WORKSPACE_ROOT/stage4/28-template-contract-normalization
+    role: Normalize Stage1 draft templates into strict template contracts, evidence contracts, and metric contracts.
+  29:
+    name: evidence-pool-normalization
+    skill: skills/29-evidence-pool-normalization/SKILL.md
+    parents:
+      - 18
+      - 19
+      - 20
+    output_dir: WORKSPACE_ROOT/stage4/29-evidence-pool-normalization
+    role: Merge three Stage3 data branches into a typed evidence pool without losing source provenance.
+  30:
+    name: template-evidence-binding
+    skill: skills/30-template-evidence-binding/SKILL.md
+    parents:
+      - 28
+      - 29
+    output_dir: WORKSPACE_ROOT/stage4/30-template-evidence-binding
+    role: Bind each template contract to qualified evidence records and produce evidence-backed candidate bindings.
+  31:
+    name: question-form-expansion
+    skill: skills/31-question-form-expansion/SKILL.md
+    parents:
+      - 30
+    output_dir: WORKSPACE_ROOT/stage4/31-question-form-expansion
+    role: "Expand bindings into concrete question blueprints: object choices, spatial relations, answer types, distractor families, and capability tags."
+  32:
+    name: answer-program-metric-code
+    skill: skills/32-answer-program-metric-code/SKILL.md
+    parents:
+      - 30
+    output_dir: WORKSPACE_ROOT/stage4/32-answer-program-metric-code
+    role: Generate executable answer programs, metric registry, scoring interface, and item-level traceability requirements.
+  33:
+    name: small-batch-synthesis-placeholder
+    skill: skills/33-small-batch-synthesis-placeholder/SKILL.md
+    parents:
+      - 31
+      - 32
+    output_dir: WORKSPACE_ROOT/stage4/33-small-batch-synthesis-placeholder
+    role: INTENTIONALLY BLANK per user instruction. It only emits WAIVED.json and DONE.json; no small-batch item generation.
+  34:
+    name: gray-test-placeholder
+    skill: skills/34-gray-test-placeholder/SKILL.md
+    parents:
+      - 33
+    output_dir: WORKSPACE_ROOT/stage4/34-gray-test-placeholder
+    role: INTENTIONALLY BLANK per user instruction. It only emits WAIVED.json and DONE.json; no gray/pilot test.
+  35:
+    name: quality-filter-and-selection
+    skill: skills/35-quality-filter-and-selection/SKILL.md
+    parents:
+      - 31
+      - 32
+      - 34
+    output_dir: WORKSPACE_ROOT/stage4/35-quality-filter-and-selection
+    role: Build deterministic structural filters and deferred psychometric/scope-analysis hooks. Pilot-dependent checks are declared but not executed because node 34 is waived.
+  36:
+    name: full-scale-synthesis
+    skill: skills/36-full-scale-synthesis/SKILL.md
+    parents:
+      - 31
+      - 32
+      - 35
+    output_dir: WORKSPACE_ROOT/stage4/36-full-scale-synthesis
+    role: Run full-scale benchmark item synthesis from blueprints and executable answer programs, applying selection/filter rules.
+  37:
+    name: benchmark-artifact-pack
+    skill: skills/37-benchmark-artifact-pack/SKILL.md
+    parents:
+      - 36
+    output_dir: WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack
+    role: Package final EVALSET_DATASET, metrics, dataset card, traceability table, and Stage4 report for Stage5.
+terminal_nodes:
+  - 37
+ready_set_examples:
+  -
+    when: nothing_done
+    ready:
+      - 09
+      - 18
+      - 19
+      - 20
+  -
+    when: 09_18_19_20_done
+    ready:
+      - 28
+      - 29
+  -
+    when: 28_29_done
+    ready:
+      - 30
+  -
+    when: 30_done
+    ready:
+      - 31
+      - 32
+  -
+    when: 31_32_done
+    ready:
+      - 33
+  -
+    when: 33_done
+    ready:
+      - 34
+  -
+    when: 31_32_34_done
+    ready:
+      - 35
+  -
+    when: 31_32_35_done
+    ready:
+      - 36
+  -
+    when: 36_done
+    ready:
+      - 37
+forbidden_interpretations:
+  - Do not run 09→18→19→20→28→29 as a serial chain; 09/18/19/20 are independent roots.
+  - Do not make 18 depend on 19 or 20, or 19 depend on 18 or 20, in Stage4 ingestion.
+  - Do not let synthetic question text become GT. Answers must be computed from evidence contracts or answer programs.
+  - Do not fill node 33 or node 34 in this pack; they are intentionally blank/waived.
+  - Do not execute pilot-dependent CTT/IRT/CDM/scope conclusions without pilot/model-response data.
+  - Do not allow full-scale synthesis to bypass traceability from item -> blueprint -> evidence -> source GT.

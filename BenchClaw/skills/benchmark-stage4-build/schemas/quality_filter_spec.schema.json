@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "required": [
+    "structural_filters",
+    "deferred_hooks"
+  ],
+  "properties": {
+    "structural_filters": {
+      "type": "array"
+    },
+    "deferred_hooks": {
+      "type": "array"
+    },
+    "waived_nodes": {
+      "type": "array"
+    }
+  }
+}

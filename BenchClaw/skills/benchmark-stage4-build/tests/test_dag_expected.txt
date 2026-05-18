@@ -1,0 +1,10 @@
+OK: Stage4 DAG is valid and non-serial.
+L0: 09 | 18 | 19 | 20
+L1: 28 | 29
+L2: 30
+L3: 31 | 32
+L4: 33
+L5: 34
+L6: 35
+L7: 36
+L8: 37

@@ -10,7 +10,11 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
-SAM3_REPO = os.environ.get("SAM3_REPO", "/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3")
+SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
+BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", "..")))
+BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
+THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
+SAM3_REPO = os.environ.get("SAM3_REPO", os.path.join(THIRD_PARTY_ROOT, "annotationTools", "sam3"))
 DEFAULT_CHECKPOINT = os.environ.get("SAM3_CHECKPOINT", "/home/maqiang/model/sam3/sam3.pt")
 
 if SAM3_REPO not in sys.path:

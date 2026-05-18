@@ -1,0 +1,11 @@
+templates:
+  - template_id: Txx
+    capability_dimension: Dxx
+    checkpoint_refs: []
+    task_family: ""
+    question_form: ""
+    required_gt_fields: []
+    required_annotation_outputs: []
+    anti_shortcut_constraints: []
+    validity_checks: []
+    metric_refs: []

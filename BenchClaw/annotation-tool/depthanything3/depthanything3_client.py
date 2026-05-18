@@ -13,12 +13,15 @@ HOST = os.environ.get("DEPTHANYTHING3_HOST", "127.0.0.1")
 PORT = int(os.environ.get("DEPTHANYTHING3_PORT", "8008"))
 BASE_URL = f"http://{HOST}:{PORT}"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(ROOT_DIR, "..", "..")))
+BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
+THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
 SERVICE_LOG = os.path.join(ROOT_DIR, "service.log")
 CONDA_EXE = os.environ.get("CONDA_EXE", "/home/maqiang/miniconda3/bin/conda")
 CONDA_ENV = os.environ.get("DEPTHANYTHING3_CONDA_ENV", "depthanythingv3")
 PROJECT_DIR = os.environ.get(
     "DEPTHANYTHING3_PROJECT_DIR",
-    "/home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3",
+    os.path.join(THIRD_PARTY_ROOT, "annotationTools", "Depth-Anything-3"),
 )
 DEFAULT_MODEL_DIR = os.environ.get(
     "DEPTHANYTHING3_MODEL_DIR",
@@ -26,7 +29,7 @@ DEFAULT_MODEL_DIR = os.environ.get(
 )
 DEFAULT_GALLERY_DIR = os.environ.get(
     "DEPTHANYTHING3_GALLERY_DIR",
-    "/home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3/workspace/gallery",
+    os.path.join(THIRD_PARTY_ROOT, "annotationTools", "Depth-Anything-3", "workspace", "gallery"),
 )
 
 

@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "required": [
+    "node_id",
+    "status",
+    "outputs"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "done",
+        "waived"
+      ]
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

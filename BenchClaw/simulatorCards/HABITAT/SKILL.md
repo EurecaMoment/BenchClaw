@@ -2,8 +2,9 @@
 
 ## Core Path
 
+- BenchClaw root: resolve `BENCHCLAW_ROOT` as the BenchClaw directory that contains `skills/` and `simulatorCards/`.
 - Simulator root: `/home/maqiang/simulators/habitat`
-- Skill directory: `/home/maqiang/benchclaw/simulator_cards/HABITAT`
+- Skill directory: `BENCHCLAW_ROOT/simulatorCards/HABITAT`
 - Environment activator: `/home/maqiang/simulators/habitat/scripts/env_habitat.sh`
 
 ## Goal
@@ -56,7 +57,7 @@ Run from the skill directory:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
-python /home/maqiang/benchclaw/simulator_cards/HABITAT/test_connect.py
+python BENCHCLAW_ROOT/simulatorCards/HABITAT/test_connect.py
 ```
 
 Expected output contains:
@@ -70,7 +71,7 @@ Run:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
-python /home/maqiang/benchclaw/simulator_cards/HABITAT/render_rgb.py
+python BENCHCLAW_ROOT/simulatorCards/HABITAT/render_rgb.py
 ```
 
 Expected behavior:
@@ -79,7 +80,7 @@ Expected behavior:
 2. One RGB frame is saved to:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/HABITAT/output/first_rgb.png
+BENCHCLAW_ROOT/simulatorCards/HABITAT/output/first_rgb.png
 ```
 
 Observed warning that can be ignored for this test:
@@ -96,7 +97,7 @@ Run:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
-python /home/maqiang/benchclaw/simulator_cards/HABITAT/run_example.py
+python BENCHCLAW_ROOT/simulatorCards/HABITAT/run_example.py
 ```
 
 This executes the official:
@@ -105,7 +106,7 @@ This executes the official:
 /home/maqiang/simulators/habitat/src/habitat-lab/examples/example.py
 ```
 
-but keeps the user-facing entrypoint inside `simulator_cards/HABITAT`.
+but keeps the user-facing entrypoint inside `BENCHCLAW_ROOT/simulatorCards/HABITAT`.
 
 Expected success markers:
 
@@ -122,7 +123,7 @@ On this machine, it completed successfully and finished after `277` steps during
 Use this script:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/HABITAT/collect_dataset.py
+BENCHCLAW_ROOT/simulatorCards/HABITAT/collect_dataset.py
 ```
 
 It collects multi-scene RGB images and depth maps and writes GT JSON for every scene.
@@ -157,8 +158,8 @@ Each frame record contains:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
-python /home/maqiang/benchclaw/simulator_cards/HABITAT/collect_dataset.py \
-  --output-dir /home/maqiang/benchclaw/simulator_cards/HABITAT/output_dataset_demo \
+python BENCHCLAW_ROOT/simulatorCards/HABITAT/collect_dataset.py \
+  --output-dir BENCHCLAW_ROOT/simulatorCards/HABITAT/output_dataset_demo \
   --frames-per-scene 4
 ```
 
@@ -239,7 +240,7 @@ python -m pip install -e habitat-lab
 Then rerun from the skill directory:
 
 ```bash
-cd /home/maqiang/benchclaw/simulator_cards/HABITAT
+cd BENCHCLAW_ROOT/simulatorCards/HABITAT
 python test_connect.py
 python render_rgb.py
 python run_example.py
@@ -261,9 +262,9 @@ Note: `env_habitat.sh` changes the current directory to Habitat-Lab. Always invo
 
 ## Notes
 
-1. The old top-level file `/home/maqiang/benchclaw/simulator_cards/HABITAT.md` is legacy reference material.
+1. The old top-level file `BENCHCLAW_ROOT/simulatorCards/HABITAT.md` is legacy reference material.
 2. The execution source of truth is this file:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/HABITAT/SKILL.md
+BENCHCLAW_ROOT/simulatorCards/HABITAT/SKILL.md
 ```

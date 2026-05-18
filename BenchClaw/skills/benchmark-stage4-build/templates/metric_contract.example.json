@@ -1,0 +1,6 @@
+{
+  "metric_id": "single_choice_exact_match",
+  "answer_type": "single_choice",
+  "scoring_rule": "normalize_choice_letter_then_exact_match",
+  "normalization": "strip whitespace, uppercase A/B/C/D"
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "tool_name",
+    "capabilities",
+    "inputs",
+    "outputs",
+    "trust_level"
+  ],
+  "properties": {
+    "tool_name": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trust_level": {
+      "enum": [
+        "candidate_only",
+        "official",
+        "simulator_privileged",
+        "human_verified"
+      ]
+    }
+  }
+}

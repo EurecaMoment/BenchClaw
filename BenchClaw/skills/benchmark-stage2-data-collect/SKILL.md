@@ -1,170 +1,216 @@
+# BenchClaw Stage2 Skill — 数据采集（Opencode-ready DAG 版）
+
+## 0. 任务边界
+
+本 Skill 对应手绘图中的 **Stage2 数据采集**。它不是线性流水线，而是一个按 ready-set 调度的 DAG。  
+核心目标是把 Stage1 的执行计划落到三类原始数据源：
+
+1. **真实图片分支**：真实图片 + 期望/目标标注要求；
+2. **已有 benchmark 分支**：已有 benchmark + 已有标注/QA + 期望额外标注；
+3. **仿真器分支**：仿真器多模态观测/轨迹 + simulator privileged GT。
+
+严禁把 Stage2 写成 `13→14→15→16→17` 串行链。编号只是节点编号，不是执行顺序。
+
 ---
-name: benchmark-stage2-data-collect
-description: "Stage 2 pipeline orchestrator. 从 Stage 1 产物出发，完成数据能力调研、采集计划、raw schema、逐源脚本生成、subagent 并行采集、单元测试；只产出原始数据与问题标记，不做清洗/过滤/拒收。"
-argument-hint: [workspace-root-or-stage1-dir]
-allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
+
+## 1. DAG 结构
+
+```text
+                 ┌──────────────┐
+                 │ 13 执行计划入口 │
+                 └──────┬───────┘
+                        │
+        ┌───────────────┼────────────────┐
+        │               │                │
+        v               v                v
+  ┌──────────┐    ┌─────────────┐   ┌──────────────┐
+  │15 真实图片│    │16 已有benchmark│   │17 仿真器多模态│
+  │  数据采集 │    │   数据采集    │   │ GT 数据采集   │
+  └──────────┘    └─────────────┘   └──────▲───────┘
+                                            │
+                                   ┌────────┴───────┐
+                                   │14 各仿真器 skill│
+                                   │   注册/适配     │
+                                   └────────────────┘
+```
+
+等价依赖表：
+
+```text
+13.parents = []
+14.parents = []
+15.parents = [13]
+16.parents = [13]
+17.parents = [13,14]
+terminal_nodes = [15,16,17]
+```
+
+动态 ready-set：
+
+```text
+初始 ready: 13, 14
+13 完成后 ready: 15, 16
+13 和 14 均完成后 ready: 17
+最终完成条件: 15, 16, 17 全部 DONE
+```
+
 ---
 
-# Stage 2 Pipeline: raw data collection with parallel subagents
+## 2. Opencode 调度要求
 
-## 0. Non-negotiable contract
+### 2.1 必须使用 ready-set
 
-This skill is an orchestrator. It must run the Stage 2 phases in order and must not replace subskills with free-form reasoning.
+执行时先读取：
 
-Hard constraints:
+```bash
+cat dag.json
+cat contracts/node_io_contracts.json
+```
 
-- `BENCHCLAW_ROOT` is read-only. It may be read for cards/templates only. Never write logs, cache, data, reports, scripts, patches, or temp files under it.
-- `WORKSPACE_ROOT` is the active benchmark workspace. If the argument points to `stage1/`, use its parent. If it points to a workspace root, use it directly. Do not create a new `workspace{i}` and do not reuse another workspace.
-- All Stage 2 outputs go under `WORKSPACE_ROOT/stage2/`.
-- Stage 2 is raw-only: no cleaning, dedup deletion, quality filtering, confidence threshold rejection, Stage 4 readiness filtering, or synthetic placeholder samples.
-- Enabled source types are exactly: `simulator`, `existing_dataset`, `real_data`.
-- Every enabled source must be traceable to Stage 1 requirements and to a read-only source card, or be explicitly marked `NEEDS_CARD`, `NEEDS_CARD_DETAIL`, or `NEEDS_USER_INPUT`.
-- Simulator sources must create a new runtime/session/run before samples can count as successfully collected. Old images, old JSON, cache, or other workspace data must not be counted.
-- After writing `stage2/STAGE2_SUMMARY.md`, stop. Do not enter Stage 3.
+然后按 `scripts/ready_set_runner.py` 输出的 ready nodes 启动子任务。  
+如果环境支持 subagent，必须把同一 ready-set 中的节点交给不同 subagent 并行执行。
 
-## 1. Required Stage 1 inputs
+推荐过程：
 
-Before any phase call, verify that these files exist:
+```bash
+python scripts/validate_dag.py dag.json
+python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
+```
+
+初始会得到：
 
 ```text
-stage1/CAPABILITY_SCOPE.md
-stage1/DATA_SOURCE_MAPPING.md
-stage1/BENCHMARK_DRAFT.md
-stage1/EVALSET_PROTOTYPE.md
-stage1/EXECUTION_PLAN.md
+READY: 13 14
 ```
 
-If any required file is missing, stop and write `stage2/PIPELINE_BLOCKED.md` listing missing paths. Do not invent Stage 1 content.
-
-## 2. Canonical Stage 2 outputs
-
-The pipeline is successful only if these artifacts are produced or a blocking report explains why they cannot be produced:
+此时应并行启动：
 
 ```text
-stage2/SOURCE_CAPABILITY_SURVEY.md
-stage2/source_inventory.jsonl
-stage2/COLLECTION_GUIDANCE_PLAN.md
-stage2/source_plan.jsonl
-stage2/TEMPLATE_REFINEMENT_REPORT.md
-stage2/templates/*.yaml
-stage2/DATA_SCHEMA.md
-stage2/source_runs/{source_type}/{source_name}/...
-stage2/source_jobs/*.json
-stage2/source_results/*.json
-stage2/collected_data/{source_type}/{source_name}/images/
-stage2/collected_data/{source_type}/{source_name}/records/
-stage2/collected_data/{source_type}/{source_name}/manifest.jsonl
-stage2/RAW_DATA_COLLECTION_REPORT.md
-stage2/unit_tests/test_stage2_contract.py
-stage2/unit_tests/results.json
-stage2/STAGE2_UNIT_TEST_REPORT.md
-stage2/STAGE2_SUMMARY.md
-stage2/status/*.json
+subagent-13 -> skills/13-stage1-execution-plan-ingest/SKILL.md
+subagent-14 -> skills/14-simulator-skill-registry/SKILL.md
 ```
 
-If a source is blocked, its result file is still required and must contain the blocking status and reason.
-
-## 3. Pipeline execution order
-
-Create `stage2/status/` first. After each phase, write a small JSON status file:
-
-```json
-{"phase":"phase_name","status":"PASS|PARTIAL|BLOCKED|FAIL","inputs":[],"outputs":[],"notes":[]}
-```
-
-Run exactly these phase skills in order:
-
-### Phase 1 — source capability survey
-
-Call skill `benchmark-data-capability-survey` with argument `WORKSPACE_ROOT`.
-
-Expected outputs:
+当 13 完成后，不要等 14 才启动全部后续；应立即启动 15、16：
 
 ```text
-stage2/SOURCE_CAPABILITY_SURVEY.md
-stage2/source_inventory.jsonl
-stage2/status/phase1_survey.json
+subagent-15 -> skills/15-real-image-acquisition/SKILL.md
+subagent-16 -> skills/16-existing-benchmark-acquisition/SKILL.md
 ```
 
-### Phase 2 — collection guidance
-
-Call skill `benchmark-collection-guidance` with argument `WORKSPACE_ROOT`.
-
-Expected outputs:
+17 必须等 13 和 14 都完成：
 
 ```text
-stage2/COLLECTION_GUIDANCE_PLAN.md
-stage2/source_plan.jsonl
-stage2/status/phase2_guidance.json
+subagent-17 -> skills/17-simulator-multimodal-gt-acquisition/SKILL.md
 ```
 
-### Phase 3 — raw template refinement
+### 2.2 不支持 subagent 时的降级
 
-Call skill `benchmark-template-refinement` with argument `WORKSPACE_ROOT`.
-
-Expected outputs:
+可以顺序执行 ready-set 内节点，但不得改变依赖：
 
 ```text
-stage2/TEMPLATE_REFINEMENT_REPORT.md
-stage2/templates/*.yaml
-stage2/template_index.jsonl
-stage2/status/phase3_templates.json
+允许: 13,14 任意顺序；13 后可跑 15/16；13+14 后跑 17
+禁止: 13→14→15→16→17 被写死为唯一流程
 ```
 
-### Phase 4 — source script generation
+---
 
-Call skill `benchmark-collect-codegen` with argument `WORKSPACE_ROOT`.
+## 3. 输入输出约束
 
-Expected outputs:
+### 3.1 总输入
+
+Stage2 默认读取 Stage1 末端输出：
 
 ```text
-stage2/DATA_SCHEMA.md
-stage2/source_runs/{source_type}/{source_name}/README.md
-stage2/source_runs/{source_type}/{source_name}/config.yaml
-stage2/source_runs/{source_type}/{source_name}/{collect.py|ingest.py|register.py}
-stage2/status/phase4_codegen.json
+WORKSPACE_ROOT/stage1/13-execution-plan/
 ```
 
-### Phase 5 — batch collect through subagents
-
-Call skill `benchmark-batch-collect` with argument `WORKSPACE_ROOT`.
-
-This phase must dispatch one `benchmark-source-collect-worker` subagent per enabled source job. The current agent must act as dispatcher/aggregator, not as the worker for all sources.
-
-Expected outputs:
+最低需要：
 
 ```text
-stage2/source_jobs/*.json
-stage2/source_results/*.json
-stage2/collected_data/...
-stage2/RAW_DATA_COLLECTION_REPORT.md
-stage2/status/phase5_batch_collect.json
+execution_plan.md
+benchmark_draft.md 或 benchmark_traceability.*
 ```
 
-### Phase 6 — Stage 2 unit test
+如果 Stage1 使用了不同目录，先在 `WORKSPACE_ROOT/config/stage2_input_paths.json` 中声明。
 
-Call skill `benchmark-unit-test-stage2` with argument `WORKSPACE_ROOT`.
+### 3.2 总输出
 
-Expected outputs:
+Stage2 不制造最终 eval set，也不做清洗标注；它只输出三类原始采集结果，供 Stage3 使用。
 
 ```text
-stage2/unit_tests/test_stage2_contract.py
-stage2/unit_tests/results.json
-stage2/STAGE2_UNIT_TEST_REPORT.md
-stage2/status/phase6_unit_test.json
+WORKSPACE_ROOT/stage2/
+  13-execution-plan-ingest/
+  14-simulator-skill-registry/
+  15-real-image-acquisition/
+  16-existing-benchmark-acquisition/
+  17-simulator-multimodal-gt-acquisition/
 ```
 
-## 4. Final summary
+完成条件：
 
-After Phase 6, write `stage2/STAGE2_SUMMARY.md` with:
+```bash
+python scripts/check_stage2_outputs.py --workspace WORKSPACE_ROOT
+```
 
-- workspace root
-- total enabled sources by type
-- source statuses: `PASS`, `PARTIAL`, `NEEDS_RUNTIME`, `NEEDS_CARD`, `NEEDS_USER_INPUT`, `FAIL`
-- number of collected raw samples by source
-- collected data root
-- whether subagent dispatch was used
-- unit test verdict
-- exact next-step instruction: Stage 2 stops here; Stage 3 must be invoked separately.
+该脚本必须看到：
 
-Do not continue beyond this summary.
+```text
+15-real-image-acquisition/DONE.json
+16-existing-benchmark-acquisition/DONE.json
+17-simulator-multimodal-gt-acquisition/DONE.json
+```
+
+---
+
+## 4. GT 原则
+
+Stage2 只采集和搬运数据。  
+**不得把 LLM 生成的描述、判断、推测当作 GT。**
+
+允许的 GT 来源：
+
+```text
+1. 仿真器 privileged state / metadata / physics query / rendered sensor pose；
+2. 已有 benchmark 的官方 label、QA、split、metadata；
+3. 真实图片自带的人工标注、设备元数据或后续 Stage3 小模型/几何工具生成的半监督标注。
+```
+
+真实图片分支在 Stage2 只能写“期望标注字段/目标标注任务”，不能伪造标签。
+
+---
+
+## 5. 子 Skill 列表
+
+每个手绘图编号节点都有自己的 Skill：
+
+```text
+skills/13-stage1-execution-plan-ingest/SKILL.md
+skills/14-simulator-skill-registry/SKILL.md
+skills/15-real-image-acquisition/SKILL.md
+skills/16-existing-benchmark-acquisition/SKILL.md
+skills/17-simulator-multimodal-gt-acquisition/SKILL.md
+```
+
+---
+
+## 6. 强制检查
+
+在开始前：
+
+```bash
+python scripts/validate_dag.py dag.json
+```
+
+在每个节点完成后：
+
+```bash
+python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
+```
+
+在 Stage2 结束后：
+
+```bash
+python scripts/check_stage2_outputs.py --workspace WORKSPACE_ROOT
+```
+
+如果 `validate_dag.py` 报告该图是 serial chain，本 Skill 不能继续执行。

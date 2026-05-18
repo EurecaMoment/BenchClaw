@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from PIL import Image
@@ -6,10 +5,10 @@ import habitat_sim
 
 
 SCENE = "/home/maqiang/simulators/habitat/data/scene_datasets/habitat-test-scenes/skokloster-castle.glb"
-OUT = "/home/maqiang/benchclaw/simulator_cards/HABITAT/output/first_rgb.png"
+OUT = Path(__file__).resolve().parent / "output" / "first_rgb.png"
 
 
-Path(OUT).parent.mkdir(parents=True, exist_ok=True)
+OUT.parent.mkdir(parents=True, exist_ok=True)
 
 sim_cfg = habitat_sim.SimulatorConfiguration()
 sim_cfg.scene_id = SCENE

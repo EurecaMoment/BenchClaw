@@ -1,0 +1,1 @@
+{"sample_id":"real_000001","image_path":"images/real_000001.jpg","source":"user_provided","license":"unknown","capture_metadata":{},"target_dimensions":["D1"],"expected_annotation_fields":["object_detection","depth","spatial_relation_graph"],"gt_status":"not_available","provenance":{"raw_source_path":"","hash_sha256":""}}

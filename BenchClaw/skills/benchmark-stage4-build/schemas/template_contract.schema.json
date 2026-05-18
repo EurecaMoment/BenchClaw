@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "required": [
+    "template_id",
+    "capability_tags",
+    "required_evidence",
+    "question_family"
+  ],
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "capability_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "question_family": {
+      "type": "string"
+    },
+    "allowed_answer_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "default_metric_id": "single_choice_exact_match",
+  "programs": [
+    {
+      "answer_program_id": "egocentric_direction_v1",
+      "inputs": [
+        "agent_pose",
+        "object_pose"
+      ],
+      "output": "choice_label"
+    }
+  ]
+}

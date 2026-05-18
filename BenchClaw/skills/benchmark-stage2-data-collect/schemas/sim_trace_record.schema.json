@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Simulator trace manifest record",
+  "type": "object",
+  "required": [
+    "sample_id",
+    "simulator_id",
+    "episode_id",
+    "seed",
+    "modalities",
+    "observation_paths",
+    "target_dimensions",
+    "provenance_path"
+  ],
+  "properties": {
+    "sample_id": {
+      "type": "string"
+    },
+    "simulator_id": {
+      "type": "string"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "scene_id": {
+      "type": "string"
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "modalities": {
+      "type": "array"
+    },
+    "observation_paths": {
+      "type": "object"
+    },
+    "target_dimensions": {
+      "type": "array"
+    },
+    "task_context": {
+      "type": "object"
+    },
+    "provenance_path": {
+      "type": "string"
+    }
+  }
+}

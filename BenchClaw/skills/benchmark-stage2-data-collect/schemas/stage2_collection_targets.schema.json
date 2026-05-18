@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stage2 collection targets",
+  "type": "object",
+  "required": [
+    "target_dimensions",
+    "real_image_targets",
+    "existing_benchmark_targets",
+    "simulator_targets",
+    "required_modalities",
+    "required_gt_fields",
+    "quality_constraints"
+  ],
+  "properties": {
+    "target_dimensions": {
+      "type": "array"
+    },
+    "real_image_targets": {
+      "type": "array"
+    },
+    "existing_benchmark_targets": {
+      "type": "array"
+    },
+    "simulator_targets": {
+      "type": "array"
+    },
+    "required_modalities": {
+      "type": "array"
+    },
+    "required_gt_fields": {
+      "type": "array"
+    },
+    "quality_constraints": {
+      "type": "array"
+    }
+  }
+}

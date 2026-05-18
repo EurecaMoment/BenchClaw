@@ -1,4 +1,4 @@
----
+﻿---
 name: sam3-local
 description: "Use this skill when the user wants to run the local SAM3 annotation tool on images or videos, generate candidate masks, do text-grounded image segmentation, add box prompts, or use the full SAM3 video predictor API. Always reuse an already running local SAM3 service if available; otherwise start it locally through sam3_client.py."
 license: Proprietary. Local workspace tool.
@@ -25,8 +25,8 @@ Use this skill when the task needs any of the following:
 Always do this before sending inference requests:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py ensure-server
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py ensure-server
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py health
 ```
 
 Behavior:
@@ -44,7 +44,7 @@ The service can return structured results directly. Saving mask files is optiona
 Command:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py image-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py image-infer \
   --image-path /abs/path/to/image.png \
   --text-prompt "car"
 ```
@@ -52,7 +52,7 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py im
 Optional geometric prompts can be added repeatedly:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py image-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py image-infer \
   --image-path /abs/path/to/image.png \
   --text-prompt "car" \
   --box-prompt '{"box": [0.5, 0.5, 0.2, 0.1], "label": true}'
@@ -163,7 +163,7 @@ Example: call batch instance-interactive prediction without creating a persisten
 Command:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py image-request \
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py image-request \
   --request-file /abs/path/to/request.json
 ```
 
@@ -183,7 +183,7 @@ Example request file for starting a session:
 Call it with:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py video-request \
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py video-request \
   --request-file /abs/path/to/request.json \
   --version sam3.1
 ```
@@ -191,7 +191,7 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py vi
 For streaming requests such as propagation:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_client.py video-request \
+python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py video-request \
   --request-file /abs/path/to/request.json \
   --version sam3.1 \
   --stream
@@ -248,9 +248,9 @@ Typical video response data that can be returned directly includes:
 - host: `127.0.0.1`
 - port: `8765`
 - conda env: `sam3`
-- SAM3 repo: `/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3`
+- SAM3 repo: `BENCHCLAW_ROOT/../thirty_part/annotationTools/sam3`
 - default checkpoint: `/home/maqiang/model/sam3/sam3.pt`
-- service log: `/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/service.log`
+- service log: `BENCHCLAW_ROOT/annotation-tool/sam3/service.log`
 
 ## Important output policy
 

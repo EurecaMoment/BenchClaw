@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "record_id",
+    "gt_candidates",
+    "provenance"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string"
+    },
+    "gt_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "value",
+          "source_type",
+          "confidence",
+          "evidence"
+        ],
+        "properties": {
+          "candidate_id": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "value": {},
+          "source_type": {
+            "enum": [
+              "official_label",
+              "tool_generated_candidate",
+              "derived_geometry",
+              "human_verified"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "tool": {
+            "type": "string"
+          },
+          "tool_version": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tool_chain": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "tool",
+                "skill_path",
+                "output_path"
+              ],
+              "properties": {
+                "tool": {
+                  "type": "string"
+                },
+                "skill_path": {
+                  "type": "string"
+                },
+                "output_path": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "parent_candidate_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "artifact_paths": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "quality_checks": {
+            "type": "object"
+          },
+          "is_final_gt": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array"
+    },
+    "provenance": {
+      "type": "object"
+    }
+  }
+}

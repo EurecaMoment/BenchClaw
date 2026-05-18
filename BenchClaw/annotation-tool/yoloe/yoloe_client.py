@@ -12,13 +12,16 @@ HOST = os.environ.get("YOLOE_SERVICE_HOST", "127.0.0.1")
 PORT = int(os.environ.get("YOLOE_SERVICE_PORT", "8766"))
 BASE_URL = f"http://{HOST}:{PORT}"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(ROOT_DIR, "..", "..")))
+BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
+THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
 SERVICE_PATH = os.path.join(ROOT_DIR, "yoloe_service.py")
 SERVICE_LOG = os.path.join(ROOT_DIR, "service.log")
 CONDA_EXE = os.environ.get("CONDA_EXE", "/home/maqiang/miniconda3/bin/conda")
 CONDA_ENV = os.environ.get("YOLOE_CONDA_ENV", "yoloe")
 YOLOE_REPO = os.environ.get(
     "YOLOE_REPO",
-    "/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe",
+    os.path.join(THIRD_PARTY_ROOT, "annotationTools", "yoloe"),
 )
 YOLOE_CHECKPOINT = os.environ.get(
     "YOLOE_CHECKPOINT",
@@ -32,6 +35,21 @@ YOLOE_PF_CHECKPOINT = os.environ.get(
     "YOLOE_PF_CHECKPOINT",
     "/home/maqiang/model/yoloe_11_l/yoloe-11l-seg-pf.pt",
 )
+
+
+def resolve_local_path(path_value):
+    if not path_value:
+        return path_value
+    text = str(path_value).replace("\\", "/")
+    if text == "BENCHCLAW_ROOT":
+        return BENCHCLAW_ROOT
+    if text.startswith("BENCHCLAW_ROOT/"):
+        return os.path.abspath(os.path.join(BENCHCLAW_ROOT, text[len("BENCHCLAW_ROOT/") :]))
+    if text == "THIRD_PARTY_ROOT":
+        return THIRD_PARTY_ROOT
+    if text.startswith("THIRD_PARTY_ROOT/"):
+        return os.path.abspath(os.path.join(THIRD_PARTY_ROOT, text[len("THIRD_PARTY_ROOT/") :]))
+    return os.path.abspath(path_value)
 
 
 def _http_get(path):
@@ -114,14 +132,14 @@ def cmd_ensure_server(args):
 def cmd_text_infer(args):
     ensure_server(timeout_seconds=args.timeout)
     payload = {
-        "image_path": os.path.abspath(args.image_path),
+        "image_path": resolve_local_path(args.image_path),
         "checkpoint_path": args.checkpoint_path,
         "device": args.device,
         "imgsz": args.imgsz,
         "conf": args.conf,
         "iou": args.iou,
         "names": [item.strip() for item in args.names.split(",") if item.strip()],
-        "annotated_output_path": os.path.abspath(args.annotated_output_path) if args.annotated_output_path else None,
+        "annotated_output_path": resolve_local_path(args.annotated_output_path) if args.annotated_output_path else None,
     }
     print_json(_http_post("/text-infer", payload))
 
@@ -134,7 +152,7 @@ def cmd_prompt_free_infer(args):
     else:
         names = [item.strip() for item in args.names.split(",") if item.strip()]
     payload = {
-        "image_path": os.path.abspath(args.image_path),
+        "image_path": resolve_local_path(args.image_path),
         "checkpoint_path": args.checkpoint_path,
         "device": args.device,
         "imgsz": args.imgsz,
@@ -144,7 +162,7 @@ def cmd_prompt_free_infer(args):
         "pf_checkpoint_path": args.pf_checkpoint_path,
         "pf_head_conf": args.pf_head_conf,
         "max_det": args.max_det,
-        "annotated_output_path": os.path.abspath(args.annotated_output_path) if args.annotated_output_path else None,
+        "annotated_output_path": resolve_local_path(args.annotated_output_path) if args.annotated_output_path else None,
     }
     print_json(_http_post("/prompt-free-infer", payload))
 
@@ -179,11 +197,11 @@ def cmd_visual_infer(args):
     payload.setdefault("checkpoint_path", args.checkpoint_path)
     payload.setdefault("device", args.device)
     if payload.get("image_path"):
-        payload["image_path"] = os.path.abspath(payload["image_path"])
+        payload["image_path"] = resolve_local_path(payload["image_path"])
     if payload.get("target_image_path"):
-        payload["target_image_path"] = os.path.abspath(payload["target_image_path"])
+        payload["target_image_path"] = resolve_local_path(payload["target_image_path"])
     if payload.get("annotated_output_path"):
-        payload["annotated_output_path"] = os.path.abspath(payload["annotated_output_path"])
+        payload["annotated_output_path"] = resolve_local_path(payload["annotated_output_path"])
     print_json(_http_post("/visual-infer", payload))
 
 

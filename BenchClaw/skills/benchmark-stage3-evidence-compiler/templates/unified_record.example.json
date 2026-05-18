@@ -1,0 +1,20 @@
+{
+  "record_id": "example_real_000001",
+  "source_branch": "real_image",
+  "modalities": [
+    "image"
+  ],
+  "assets": {
+    "image_path": "images/example.jpg"
+  },
+  "official_labels": {},
+  "simulator_gt": null,
+  "provenance": {
+    "stage2_node": "15",
+    "source_path": "..."
+  },
+  "license": {
+    "status": "unknown"
+  },
+  "quality_flags": []
+}

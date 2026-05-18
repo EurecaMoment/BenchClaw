@@ -24,7 +24,7 @@ Use this rule for all package checks, CLI invocation, and smoke runs. Do not ass
 ## Repository And Runtime
 
 - Data-Juicer repo: `/home/maqiang/data-juicer`
-- Skill directory: `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card`
+- Skill directory: `BENCHCLAW_ROOT/data-juicer_card`
 - Standard conda env: `data_juicer`
 
 If `dj-process` is unavailable inside `data_juicer`, bootstrap it with:
@@ -187,21 +187,21 @@ This directory is expected to contain an executable local example so the skill c
 
 Example input:
 
-- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_input.jsonl`
+- `BENCHCLAW_ROOT/data-juicer_card/examples/minimal_input.jsonl`
 
 Example config:
 
-- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_process.yaml`
+- `BENCHCLAW_ROOT/data-juicer_card/examples/minimal_process.yaml`
 
 Expected run command:
 
 ```bash
-conda run -n data_juicer dj-process --config /home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/minimal_process.yaml
+conda run -n data_juicer dj-process --config BENCHCLAW_ROOT/data-juicer_card/examples/minimal_process.yaml
 ```
 
 Expected output path:
 
-- `/home/maqiang/BenchClaw/BenchClaw/data-juicer_card/examples/output/minimal_cleaned.jsonl`
+- `BENCHCLAW_ROOT/data-juicer_card/examples/output/minimal_cleaned.jsonl`
 
 ## Example Validation Standard
 

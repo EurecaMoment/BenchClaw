@@ -1,4 +1,4 @@
----
+﻿---
 name: yoloe-local
 description: "Use this skill when the user wants to run the local YOLOE annotation tool with the provided yoloe-11l-seg checkpoint for open-vocabulary detection or segmentation, including text-prompt inference, visual-prompt inference, or prompt-free inference. Always reuse an already running local YOLOE service if available; otherwise start it locally through yoloe_client.py."
 license: Proprietary. Local workspace tool.
@@ -10,7 +10,7 @@ This folder exposes the local YOLOE deployment as a reusable localhost service s
 
 The deployment is backed by:
 
-- repo: `/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe`
+- repo: `BENCHCLAW_ROOT/../thirty_part/annotationTools/yoloe`
 - conda env: `yoloe`
 - checkpoint: `/home/maqiang/model/yoloe_11_l/yoloe-11l-seg.pt`
 - text encoder weights: `/home/maqiang/model/yoloe_11_l/mobileclip_blt.pt`
@@ -39,8 +39,8 @@ Use this skill when the task needs any of the following:
 Always do this before inference requests:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py ensure-server
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py ensure-server
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py health
 ```
 
 Behavior:
@@ -61,7 +61,7 @@ That means the service currently auto-falls back to CPU unless the environment o
 ### 1. Health check
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py health
 ```
 
 Returns direct service metadata such as:
@@ -80,7 +80,7 @@ Returns direct service metadata such as:
 Use this for open-vocabulary segmentation/detection with explicit class names.
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py text-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py text-infer \
   --image-path /abs/path/to/image.jpg \
   --names "person,bus"
 ```
@@ -125,7 +125,7 @@ Important requirement:
 If the dedicated prompt-free checkpoint is missing, the service returns a clear error instead of pretending the mode is available.
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py prompt-free-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py prompt-free-infer \
   --image-path /abs/path/to/image.jpg \
   --names "person,bus,car" \
   --pf-checkpoint-path /abs/path/to/yoloe-11l-seg-pf.pt
@@ -134,7 +134,7 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py 
 Or provide a class list file:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py prompt-free-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py prompt-free-infer \
   --image-path /abs/path/to/image.jpg \
   --names-file /abs/path/to/names.txt
 ```
@@ -159,14 +159,14 @@ This mode is more naturally expressed as a JSON request file because the prompt 
 Command:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py visual-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py visual-infer \
   --request-file /abs/path/to/request.json
 ```
 
 There is also a direct CLI form for common box-prompt cases:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_client.py visual-infer \
+python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py visual-infer \
   --image-path /abs/path/to/image.jpg \
   --prompt-type bboxes \
   --bbox 22,230,805,735 \
@@ -236,10 +236,10 @@ Use this only when the task explicitly needs a file artifact. Otherwise consume 
 - host: `127.0.0.1`
 - port: `8766`
 - conda env: `yoloe`
-- repo: `/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe`
+- repo: `BENCHCLAW_ROOT/../thirty_part/annotationTools/yoloe`
 - checkpoint: `/home/maqiang/model/yoloe_11_l/yoloe-11l-seg.pt`
 - mobileclip path: `/home/maqiang/model/yoloe_11_l/mobileclip_blt.pt`
-- service log: `/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/service.log`
+- service log: `BENCHCLAW_ROOT/annotation-tool/yoloe/service.log`
 
 ## Practical guidance
 

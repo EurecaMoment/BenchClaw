@@ -1,0 +1,49 @@
+{
+  "stage": "stage5",
+  "name": "BenchClaw Stage5 Evaluation and Report",
+  "external_inputs": {
+    "37": "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack"
+  },
+  "nodes": [
+    {
+      "id": "38",
+      "skill": "skills/38-evaluation-run/SKILL.md",
+      "name": "evaluation-run",
+      "parents": [],
+      "external_parents": [
+        "37"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage5/38-evaluation-run"
+      ]
+    },
+    {
+      "id": "39",
+      "skill": "skills/39-evaluation-report/SKILL.md",
+      "name": "evaluation-report",
+      "parents": [
+        "38"
+      ],
+      "external_parents": [],
+      "outputs": [
+        "WORKSPACE_ROOT/stage5/39-evaluation-report"
+      ]
+    }
+  ],
+  "terminal_nodes": [
+    "39"
+  ],
+  "levels": [
+    [
+      "38"
+    ],
+    [
+      "39"
+    ]
+  ],
+  "strict_constraints": [
+    "39 depends only on 38",
+    "39 must not read Stage4 node 37 directly",
+    "Stage5 contains no small-batch synthesis and no gray test node"
+  ]
+}

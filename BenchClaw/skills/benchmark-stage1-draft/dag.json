@@ -1,0 +1,228 @@
+{
+  "name": "benchclaw-stage1-dag",
+  "kind": "skill-dag",
+  "version": "2.1.0",
+  "principle": "Non-serial DAG scheduled by ready set. Nodes 05 and 06 are external capability-document inputs. Node 13 depends only on node 12.",
+  "nodes": [
+    {
+      "id": "00",
+      "name": "idea-intake",
+      "parents": [],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/00_idea/idea_card.md",
+        "WORKSPACE_ROOT/stage1/00_idea/scope_seed.json"
+      ],
+      "purpose": "Freeze the user's benchmark idea and boundary assumptions as the Stage1 input baseline."
+    },
+    {
+      "id": "01",
+      "name": "intent-understanding",
+      "parents": [
+        "00"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/01_intent/intent_interpretation.md",
+        "WORKSPACE_ROOT/stage1/01_intent/ambiguity_log.md"
+      ],
+      "purpose": "Extract evaluation targets, capability intent, boundaries, exclusions, and ambiguity from the idea."
+    },
+    {
+      "id": "02",
+      "name": "query-rewrite",
+      "parents": [
+        "01"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/02_query/query_pack.json",
+        "WORKSPACE_ROOT/stage1/02_query/search_strategy.md"
+      ],
+      "purpose": "Rewrite the interpreted intent into search queries and literature-discovery strategy."
+    },
+    {
+      "id": "03",
+      "name": "intent-expansion-doc",
+      "parents": [
+        "01"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/03_intent_doc/expanded_intent.md",
+        "WORKSPACE_ROOT/stage1/03_intent_doc/construct_hypotheses.md"
+      ],
+      "purpose": "Expand the intent into a structured design document for later capability and template work."
+    },
+    {
+      "id": "04",
+      "name": "useful-literature-search",
+      "parents": [
+        "02"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/04_literature_search/candidate_papers.jsonl",
+        "WORKSPACE_ROOT/stage1/04_literature_search/search_log.md"
+      ],
+      "purpose": "Search and screen useful literature candidates without turning them into final claims yet."
+    },
+    {
+      "id": "05",
+      "name": "data-simulator-capability-description",
+      "parents": [],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/05_data_capability/simulator_capability_matrix.md",
+        "WORKSPACE_ROOT/stage1/05_data_capability/observable_gt_fields.json"
+      ],
+      "purpose": "Read data and simulator capability cards to summarize available sources, GT fields, and constraints."
+    },
+    {
+      "id": "06",
+      "name": "annotation-capability-description",
+      "parents": [],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/06_annotation_capability/annotation_capability_matrix.md",
+        "WORKSPACE_ROOT/stage1/06_annotation_capability/tool_io_contracts.md"
+      ],
+      "purpose": "Read annotation-tool capability cards and summarize I/O, confidence, limitations, and call constraints."
+    },
+    {
+      "id": "07",
+      "name": "literature-analysis-report",
+      "parents": [
+        "03",
+        "04"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/07_literature_analysis/literature_analysis_report.md",
+        "WORKSPACE_ROOT/stage1/07_literature_analysis/benchmark_design_evidence.md"
+      ],
+      "purpose": "Turn candidate literature into benchmark-design evidence for capability decomposition and template design."
+    },
+    {
+      "id": "08",
+      "name": "capability-decomposition-doc",
+      "parents": [
+        "03",
+        "05",
+        "06",
+        "07"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/08_capability_decomposition/capability_dimensions.md",
+        "WORKSPACE_ROOT/stage1/08_capability_decomposition/capability_checkpoints.yaml",
+        "WORKSPACE_ROOT/stage1/08_capability_decomposition/capability_dependency_graph.json"
+      ],
+      "purpose": "Combine intent, literature, simulator/data capability, and annotation capability into measurable capability dimensions."
+    },
+    {
+      "id": "09",
+      "name": "initial-template-metric-set",
+      "parents": [
+        "08",
+        "07"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/09_templates_metrics/template_set.yaml",
+        "WORKSPACE_ROOT/stage1/09_templates_metrics/metric_set.yaml",
+        "WORKSPACE_ROOT/stage1/09_templates_metrics/evidence_contracts.yaml",
+        "WORKSPACE_ROOT/stage1/09_templates_metrics/q_matrix.csv"
+      ],
+      "purpose": "Derive initial templates, evidence contracts, metrics, and template-to-capability mapping."
+    },
+    {
+      "id": "10",
+      "name": "simulator-selection",
+      "parents": [
+        "08",
+        "05"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/10_simulator_selection/selected_simulators.md",
+        "WORKSPACE_ROOT/stage1/10_simulator_selection/simulator_routing.json"
+      ],
+      "purpose": "Select executable simulators based on capability dimensions and simulator support."
+    },
+    {
+      "id": "11",
+      "name": "annotation-tool-selection",
+      "parents": [
+        "08",
+        "06"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/11_annotation_tool_selection/selected_annotation_tools.md",
+        "WORKSPACE_ROOT/stage1/11_annotation_tool_selection/tool_routing.json"
+      ],
+      "purpose": "Select automatic or semi-automatic annotation tools based on capability needs and tool constraints."
+    },
+    {
+      "id": "12",
+      "name": "benchmark-draft",
+      "parents": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/12_benchmark_draft/benchmark_draft.md",
+        "WORKSPACE_ROOT/stage1/12_benchmark_draft/design_traceability_table.csv"
+      ],
+      "purpose": "Merge nodes 00 through 11 into the benchmark design draft."
+    },
+    {
+      "id": "13",
+      "name": "execution-plan",
+      "parents": [
+        "12"
+      ],
+      "outputs": [
+        "WORKSPACE_ROOT/stage1/13_execution_plan/execution_plan.md",
+        "WORKSPACE_ROOT/stage1/13_execution_plan/stage2_handoff.yaml"
+      ],
+      "purpose": "Generate the executable Stage2 to Stage4 handoff plan from the benchmark draft."
+    }
+  ],
+  "parallel_layers": [
+    [
+      "00",
+      "05",
+      "06"
+    ],
+    [
+      "01"
+    ],
+    [
+      "02",
+      "03"
+    ],
+    [
+      "04"
+    ],
+    [
+      "07"
+    ],
+    [
+      "08"
+    ],
+    [
+      "09",
+      "10",
+      "11"
+    ],
+    [
+      "12"
+    ],
+    [
+      "13"
+    ]
+  ],
+  "terminal_nodes": [
+    "13"
+  ]
+}

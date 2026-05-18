@@ -1,0 +1,1 @@
+{"sample_id":"sim_000001","simulator_id":"carla","episode_id":"episode_000001","scene_id":"","seed":0,"modalities":["rgb","depth","pose"],"observation_paths":{"rgb":"observations/carla/episode_000001/rgb"},"target_dimensions":["D1"],"task_context":{},"provenance_path":"provenance/sim_000001.json"}

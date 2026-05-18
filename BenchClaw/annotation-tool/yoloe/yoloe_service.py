@@ -9,9 +9,13 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
+SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
+BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", "..")))
+BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
+THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
 YOLOE_REPO = os.environ.get(
     "YOLOE_REPO",
-    "/home/maqiang/BenchClaw/thirty_part/annotationTools/yoloe",
+    os.path.join(THIRD_PARTY_ROOT, "annotationTools", "yoloe"),
 )
 DEFAULT_CHECKPOINT = os.environ.get(
     "YOLOE_CHECKPOINT",

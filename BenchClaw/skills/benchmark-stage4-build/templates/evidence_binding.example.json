@@ -1,0 +1,10 @@
+{
+  "binding_id": "bind_000001",
+  "template_id": "spatial_relation_mcq_v1",
+  "source_record_id": "sim_000001",
+  "satisfied_evidence": {
+    "agent_pose": "ok",
+    "object_pose": "ok",
+    "object_mask_or_bbox": "ok"
+  }
+}

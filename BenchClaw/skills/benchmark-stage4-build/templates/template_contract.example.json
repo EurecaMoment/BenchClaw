@@ -1,0 +1,15 @@
+{
+  "template_id": "spatial_relation_mcq_v1",
+  "question_family": "spatial_relation",
+  "capability_tags": [
+    "egocentric_spatial_reasoning"
+  ],
+  "required_evidence": [
+    "agent_pose",
+    "object_pose",
+    "object_mask_or_bbox"
+  ],
+  "allowed_answer_types": [
+    "single_choice"
+  ]
+}

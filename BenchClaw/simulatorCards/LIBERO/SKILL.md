@@ -2,8 +2,9 @@
 
 ## Core Path
 
+- BenchClaw root: resolve `BENCHCLAW_ROOT` as the BenchClaw directory that contains `skills/` and `simulatorCards/`.
 - Simulator root: `/home/maqiang/simulators/LIBERO`
-- Skill directory: `/home/maqiang/benchclaw/simulator_cards/LIBERO`
+- Skill directory: `BENCHCLAW_ROOT/simulatorCards/LIBERO`
 - Conda environment: `libero`
 
 ## Goal
@@ -32,7 +33,7 @@ export PYOPENGL_PLATFORM=egl
 Run:
 
 ```bash
-python /home/maqiang/benchclaw/simulator_cards/LIBERO/test_connect.py
+python BENCHCLAW_ROOT/simulatorCards/LIBERO/test_connect.py
 ```
 
 Validated outputs include:
@@ -96,8 +97,8 @@ Validated live observation keys include:
 Run:
 
 ```bash
-python /home/maqiang/benchclaw/simulator_cards/LIBERO/extract_hdf5_dataset.py \
-  --output-dir /home/maqiang/benchclaw/simulator_cards/LIBERO/output_hdf5_demo \
+python BENCHCLAW_ROOT/simulatorCards/LIBERO/extract_hdf5_dataset.py \
+  --output-dir BENCHCLAW_ROOT/simulatorCards/LIBERO/output_hdf5_demo \
   --max-demos 2 \
   --max-frames 16
 ```
@@ -134,9 +135,9 @@ Each `gt.json` contains:
 Run:
 
 ```bash
-python /home/maqiang/benchclaw/simulator_cards/LIBERO/collect_env_dataset.py \
+python BENCHCLAW_ROOT/simulatorCards/LIBERO/collect_env_dataset.py \
   --suite libero_10 \
-  --output-dir /home/maqiang/benchclaw/simulator_cards/LIBERO/output_env_dataset \
+  --output-dir BENCHCLAW_ROOT/simulatorCards/LIBERO/output_env_dataset \
   --max-tasks 3 \
   --steps-per-task 8 \
   --image-size 128 \
@@ -204,5 +205,5 @@ The workflow is considered successful if all of the following hold:
 2. The execution source of truth is this file:
 
 ```text
-/home/maqiang/benchclaw/simulator_cards/LIBERO/SKILL.md
+BENCHCLAW_ROOT/simulatorCards/LIBERO/SKILL.md
 ```

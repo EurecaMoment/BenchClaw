@@ -1,0 +1,45 @@
+{
+  "tools": [
+    {
+      "tool_name": "YOLOE",
+      "tool_id": "yoloe",
+      "skill_path": "BENCHCLAW_ROOT/annotation-tool/yoloe/SKILL.md",
+      "capabilities": [
+        "open-vocabulary detection",
+        "boxes",
+        "class scores"
+      ],
+      "trust_level": "candidate_only"
+    },
+    {
+      "tool_name": "SAM3",
+      "tool_id": "sam3",
+      "skill_path": "BENCHCLAW_ROOT/annotation-tool/sam3/SKILL.md",
+      "capabilities": [
+        "instance/semantic mask candidate from box or point prompt"
+      ],
+      "trust_level": "candidate_only"
+    },
+    {
+      "tool_name": "Depth Anything 3",
+      "tool_id": "depthanything3",
+      "skill_path": "BENCHCLAW_ROOT/annotation-tool/depthanything3/SKILL.md",
+      "capabilities": [
+        "relative depth map",
+        "depth ordering candidate"
+      ],
+      "trust_level": "candidate_only"
+    },
+    {
+      "tool_name": "small VLM/LLM router",
+      "tool_id": "llm-local",
+      "skill_path": "BENCHCLAW_ROOT/annotation-tool/llm-local/SKILL.md",
+      "capabilities": [
+        "tool routing",
+        "candidate caption",
+        "failure explanation"
+      ],
+      "trust_level": "candidate_only"
+    }
+  ]
+}

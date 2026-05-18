@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "required": [
+    "node_id",
+    "used_inputs"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string"
+    },
+    "used_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

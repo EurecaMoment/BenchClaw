@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "required": [
+    "item_id",
+    "question",
+    "metric_id",
+    "source_trace"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array"
+    },
+    "answer": {},
+    "answer_program_id": {
+      "type": "string"
+    },
+    "metric_id": {
+      "type": "string"
+    },
+    "capability_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_trace": {
+      "type": "object"
+    },
+    "seed": {
+      "type": "integer"
+    }
+  }
+}

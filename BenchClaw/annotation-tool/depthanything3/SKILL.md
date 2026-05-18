@@ -1,4 +1,4 @@
----
+﻿---
 name: depthanything3-local
 description: "Use this skill when the user wants local Depth Anything 3 inference on images, image folders, videos, or COLMAP-style inputs; needs depth maps, camera pose estimation, GLB scene export, feature visualization export, backend task submission, backend status inspection, or a localhost Depth Anything 3 service on port 8008 backed by the local DA3NESTED-GIANT-LARGE-1.1 model. Always reuse an already running local backend if available; otherwise start it through depthanything3_client.py."
 license: Proprietary. Local workspace tool.
@@ -12,7 +12,7 @@ The deployment is backed by:
 
 - model: `/home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1`
 - conda env: `depthanythingv3`
-- project repo: `/home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3`
+- project repo: `BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3`
 - backend URL: `http://127.0.0.1:8008`
 
 The goal is to preserve as much of DA3's checked-in capability surface as the local code reliably exposes.
@@ -37,8 +37,8 @@ Use this skill when the task needs any of the following:
 Always do this before inference or backend inspection:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py ensure-server
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py status
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py ensure-server
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py status
 ```
 
 Behavior:
@@ -92,19 +92,19 @@ That means both the backend submission path and the `auto` wrapper can preserve 
 Health:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py health
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py health
 ```
 
 Detailed backend status:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py status
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py status
 ```
 
 GPU memory:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py gpu-memory
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py gpu-memory
 ```
 
 Directly available status data typically includes:
@@ -126,7 +126,7 @@ Directly available status data typically includes:
 Use this when you already have the exact image paths and want explicit queued backend execution.
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py submit \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py submit \
   --image-path /abs/path/to/000.png \
   --image-path /abs/path/to/001.png \
   --export-dir /abs/path/to/output \
@@ -159,20 +159,20 @@ Direct submission returns structured JSON including:
 List tasks:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py tasks
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py tasks
 ```
 
 Inspect one task:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py task \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py task \
   --task-id <task-id>
 ```
 
 Wait until completion:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py wait-task \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py wait-task \
   --task-id <task-id>
 ```
 
@@ -195,7 +195,7 @@ Typical task fields available directly:
 Use this when the task wants DA3's own input-type detection and preprocessing logic.
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py auto \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py auto \
   --input-path /abs/path/to/input \
   --export-dir /abs/path/to/output \
   --export-format glb \
@@ -245,19 +245,19 @@ Typical exported files include:
 Reload model:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py reload
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py reload
 ```
 
 Cleanup task history:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py cleanup
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py cleanup
 ```
 
 Delete one completed task:
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py delete-task \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py delete-task \
   --task-id <task-id>
 ```
 
@@ -266,7 +266,7 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthan
 ### Pattern A: one-shot image folder inference
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py auto \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py auto \
   --input-path /abs/path/to/image_dir \
   --export-dir /abs/path/to/output \
   --export-format glb \
@@ -276,20 +276,20 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthan
 ### Pattern B: asynchronous backend task workflow
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py submit \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py submit \
   --image-path /abs/path/to/000.png \
   --image-path /abs/path/to/001.png \
   --export-dir /abs/path/to/output \
   --export-format glb
 
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py wait-task \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py wait-task \
   --task-id <task-id>
 ```
 
 ### Pattern C: feature visualization export
 
 ```bash
-python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthanything3_client.py auto \
+python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py auto \
   --input-path /abs/path/to/video.mp4 \
   --export-dir /abs/path/to/output \
   --export-format glb-feat_vis \
@@ -304,9 +304,9 @@ python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/depthan
 - port: `8008`
 - conda env: `depthanythingv3`
 - model dir: `/home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1`
-- project repo: `/home/maqiang/BenchClaw/thirty_part/annotationTools/Depth-Anything-3`
-- service log: `/home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/service.log`
-- launcher helper: `/home/maqiang/BenchClaw/BenchClaw/annotation-tool/depthanything3/start_backend.sh`
+- project repo: `BENCHCLAW_ROOT/../thirty_part/annotationTools/Depth-Anything-3`
+- service log: `BENCHCLAW_ROOT/annotation-tool/depthanything3/service.log`
+- launcher helper: `BENCHCLAW_ROOT/annotation-tool/depthanything3/start_backend.sh`
 
 ## Files in this skill
 

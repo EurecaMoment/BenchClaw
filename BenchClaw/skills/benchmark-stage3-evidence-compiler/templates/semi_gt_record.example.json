@@ -1,0 +1,80 @@
+{
+  "record_id": "example_real_000001",
+  "gt_candidates": [
+    {
+      "candidate_id": "example_real_000001_obj_0001",
+      "field": "object_instances_with_depth",
+      "value": {
+        "semantic_label": "chair",
+        "bbox_xyxy": [124, 88, 302, 410],
+        "class_score": 0.87,
+        "mask_path": "annotations/sam3/example_real_000001_obj_0001_mask.json",
+        "mask_score": 0.82,
+        "mask_area_px": 18342,
+        "relative_depth_map_path": "annotations/depthanything3/example_real_000001_depth.png",
+        "depth_stats": {
+          "mean_depth": 0.43,
+          "median_depth": 0.41,
+          "min_depth": 0.18,
+          "max_depth": 0.76,
+          "depth_order_hint": "nearer_than_background"
+        }
+      },
+      "source_type": "tool_generated_candidate",
+      "confidence": 0.78,
+      "tool": "YOLOE+SAM3+DepthAnything3",
+      "tool_version": "unknown",
+      "evidence": [
+        "image_path",
+        "annotations/yoloe/example_real_000001.json",
+        "annotations/sam3/example_real_000001.json",
+        "annotations/depthanything3/example_real_000001.json",
+        "annotations/fused/example_real_000001.json"
+      ],
+      "tool_chain": [
+        {
+          "tool": "YOLOE",
+          "skill_path": "BENCHCLAW_ROOT/annotation-tool/yoloe/SKILL.md",
+          "role": "semantic_label_and_bbox_candidate",
+          "output_path": "annotations/yoloe/example_real_000001.json",
+          "status": "ok"
+        },
+        {
+          "tool": "SAM3",
+          "skill_path": "BENCHCLAW_ROOT/annotation-tool/sam3/SKILL.md",
+          "role": "mask_from_yoloe_bbox",
+          "output_path": "annotations/sam3/example_real_000001.json",
+          "status": "ok"
+        },
+        {
+          "tool": "Depth Anything 3",
+          "skill_path": "BENCHCLAW_ROOT/annotation-tool/depthanything3/SKILL.md",
+          "role": "relative_depth_and_mask_depth_stats",
+          "output_path": "annotations/depthanything3/example_real_000001.json",
+          "status": "ok"
+        }
+      ],
+      "artifact_paths": {
+        "yoloe_boxes": "annotations/yoloe/example_real_000001.json",
+        "sam3_masks": "annotations/sam3/example_real_000001.json",
+        "depthanything3_depth": "annotations/depthanything3/example_real_000001_depth.png",
+        "fused_candidate": "annotations/fused/example_real_000001.json"
+      },
+      "quality_checks": {
+        "box_mask_iou": 0.91,
+        "mask_depth_coverage": 0.96,
+        "conflict_with_official_label": false
+      },
+      "parent_candidate_ids": [
+        "example_real_000001_yoloe_box_0001",
+        "example_real_000001_sam3_mask_0001",
+        "example_real_000001_depthanything3_depth_0001"
+      ],
+      "is_final_gt": false
+    }
+  ],
+  "conflicts": [],
+  "provenance": {
+    "created_by_node": "18"
+  }
+}
