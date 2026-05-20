@@ -1,5 +1,7 @@
 # 39-evaluation-report
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## Role
 Generate the final Stage5 evaluation report from node 38 outputs.
 

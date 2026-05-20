@@ -1,6 +1,6 @@
 ﻿---
 name: sam3-local
-description: "Use this skill when the user wants to run the local SAM3 annotation tool on images or videos, generate candidate masks, do text-grounded image segmentation, add box prompts, or use the full SAM3 video predictor API. Always reuse an already running local SAM3 service if available; otherwise start it locally through sam3_client.py."
+description: "Use this skill when the user wants to run the local SAM3 annotation tool on images or videos, generate candidate masks, do text-grounded image segmentation, add box prompts, or use the full SAM3 video predictor API. Always attach to an already running local SAM3 service when available; Stage3 normal workflow must not start a new service instance."
 license: Proprietary. Local workspace tool.
 ---
 
@@ -20,20 +20,19 @@ Use this skill when the task needs any of the following:
 - local SAM3 video tracking sessions
 - direct access to the SAM3 predictor `handle_request` or `handle_stream_request` APIs
 
-## First step: ensure the local service exists
+## First step: verify the local service
 
 Always do this before sending inference requests:
 
 ```bash
-python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py ensure-server
 python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_client.py health
 ```
 
 Behavior:
 
-- if a SAM3 service is already running on `127.0.0.1:8765`, reuse it
-- otherwise start a new background service in conda env `sam3`
-- the service stays local and listens only on localhost
+- attach to the already-running SAM3 service on `127.0.0.1:8765`
+- if the service is unavailable, fail fast and report the endpoint problem to the caller
+- Stage3 normal workflow must not start a new background service from this skill
 
 ## Capabilities
 

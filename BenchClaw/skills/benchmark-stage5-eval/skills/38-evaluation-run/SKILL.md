@@ -1,5 +1,7 @@
 # 38-evaluation-run
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## Role
 Execute model evaluation on the final Stage4 benchmark package and produce machine-readable evaluation results.
 
@@ -19,9 +21,10 @@ WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/
 Expected artifacts:
 
 ```text
-EVALSET_DATASET/eval_dataset.jsonl
-EVALSET_DATASET/metric_registry.json
-EVALSET_DATASET/answer_programs.py
+EVALSET_DATASET/README.md
+EVALSET_DATASET/data/test.jsonl
+EVALSET_DATASET/images/
+EVALSET_DATASET/metrics/evaluate.py
 model_roster.yaml or equivalent model list
 FINAL_BENCHMARK_CARD.md
 DONE.json
@@ -55,6 +58,17 @@ DONE.json
 6. Emit failure cases, grouped by model and capability dimension.
 7. Package all report-facing metadata into `report_payload.json` so node 39 does not need to read Stage4 directly.
 8. Write `DONE.json` only after all required outputs exist.
+
+When Stage5 performs real model calls itself, it must use `BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py` and the fixed candidate roster in `BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml`.
+
+## Additional Hard Constraints
+
+- Do not simulate predictions, scores, missing cases, leaderboard values, or failure patterns.
+- Do not derive predictions from `item_id`, hashes, templates, expected difficulty, or any handcrafted heuristic.
+- If no real model API output or no already materialized prediction file is available, this node must fail/block and must not emit a completion marker.
+- If the Stage4 artifact pack is not self-contained enough to resolve media and metric inputs inside the workspace, this node must fail/block rather than guessing or rewriting the benchmark.
+- For image-based eval items, node 38 must send real multimodal requests to `https://yeysai.com/v1/chat/completions` using the required model roster from `modelNeedMeasured`; it must not degrade such items to text-only unless the item truly has no image/media refs.
+- Node 38 must evaluate all required candidate models: `qwen3-vl-235b-a22b-instruct`, `kimi-k2.5`, `llama-4-maverick-17b-128e-instruct`, `grok-4-fast`, `gpt-5.4-mini-2026-03-17`, `glm-4.5v`, `gemini-3-flash-preview`, `claude-haiku-4-5-20251001-thinking`, `claude-sonnet-4-5-20250929`.
 
 ## Reproducibility Requirements
 

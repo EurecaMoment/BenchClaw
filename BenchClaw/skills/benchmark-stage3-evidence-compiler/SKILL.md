@@ -1,5 +1,16 @@
 # BenchClaw Stage3 Skill — 数据清洗、统一格式与半监督 GT 标注（Opencode-ready DAG 版）
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
+## 路径入口校验
+
+开始执行前必须先确认：
+
+- 本次收到的 `BENCHCLAW_ROOT` 与 `WORKSPACE_ROOT` 与上游 pipeline 冻结值完全一致，不得在 Stage3 内重新猜测或重写。
+- `BENCHCLAW_ROOT` 必须仍然解析为当前 BenchClaw 项目根目录。
+- `WORKSPACE_ROOT` 必须是独立于 `BENCHCLAW_ROOT` 的外部工作目录，不能落在 `BENCHCLAW_ROOT` 内，不能等于 `BENCHCLAW_ROOT`，不能使用 `BENCHCLAW_ROOT/workspace*` 这类错误路径。
+- 若路径校验失败，Stage3 必须立即阻塞并报错，不能继续读取 Stage2 或写任何 Stage3 输出。
+
 ## 0. 任务边界
 
 本 Skill 对应手绘图中的 **Stage3**。它接收 Stage2 的三个终端输出：
@@ -13,6 +24,8 @@ Stage3 的目标不是制造最终评测集，而是把三类原始数据变成 
 - `18`：真实图片 + 半监督 GT；
 - `19`：已有 benchmark 图 + 官方标签/QA + 半监督 GT；
 - `20`：仿真器多模态数据 + 清洗后的 privileged GT。
+
+这些“高可信数据资产”必须是 **真实落盘并可被后续节点直接消费的清洗结果、标注文件、融合记录和证据文件**，而不是只含有 `pending`、`candidate only`、说明文字或空目录的结构壳子。
 
 严禁把本阶段写成 `15→16→17→18→19→20` 串行链。编号是节点 ID，不是执行顺序。
 
@@ -139,10 +152,38 @@ WORKSPACE_ROOT/config/stage3_input_paths.json
 
 ```text
 WORKSPACE_ROOT/stage3/
+  realdata/
+    <real_scene_or_source>/
+      original/
+      semantic_entity_segmentation/
+      depth/
+      gt/
+  benchmarkdataset/
+    <dataset_name>/
+      <existing_dataset_split_or_category>/
+        original/
+        semantic_entity_segmentation/
+        depth/
+        gt/
+  simulator/
+    <simulator_id>/
+      <scene_or_map_id>/
+        original/
+        semantic_entity_segmentation/
+        depth/
+        gt/
   18-real-image-semi-supervised-gt/
   19-benchmark-image-semi-supervised-gt/
   20-simulator-clean-gt-pack/
 ```
+
+其中三类图像的语义必须统一为：
+
+1. `original/`: 原图或原始视觉观测；
+2. `semantic_entity_segmentation/`: 语义实体分割图。对 realdata 与 benchmarkdataset 分支，它应来自 `YOLOE + LLM -> SAM3` 链路的实体分割结果渲染；对 simulator 分支，它应来自仿真器原生 semantic/instance render 或与 privileged GT 对齐后的等价语义实体分割图；
+3. `depth/`: 深度图。对 realdata 与 benchmarkdataset 分支，它应来自 Depth Anything 3；对 simulator 分支，它应来自仿真器深度观测或等价 depth render。
+
+所有保留样本都必须把这三类图像与对应 GT 一并落盘到 `WORKSPACE_ROOT/stage3` 下的上述目录树中。不得只保存 JSON、统计表、缩略图、抽样帧、样例图片或“可按需重新生成”的说明。
 
 最终完成条件：
 
@@ -158,6 +199,10 @@ python scripts/check_stage3_outputs.py --workspace WORKSPACE_ROOT
 2. 真实图与旧 benchmark 图像分支中的 YOLOE、SAM3、Depth Anything 3 等输出是 **半监督 GT 候选**，必须记录工具、版本、参数、置信度、失败原因和证据路径。
 3. LLM 或 VLM 只能用于路由、字段建议、弱标签解释或冲突报告，不能把纯文本判断写成最终 GT。
 4. 所有 GT 字段必须有 `source_type`：`official_label`、`simulator_privileged_gt`、`tool_generated_candidate`、`human_verified`、`derived_geometry` 之一。
+5. `tool_generated_candidate` 只表示来源类型，不表示可以不实跑。若某条记录声称来自 YOLOE/SAM3/DA3，则对应逐样本工具输出文件必须真实存在并能被后续节点读取。
+6. 若工具执行失败、产物缺失或数量不足，节点必须阻塞并写失败/冲突报告，不得使用 `pending`、`to_be_generated`、空 annotation 目录、样例条目或说明文档冒充完成。
+7. 对 image-based 半监督 GT，18 与 19 必须执行同一条共享链路：`输入图像 -> YOLOE + LLM -> SAM3 -> Depth Anything 3 -> 融合`，最终产出带语义/深度信息的实体分割结果；27 只负责登记这条链路的工具契约，不代替逐图执行。
+8. 对 realdata、benchmarkdataset、simulator 三条 image-based 分支，保留下来的样本必须在 `WORKSPACE_ROOT/stage3` 下全量保存三类图像：原图、语义实体分割图、深度图。尤其 simulator 分支的图像型观测不得只保留抽样帧、摘要视频、统计结果或代表样例，必须对被保留样本全量落盘。
 
 ---
 

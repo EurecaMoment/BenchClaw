@@ -1,5 +1,7 @@
 # Node 17 — stage2-simulator-gt-source-ingest
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## Role
 
 Ingest Stage2 node-17 simulator multimodal observations and privileged GT as a read-only Stage3 source.

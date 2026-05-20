@@ -2,12 +2,38 @@ workspace: WORKSPACE_ROOT
 stage4_package: WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack
 stage5_output: WORKSPACE_ROOT/stage5/38-evaluation-run
 scoring_mode: auto
+model_roster: BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml
+api_client: BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py
 prediction_source:
   mode: materialized_predictions_or_model_calls
   predictions_dir: WORKSPACE_ROOT/stage5/predictions
 models:
-  - name: example_model
-    endpoint: null
+  - name: qwen3-vl-235b-a22b-instruct
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: kimi-k2.5
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: llama-4-maverick-17b-128e-instruct
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: grok-4-fast
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: gpt-5.4-mini-2026-03-17
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: glm-4.5v
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: gemini-3-flash-preview
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: claude-haiku-4-5-20251001-thinking
+    endpoint: https://yeysai.com/v1/chat/completions
+    prediction_file: null
+  - name: claude-sonnet-4-5-20250929
+    endpoint: https://yeysai.com/v1/chat/completions
     prediction_file: null
 metric_fields:
   sample_id_candidates: [sample_id, id, qid]

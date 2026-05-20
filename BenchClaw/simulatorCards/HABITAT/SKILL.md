@@ -6,18 +6,46 @@
 - Simulator root: `/home/maqiang/simulators/habitat`
 - Skill directory: `BENCHCLAW_ROOT/simulatorCards/HABITAT`
 - Environment activator: `/home/maqiang/simulators/habitat/scripts/env_habitat.sh`
+- Local service policy: attach to an already-running local Habitat service; do not start or restart Habitat from this skill during normal Stage2 collection.
 
 ## Goal
 
-This skill is the minimal validated workflow for using Habitat-Sim / Habitat-Lab on this machine without exposing the user to Habitat source code entrypoints.
+This skill is the minimal validated workflow for using Habitat-Sim / Habitat-Lab on this machine while reusing an already-running local Habitat service during normal Stage2 collection.
 
 If a model only reads this file and follows it exactly, it should be able to:
 
-1. Activate the correct conda environment.
-2. Verify installed Habitat versions.
-3. Render one RGB frame with Habitat-Sim.
-4. Run the official Habitat-Lab `examples/example.py` workflow.
-5. Collect large batches of scene images and GT using only scripts inside this skill directory.
+1. Connect to an already-running local Habitat service endpoint.
+2. Verify the service is healthy and reports the expected Habitat versions.
+3. Use the validated local scripts when manual adapter-level revalidation is needed.
+4. Collect large batches of scene images and GT using only scripts inside this skill directory.
+
+## Connection Policy
+
+Normal Stage2 collection must reuse an already-running local Habitat service.
+
+1. Default endpoint is `http://127.0.0.1:8401` unless the caller explicitly provides another local endpoint.
+2. This skill must not run `ensure_habitat_service.sh` or start `habitat_service.py` during normal Stage2 collection.
+3. If the target local endpoint is unhealthy, fail fast and report the endpoint problem to the caller instead of trying to restart the service.
+
+## Service Health Check
+
+Run against the target endpoint:
+
+```bash
+python - <<'PY'
+import json, urllib.request
+print(json.load(urllib.request.urlopen('http://127.0.0.1:8401/health', timeout=10)))
+PY
+```
+
+Healthy output must include at least:
+
+1. `host: 127.0.0.1`
+2. `port: 8401`
+3. `habitat-sim: 0.3.3`
+4. `habitat-lab: 0.3.3`
+
+If `/health` fails, treat the current endpoint as unhealthy and stop. Do not restart Habitat from this skill; hand the failure back to the caller.
 
 ## Verified Environment
 
@@ -51,9 +79,11 @@ This script already does the required setup:
 5. Sets `CUDA_VISIBLE_DEVICES` if not already set
 6. Extends `PYTHONPATH` for Habitat-Lab
 
+These environment-setup steps remain useful for manual adapter validation, but they are not a reason to relaunch the Habitat service during Stage2 normal workflow.
+
 ## Skill-Local Health Check
 
-Run from the skill directory:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run from the skill directory:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
@@ -67,7 +97,7 @@ Expected output contains:
 
 ## Skill-Local RGB Smoke Test
 
-Run:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
@@ -93,7 +123,7 @@ This warning did not block RGB rendering.
 
 ## Skill-Local Official Example Run
 
-Run:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run:
 
 ```bash
 source /home/maqiang/simulators/habitat/scripts/env_habitat.sh
@@ -217,7 +247,7 @@ These were observed during validation and can be tolerated if the run still reac
 3. `navmesh_instances ... not found`
 4. `MeshTools::compile(): ignoring Trade::MeshAttribute::TextureCoordinates ...`
 
-If the run still prints `Environment creation successful` and finishes an episode, the workflow is considered good.
+If the run still prints `Environment creation successful` and finishes an episode, the manual adapter workflow is considered good.
 
 ## Known Failure Mode
 

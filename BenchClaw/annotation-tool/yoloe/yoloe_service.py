@@ -10,9 +10,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
 SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
-BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", "..")))
+BENCHCLAW_ROOT = os.environ.get(
+    "BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", ".."))
+)
 BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
-THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
+THIRD_PARTY_ROOT = os.environ.get(
+    "THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part")
+)
 YOLOE_REPO = os.environ.get(
     "YOLOE_REPO",
     os.path.join(THIRD_PARTY_ROOT, "annotationTools", "yoloe"),
@@ -38,7 +42,7 @@ os.chdir(YOLOE_REPO)
 
 
 MODEL_LOCK = threading.RLock()
-MODEL_CACHE = {}
+INFERENCE_LOCK = threading.RLock()
 
 
 @contextlib.contextmanager
@@ -63,7 +67,7 @@ def _json_response(handler, payload, status=HTTPStatus.OK):
 def _read_json(handler):
     content_length = int(handler.headers.get("Content-Length", "0"))
     raw = handler.rfile.read(content_length) if content_length else b"{}"
-    return json.loads(raw.decode("utf-8"))
+    return json.loads(raw.decode("utf-8-sig"))
 
 
 def _resolve_device(device):
@@ -102,14 +106,14 @@ def _build_runtime(checkpoint_path=DEFAULT_CHECKPOINT, device=DEFAULT_DEVICE):
     }
 
 
-def _get_runtime(checkpoint_path=DEFAULT_CHECKPOINT, device=DEFAULT_DEVICE, role="default"):
-    key = (checkpoint_path, device, role)
+def _get_runtime(
+    checkpoint_path=DEFAULT_CHECKPOINT, device=DEFAULT_DEVICE, role="default"
+):
     with MODEL_LOCK:
-        runtime = MODEL_CACHE.get(key)
-        if runtime is None:
-            runtime = _build_runtime(checkpoint_path=checkpoint_path, device=device)
-            MODEL_CACHE[key] = runtime
-        return runtime
+        # YOLOE mutates class/head/predictor state across text and visual prompt paths.
+        # Building an isolated runtime per request is slower but prevents cross-request
+        # corruption and threaded state leakage that manifests as shape mismatch 500s.
+        return _build_runtime(checkpoint_path=checkpoint_path, device=device)
 
 
 def _to_builtin(value):
@@ -176,12 +180,18 @@ def _result_to_payload(result):
             {
                 "index": idx,
                 "class_id": class_id,
-                "class_name": names[class_id] if isinstance(names, list) else names.get(class_id, str(class_id)),
+                "class_name": names[class_id]
+                if isinstance(names, list)
+                else names.get(class_id, str(class_id)),
                 "confidence": float(confs[idx]),
                 "box_xyxy": xyxy[idx],
                 "box_xywhn": xywhn[idx],
-                "segment_xy": _to_builtin(mask_segments[idx]) if masks is not None else None,
-                "segment_xyn": _to_builtin(mask_segments_norm[idx]) if masks is not None else None,
+                "segment_xy": _to_builtin(mask_segments[idx])
+                if masks is not None
+                else None,
+                "segment_xyn": _to_builtin(mask_segments_norm[idx])
+                if masks is not None
+                else None,
             }
         )
     payload["num_detections"] = len(detections)
@@ -299,22 +309,32 @@ def _run_visual_infer(payload):
     model = runtime["model"]
     _reset_predict_state(model)
     source_image = os.path.abspath(payload["image_path"])
-    target_image = os.path.abspath(payload["target_image_path"]) if payload.get("target_image_path") else None
+    target_image = (
+        os.path.abspath(payload["target_image_path"])
+        if payload.get("target_image_path")
+        else None
+    )
     prompt_type = payload.get("prompt_type", "bboxes")
     prompt_classes = payload.get("class_names") or ["object0"]
 
     if prompt_type == "bboxes":
         prompts = {
             "bboxes": np.asarray(payload["bboxes"], dtype=np.float32),
-            "cls": np.asarray(payload.get("cls", [0] * len(payload["bboxes"])), dtype=np.int64),
+            "cls": np.asarray(
+                payload.get("cls", [0] * len(payload["bboxes"])), dtype=np.int64
+            ),
         }
     elif prompt_type == "masks":
         prompts = {
             "masks": np.asarray(payload["masks"], dtype=np.uint8),
-            "cls": np.asarray(payload.get("cls", [0] * len(payload["masks"])), dtype=np.int64),
+            "cls": np.asarray(
+                payload.get("cls", [0] * len(payload["masks"])), dtype=np.int64
+            ),
         }
     else:
-        raise RuntimeError("visual inference requires prompt_type in {'bboxes', 'masks'}")
+        raise RuntimeError(
+            "visual inference requires prompt_type in {'bboxes', 'masks'}"
+        )
 
     kwargs = {
         "imgsz": int(payload.get("imgsz", 640)),
@@ -329,7 +349,13 @@ def _run_visual_infer(payload):
         model.predict([source_image, target_image], return_vpe=True, **kwargs)
         model.set_classes(prompt_classes, model.predictor.vpe)
         model.predictor = None
-        results = model.predict(target_image, imgsz=kwargs["imgsz"], conf=kwargs["conf"], iou=kwargs["iou"], verbose=False)
+        results = model.predict(
+            target_image,
+            imgsz=kwargs["imgsz"],
+            conf=kwargs["conf"],
+            iou=kwargs["iou"],
+            verbose=False,
+        )
     else:
         results = model.predict(source_image, **kwargs)
 
@@ -359,30 +385,42 @@ class Handler(BaseHTTPRequestHandler):
                 "default_pf_checkpoint": DEFAULT_PF_CHECKPOINT,
                 "pf_checkpoint_ready": os.path.exists(DEFAULT_PF_CHECKPOINT),
                 "mobileclip_path": DEFAULT_MOBILECLIP,
-                "mobileclip_ready": os.path.exists(DEFAULT_MOBILECLIP) or os.path.exists(os.path.join(YOLOE_REPO, "mobileclip_blt.pt")),
+                "mobileclip_ready": os.path.exists(DEFAULT_MOBILECLIP)
+                or os.path.exists(os.path.join(YOLOE_REPO, "mobileclip_blt.pt")),
                 "default_device": DEFAULT_DEVICE,
             }
             _json_response(self, payload)
             return
 
-        _json_response(self, {"error": f"Unsupported GET path: {self.path}"}, status=HTTPStatus.NOT_FOUND)
+        _json_response(
+            self,
+            {"error": f"Unsupported GET path: {self.path}"},
+            status=HTTPStatus.NOT_FOUND,
+        )
 
     def do_POST(self):
         try:
             payload = _read_json(self)
-            if self.path == "/text-infer":
-                response = _run_text_infer(payload)
-            elif self.path == "/prompt-free-infer":
-                response = _run_prompt_free_infer(payload)
-            elif self.path == "/visual-infer":
-                response = _run_visual_infer(payload)
-            else:
-                _json_response(self, {"error": f"Unsupported POST path: {self.path}"}, status=HTTPStatus.NOT_FOUND)
-                return
+            with INFERENCE_LOCK:
+                if self.path == "/text-infer":
+                    response = _run_text_infer(payload)
+                elif self.path == "/prompt-free-infer":
+                    response = _run_prompt_free_infer(payload)
+                elif self.path == "/visual-infer":
+                    response = _run_visual_infer(payload)
+                else:
+                    _json_response(
+                        self,
+                        {"error": f"Unsupported POST path: {self.path}"},
+                        status=HTTPStatus.NOT_FOUND,
+                    )
+                    return
             _json_response(self, response)
         except Exception as exc:
             print(f"YOLOE service error on {self.path}: {exc!r}", flush=True)
-            _json_response(self, {"error": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            _json_response(
+                self, {"error": str(exc)}, status=HTTPStatus.INTERNAL_SERVER_ERROR
+            )
 
     def log_message(self, format, *args):
         return

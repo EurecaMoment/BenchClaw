@@ -1,6 +1,6 @@
 ﻿---
 name: depthanything3-local
-description: "Use this skill when the user wants local Depth Anything 3 inference on images, image folders, videos, or COLMAP-style inputs; needs depth maps, camera pose estimation, GLB scene export, feature visualization export, backend task submission, backend status inspection, or a localhost Depth Anything 3 service on port 8008 backed by the local DA3NESTED-GIANT-LARGE-1.1 model. Always reuse an already running local backend if available; otherwise start it through depthanything3_client.py."
+description: "Use this skill when the user wants local Depth Anything 3 inference on images, image folders, videos, or COLMAP-style inputs; needs depth maps, camera pose estimation, GLB scene export, feature visualization export, backend task submission, backend status inspection, or a localhost Depth Anything 3 service on port 8008 backed by the local DA3NESTED-GIANT-LARGE-1.1 model. Always attach to an already running local backend when available; Stage3 normal workflow must not start a new backend instance."
 license: Proprietary. Local workspace tool.
 ---
 
@@ -32,21 +32,20 @@ Use this skill when the task needs any of the following:
 - a persistent localhost DA3 backend that keeps the model loaded on GPU
 - backend task submission, polling, status inspection, GPU memory inspection, or model reload
 
-## First step: ensure the local backend exists
+## First step: verify the local backend
 
 Always do this before inference or backend inspection:
 
 ```bash
-python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py ensure-server
 python3 BENCHCLAW_ROOT/annotation-tool/depthanything3/depthanything3_client.py status
 ```
 
 Behavior:
 
-- if a DA3 backend is already running on `127.0.0.1:8008`, reuse it
-- otherwise start a new background backend in conda env `depthanythingv3`
-- the service stays local and listens only on localhost by default
-- the backend process log is written to `service.log` in this folder
+- attach to the already-running DA3 backend on `127.0.0.1:8008`
+- if the backend is unavailable, fail fast and report the endpoint problem to the caller
+- Stage3 normal workflow must not start a new background backend from this skill
+- the backend process log is written to `service.log` in this folder when the backend is externally managed on this machine
 
 ## Capability split: backend API vs full CLI surface
 

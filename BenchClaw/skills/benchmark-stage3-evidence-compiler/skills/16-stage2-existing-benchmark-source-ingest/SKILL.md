@@ -1,5 +1,7 @@
 # Node 16 — stage2-existing-benchmark-source-ingest
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## Role
 
 Ingest Stage2 node-16 existing benchmark acquisition output as a read-only Stage3 source.

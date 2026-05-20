@@ -1,16 +1,16 @@
 ---
 name: llm-local-qwen
-description: "Use this skill when the user wants to call the locally deployed vLLM model on port 9000. The served model is qwen3.6-35b-a3b and the endpoint is OpenAI-compatible. Use it for local text generation, chat completion, structured JSON generation, prompt experiments, and local model inference without external network access."
+description: "Use this skill when the user wants to call the locally deployed vLLM model on port 9001. The served model is qwen3.5-0.8b and the endpoint is OpenAI-compatible. Use it for local text generation, chat completion, structured JSON generation, prompt experiments, and local model inference without external network access."
 license: Proprietary. Local workspace tool.
 ---
 
 # Local Qwen vLLM skill
 
-This folder exposes the local vLLM deployment running on `127.0.0.1:9000`.
+This folder exposes the local vLLM deployment running on `127.0.0.1:9001`.
 
 The current served model is:
 
-- `qwen3.6-35b-a3b`
+- `qwen3.5-0.8b`
 
 The API is OpenAI-compatible.
 
@@ -29,14 +29,20 @@ Use this skill when the task needs any of the following:
 Always do this before sending generation requests:
 
 ```bash
-python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py health
-python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py models
+ python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py health
+ python3 BENCHCLAW_ROOT/annotation-tool/llm-local/llm_local_client.py models
 ```
+
+Behavior:
+
+- attach to the already-running local vLLM service on `127.0.0.1:9001`
+- if the service is unavailable, fail fast and report the endpoint problem to the caller
+- Stage3 normal workflow must not redeploy or restart the local service from this skill
 
 Expected runtime:
 
-- base URL: `http://127.0.0.1:9000`
-- model id: `qwen3.6-35b-a3b`
+- base URL: `http://127.0.0.1:9001`
+- model id: `qwen3.5-0.8b`
 
 ## Capabilities
 
@@ -83,7 +89,7 @@ Example request file:
 
 ```json
 {
-  "model": "qwen3.6-35b-a3b",
+  "model": "qwen3.5-0.8b",
   "messages": [
     {"role": "system", "content": "Return strict JSON."},
     {"role": "user", "content": "Give me a JSON object with keys a and b."}
@@ -134,6 +140,7 @@ The skill returns structured JSON directly. If a task needs files, the agent sho
 
 ## Practical guidance
 
+- This skill is aligned with `/home/maqiang/model_api/qwen3.5_0.8B.sh`.
 - Prefer `chat` for ordinary local assistant calls.
 - Prefer `chat-request` when you need exact OpenAI-compatible request control.
 - Prefer `completion` only when the task specifically wants prompt-string completion semantics.

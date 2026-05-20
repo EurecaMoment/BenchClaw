@@ -11,11 +11,19 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
 SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
-BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", "..")))
+BENCHCLAW_ROOT = os.environ.get(
+    "BENCHCLAW_ROOT", os.path.abspath(os.path.join(SERVICE_DIR, "..", ".."))
+)
 BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
-THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
-SAM3_REPO = os.environ.get("SAM3_REPO", os.path.join(THIRD_PARTY_ROOT, "annotationTools", "sam3"))
-DEFAULT_CHECKPOINT = os.environ.get("SAM3_CHECKPOINT", "/home/maqiang/model/sam3/sam3.pt")
+THIRD_PARTY_ROOT = os.environ.get(
+    "THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part")
+)
+SAM3_REPO = os.environ.get(
+    "SAM3_REPO", os.path.join(THIRD_PARTY_ROOT, "annotationTools", "sam3")
+)
+DEFAULT_CHECKPOINT = os.environ.get(
+    "SAM3_CHECKPOINT", "/home/maqiang/model/sam3/sam3.pt"
+)
 
 if SAM3_REPO not in sys.path:
     sys.path.insert(0, SAM3_REPO)
@@ -25,6 +33,8 @@ IMAGE_MODEL_RUNTIMES = {}
 IMAGE_SESSIONS = {}
 VIDEO_PREDICTORS = {}
 MODEL_LOCK = threading.RLock()
+IMAGE_REQUEST_LOCK = threading.RLock()
+VIDEO_REQUEST_LOCK = threading.RLock()
 
 
 def _json_response(handler, payload, status=HTTPStatus.OK):
@@ -39,7 +49,7 @@ def _json_response(handler, payload, status=HTTPStatus.OK):
 def _read_json(handler):
     content_length = int(handler.headers.get("Content-Length", "0"))
     raw = handler.rfile.read(content_length) if content_length else b"{}"
-    return json.loads(raw.decode("utf-8"))
+    return json.loads(raw.decode("utf-8-sig"))
 
 
 def _to_serializable(value):
@@ -79,7 +89,11 @@ def _save_mask_images(masks, save_dir):
 
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     masks_cpu = masks.detach().cpu() if isinstance(masks, torch.Tensor) else masks
-    if isinstance(masks_cpu, torch.Tensor) and masks_cpu.ndim == 4 and masks_cpu.shape[1] == 1:
+    if (
+        isinstance(masks_cpu, torch.Tensor)
+        and masks_cpu.ndim == 4
+        and masks_cpu.shape[1] == 1
+    ):
         masks_cpu = masks_cpu[:, 0]
 
     saved_paths = []
@@ -122,7 +136,9 @@ def _get_image_runtime(checkpoint_path=DEFAULT_CHECKPOINT):
         return runtime
 
 
-def _serialize_current_image_state(state, image_size=None, save_masks_dir=None, include_logits=False):
+def _serialize_current_image_state(
+    state, image_size=None, save_masks_dir=None, include_logits=False
+):
     import torch
     from sam3.model.box_ops import box_xyxy_to_xywh
     from sam3.train.masks_ops import rle_encode
@@ -135,7 +151,12 @@ def _serialize_current_image_state(state, image_size=None, save_masks_dir=None, 
         response["orig_img_w"] = image_size[0]
         response["orig_img_h"] = image_size[1]
 
-    if "boxes" in state and "scores" in state and "masks" in state and image_size is not None:
+    if (
+        "boxes" in state
+        and "scores" in state
+        and "masks" in state
+        and image_size is not None
+    ):
         orig_img_w, orig_img_h = image_size
         if len(state["boxes"]) > 0:
             pred_boxes_xyxy = torch.stack(
@@ -150,7 +171,9 @@ def _serialize_current_image_state(state, image_size=None, save_masks_dir=None, 
             response["pred_boxes"] = box_xyxy_to_xywh(pred_boxes_xyxy).tolist()
         else:
             response["pred_boxes"] = []
-        response["pred_masks"] = [item["counts"] for item in rle_encode(state["masks"].squeeze(1))]
+        response["pred_masks"] = [
+            item["counts"] for item in rle_encode(state["masks"].squeeze(1))
+        ]
         response["pred_scores"] = state["scores"].tolist()
         response["boxes_xyxy"] = _to_serializable(state["boxes"])
         response["saved_mask_paths"] = _save_mask_images(state["masks"], save_masks_dir)
@@ -207,8 +230,15 @@ def _image_set_image(session, image_path):
 
 def _serialize_image_session(session, save_masks_dir=None, include_logits=False):
     image_size = None
-    if session.get("state") and "original_width" in session["state"] and "original_height" in session["state"]:
-        image_size = (session["state"]["original_width"], session["state"]["original_height"])
+    if (
+        session.get("state")
+        and "original_width" in session["state"]
+        and "original_height" in session["state"]
+    ):
+        image_size = (
+            session["state"]["original_width"],
+            session["state"]["original_height"],
+        )
     payload = {
         "session_id": session["session_id"],
         "image_path": session.get("image_path"),
@@ -216,7 +246,8 @@ def _serialize_image_session(session, save_masks_dir=None, include_logits=False)
         "service_device": session["runtime"]["device"],
         "confidence_threshold": session["processor"].confidence_threshold,
         "has_backbone_out": "backbone_out" in session["state"],
-        "has_text_prompt": "language_features" in session["state"].get("backbone_out", {}),
+        "has_text_prompt": "language_features"
+        in session["state"].get("backbone_out", {}),
         "has_geometric_prompt": "geometric_prompt" in session["state"],
     }
     payload.update(
@@ -259,10 +290,15 @@ def _image_request(payload):
             device=runtime["device"],
             confidence_threshold=float(request.get("confidence_threshold", 0.2)),
         )
-        images = [Image.open(os.path.abspath(path)).convert("RGB") for path in request["image_paths"]]
+        images = [
+            Image.open(os.path.abspath(path)).convert("RGB")
+            for path in request["image_paths"]
+        ]
         with _autocast_context(runtime["device"]):
             state = processor.set_image_batch(images, state={})
-            result = runtime["model"].predict_inst_batch(state, **request.get("kwargs", {}))
+            result = runtime["model"].predict_inst_batch(
+                state, **request.get("kwargs", {})
+            )
         return {
             "checkpoint_path": runtime["checkpoint_path"],
             "service_device": runtime["device"],
@@ -295,12 +331,16 @@ def _image_request(payload):
                 )
     elif request_type == "set_confidence_threshold":
         with _autocast_context(session["runtime"]["device"]):
-            session["state"] = processor.set_confidence_threshold(float(request["threshold"]), state=session["state"])
+            session["state"] = processor.set_confidence_threshold(
+                float(request["threshold"]), state=session["state"]
+            )
     elif request_type == "reset_all_prompts":
         processor.reset_all_prompts(session["state"])
     elif request_type == "predict_inst":
         with _autocast_context(session["runtime"]["device"]):
-            result = session["runtime"]["model"].predict_inst(session["state"], **request.get("kwargs", {}))
+            result = session["runtime"]["model"].predict_inst(
+                session["state"], **request.get("kwargs", {})
+            )
         return {
             "session_id": session["session_id"],
             "checkpoint_path": session["runtime"]["checkpoint_path"],
@@ -337,7 +377,13 @@ def _image_infer(payload):
     try:
         if payload.get("text_prompt"):
             session_payload = _image_request(
-                {"request": {"type": "set_text_prompt", "session_id": session_id, "prompt": payload["text_prompt"]}}
+                {
+                    "request": {
+                        "type": "set_text_prompt",
+                        "session_id": session_id,
+                        "prompt": payload["text_prompt"],
+                    }
+                }
             )
         if payload.get("box_prompts"):
             session_payload = _image_request(
@@ -405,18 +451,31 @@ class Sam3Handler(BaseHTTPRequestHandler):
                 "video_predictor_count": len(VIDEO_PREDICTORS),
             }
             return _json_response(self, payload)
-        return _json_response(self, {"ok": False, "error": "not found"}, HTTPStatus.NOT_FOUND)
+        return _json_response(
+            self, {"ok": False, "error": "not found"}, HTTPStatus.NOT_FOUND
+        )
 
     def do_POST(self):
         try:
             payload = _read_json(self)
             if self.path == "/image/infer":
-                return _json_response(self, {"ok": True, "result": _image_infer(payload)})
+                with IMAGE_REQUEST_LOCK:
+                    return _json_response(
+                        self, {"ok": True, "result": _image_infer(payload)}
+                    )
             if self.path == "/image/request":
-                return _json_response(self, {"ok": True, "result": _image_request(payload)})
+                with IMAGE_REQUEST_LOCK:
+                    return _json_response(
+                        self, {"ok": True, "result": _image_request(payload)}
+                    )
             if self.path == "/video/request":
-                return _json_response(self, {"ok": True, "result": _video_request(payload)})
-            return _json_response(self, {"ok": False, "error": "not found"}, HTTPStatus.NOT_FOUND)
+                with VIDEO_REQUEST_LOCK:
+                    return _json_response(
+                        self, {"ok": True, "result": _video_request(payload)}
+                    )
+            return _json_response(
+                self, {"ok": False, "error": "not found"}, HTTPStatus.NOT_FOUND
+            )
         except Exception as exc:
             return _json_response(
                 self,

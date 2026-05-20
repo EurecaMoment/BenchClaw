@@ -1,5 +1,7 @@
 # 10 选择的模拟器 Skill
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## 节点定位
 
 - 节点 ID：`10`
@@ -28,8 +30,9 @@
 
 1. 读取 `08_capability_decomposition/capability_dimensions.md` 与 `05_data_capability/simulator_capability_matrix.md`。
 2. 对每个能力维度匹配可用仿真器。
-3. 输出选择理由、覆盖率、缺口、回退方案和路由表。
-4. 写出 `selected_simulators.md` 与 `simulator_routing.json`。
+3. 对每个被选中的仿真器，明确列出可执行场景/地图/任务上下文，并把“每个选中场景至少采集 50 个时刻帧的数据”写入选择理由和路由约束。
+4. 输出选择理由、覆盖率、缺口、回退方案和路由表。
+5. 写出 `selected_simulators.md` 与 `simulator_routing.json`。
 
 ## 质量门
 
@@ -38,3 +41,4 @@
 - 选择仿真器必须说明能力覆盖、必要 GT/变量、缺口和回退方案。
 - `simulator_routing.json` 中每条路由必须能回到 `05` 和 `08` 的依据。
 - 不得因知名度或便利性选择无法支撑证据需求的仿真器。
+- 对被选中的仿真器场景，不得把采集规模写成“少量样例”“若干帧”“视情况抽样”；最低约束必须是每个场景至少 50 个时刻帧的数据。

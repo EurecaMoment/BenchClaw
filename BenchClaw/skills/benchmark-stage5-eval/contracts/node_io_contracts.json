@@ -2,13 +2,16 @@
   "38": {
     "name": "evaluation-run",
     "allowed_inputs": [
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/eval_dataset.jsonl",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/metric_registry.json",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/answer_programs.py",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/model_roster.yaml",
+      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/README.md",
+      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/data/test.jsonl",
+      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/images/**",
+      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/metrics/evaluate.py",
       "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/FINAL_BENCHMARK_CARD.md",
       "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/STAGE4_REPORT.md",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/DONE.json"
+      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/DONE.json",
+      "BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml",
+      "BENCHCLAW_ROOT/modelNeedMeasured/SKILL.md",
+      "BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py"
     ],
     "required_outputs": [
       "WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json",
@@ -16,6 +19,7 @@
       "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.jsonl",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/report_payload.json",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/run_config.yaml",
+      "WORKSPACE_ROOT/stage5/38-evaluation-run/model_call_summary.json",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/DONE.json"
     ],
     "forbidden_reads": [],

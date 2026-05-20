@@ -18,6 +18,11 @@ BASE_URL = f"http://{HOST}:{PORT}"
 CONDA_EXE = os.environ.get("CONDA_EXE", "/home/maqiang/miniconda3/bin/conda")
 
 
+def load_json_file(path_value):
+    with open(path_value, "r", encoding="utf-8-sig") as handle:
+        return json.load(handle)
+
+
 def _http_get(path):
     with urllib.request.urlopen(f"{BASE_URL}{path}", timeout=10) as response:
         return json.loads(response.read().decode("utf-8"))
@@ -39,7 +44,13 @@ def service_is_ready():
     try:
         payload = _http_get("/health")
         return bool(payload.get("ok"))
-    except (urllib.error.URLError, TimeoutError, ConnectionError, OSError, json.JSONDecodeError):
+    except (
+        urllib.error.URLError,
+        TimeoutError,
+        ConnectionError,
+        OSError,
+        json.JSONDecodeError,
+    ):
         return False
 
 
@@ -75,7 +86,9 @@ def ensure_server(timeout_seconds=180):
             return {"reused": False, "url": BASE_URL, "log": SERVICE_LOG}
         time.sleep(2)
 
-    raise RuntimeError(f"SAM3 local service did not become ready within {timeout_seconds} seconds")
+    raise RuntimeError(
+        f"SAM3 local service did not become ready within {timeout_seconds} seconds"
+    )
 
 
 def print_json(payload):
@@ -95,7 +108,9 @@ def cmd_image_infer(args):
     payload = {
         "image_path": os.path.abspath(args.image_path),
         "text_prompt": args.text_prompt,
-        "save_masks_dir": os.path.abspath(args.save_masks_dir) if args.save_masks_dir else None,
+        "save_masks_dir": os.path.abspath(args.save_masks_dir)
+        if args.save_masks_dir
+        else None,
         "confidence_threshold": args.confidence_threshold,
         "checkpoint_path": args.checkpoint_path,
         "include_logits": args.include_logits,
@@ -106,15 +121,13 @@ def cmd_image_infer(args):
 
 def cmd_image_request(args):
     ensure_server(timeout_seconds=args.timeout)
-    with open(args.request_file, "r", encoding="utf-8") as handle:
-        request_payload = json.load(handle)
+    request_payload = load_json_file(args.request_file)
     print_json(_http_post("/image/request", {"request": request_payload}))
 
 
 def cmd_video_request(args):
     ensure_server(timeout_seconds=args.timeout)
-    with open(args.request_file, "r", encoding="utf-8") as handle:
-        request_payload = json.load(handle)
+    request_payload = load_json_file(args.request_file)
     payload = {
         "version": args.version,
         "checkpoint_path": args.checkpoint_path,

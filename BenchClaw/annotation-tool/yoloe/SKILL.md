@@ -1,6 +1,6 @@
 ﻿---
 name: yoloe-local
-description: "Use this skill when the user wants to run the local YOLOE annotation tool with the provided yoloe-11l-seg checkpoint for open-vocabulary detection or segmentation, including text-prompt inference, visual-prompt inference, or prompt-free inference. Always reuse an already running local YOLOE service if available; otherwise start it locally through yoloe_client.py."
+description: "Use this skill when the user wants to run the local YOLOE annotation tool with the provided yoloe-11l-seg checkpoint for open-vocabulary detection or segmentation, including text-prompt inference, visual-prompt inference, or prompt-free inference. Always attach to an already running local YOLOE service when available; Stage3 normal workflow must not start a new service instance."
 license: Proprietary. Local workspace tool.
 ---
 
@@ -34,21 +34,20 @@ Use this skill when the task needs any of the following:
 - structured YOLOE detections returned directly as JSON
 - optional annotated preview image export from YOLOE results
 
-## First step: ensure the local service exists
+## First step: verify the local service
 
 Always do this before inference requests:
 
 ```bash
-python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py ensure-server
 python3 BENCHCLAW_ROOT/annotation-tool/yoloe/yoloe_client.py health
 ```
 
 Behavior:
 
-- if a YOLOE service is already running on `127.0.0.1:8766`, reuse it
-- otherwise start a new background service in conda env `yoloe`
-- the service stays local and listens only on localhost
-- the service log is written to `service.log` in this folder
+- attach to the already-running YOLOE service on `127.0.0.1:8766`
+- if the service is unavailable, fail fast and report the endpoint problem to the caller
+- Stage3 normal workflow must not start a new background service from this skill
+- the service log is written to `service.log` in this folder when the service is externally managed on this machine
 
 ## Important runtime note
 

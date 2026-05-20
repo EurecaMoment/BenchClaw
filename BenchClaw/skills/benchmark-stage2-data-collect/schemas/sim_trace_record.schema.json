@@ -32,7 +32,11 @@
       "type": "array"
     },
     "observation_paths": {
-      "type": "object"
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^simulator/.+"
+      }
     },
     "target_dimensions": {
       "type": "array"

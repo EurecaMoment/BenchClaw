@@ -2,7 +2,7 @@
   "stage": "stage2",
   "default_workspace": "WORKSPACE_ROOT",
   "input_roots": {
-    "stage1_node_13": "WORKSPACE_ROOT/stage1/13-execution-plan",
+    "stage1_node_13": "WORKSPACE_ROOT/stage1/13_execution_plan",
     "simulator_skill_roots": [
       "BENCHCLAW_ROOT/simulatorCards"
     ],
@@ -15,10 +15,12 @@
   "node_contracts": {
     "13": {
       "may_read": [
+        "WORKSPACE_ROOT/stage1/13_execution_plan/**",
         "WORKSPACE_ROOT/stage1/13-execution-plan/**",
         "WORKSPACE_ROOT/stage1/**/execution_plan.*",
         "WORKSPACE_ROOT/stage1/**/benchmark_draft.*",
-        "WORKSPACE_ROOT/stage1/**/traceability.*"
+        "WORKSPACE_ROOT/stage1/**/traceability.*",
+        "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
         "WORKSPACE_ROOT/stage2/13-execution-plan-ingest/execution_plan.md",
@@ -56,11 +58,11 @@
       ],
       "may_read": [
         "WORKSPACE_ROOT/stage2/13-execution-plan-ingest/**",
-        "user_provided_real_image_roots/**",
-        "dataset_download_cache/real_images/**"
+        "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/images/",
+        "WORKSPACE_ROOT/stage2/15-real-image-acquisition/realdata/",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/real_image_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/expected_annotation_spec.json",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/acquisition_report.md",
@@ -79,14 +81,15 @@
       ],
       "may_read": [
         "WORKSPACE_ROOT/stage2/13-execution-plan-ingest/**",
-        "dataset_download_cache/benchmarks/**",
-        "user_provided_benchmark_roots/**"
+        "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmark_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/existing_labels_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/expected_extra_annotation_spec.json",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/license_and_split_report.md",
+        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/raw/",
+        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmarkdataset/",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/DONE.json",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/USED_INPUTS.json"
       ],
@@ -104,13 +107,14 @@
       "may_read": [
         "WORKSPACE_ROOT/stage2/13-execution-plan-ingest/**",
         "WORKSPACE_ROOT/stage2/14-simulator-skill-registry/**",
-        "simulator_outputs/**",
-        "WORKSPACE_ROOT/sim_runs/**"
+        "WORKSPACE_ROOT/sim_runs/**",
+        "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/sim_trace_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/observations/",
+        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/simulator/",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/provenance/",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/collection_report.md",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/DONE.json",

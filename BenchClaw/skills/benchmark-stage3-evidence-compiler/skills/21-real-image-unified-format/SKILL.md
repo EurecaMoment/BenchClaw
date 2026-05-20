@@ -1,5 +1,7 @@
 # Node 21 — real-image-unified-format
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## Role
 
 Convert real-image records into the Stage3 unified multimodal-record schema.

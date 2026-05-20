@@ -1,5 +1,7 @@
 # 13 执行计划 Skill
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## 节点定位
 
 - 节点 ID：`13`
@@ -29,8 +31,12 @@
 
 1. 读取 `12` 的 benchmark 草稿与设计追踪表。
 2. 生成 Stage2/Stage3/Stage4 的执行计划：数据采集、证据构造、模板合成、指标实现、质量门、失败回退。
-3. 输出 `stage2_handoff.yaml`，其中 simulator routing、tool routing、template routing、Q-matrix 引用、evidence contracts 必须从 `12` 的草稿和追踪表中抽取，不重新直接读取 08/09/10/11。
-4. 明确哪些任务可继续并行，哪些任务必须阻塞等待。
+3. 在执行计划中把数据规模约束写成可执行条款，而不是模糊描述：
+   - 所有被选中的真实数据源图文数据必须全量进入 Stage2/Stage3/Stage4，不得在计划中再引入抽样缩减；
+   - 所有被选中的已有 benchmark 图文数据必须全量进入 Stage2/Stage3/Stage4，不得在计划中再引入抽样缩减；
+   - 所有被选中的仿真器场景必须至少采集 50 个时刻帧的数据，且一个时刻可对应多张图像或多模态观测。
+4. 输出 `stage2_handoff.yaml`，其中 simulator routing、tool routing、template routing、Q-matrix 引用、evidence contracts 和上述数量约束必须从 `12` 的草稿和追踪表中抽取，不重新直接读取 08/09/10/11。
+5. 明确哪些任务可继续并行，哪些任务必须阻塞等待。
 
 ## 质量门
 
@@ -38,4 +44,5 @@
 
 - `13` 只能读取 `12` 的草稿、追踪表和 `DONE.json`，不得绕过 `12` 直接读取 `08/09/10/11`。
 - `execution_plan.md` 必须是可执行任务合同，不是论文式描述。
-- `stage2_handoff.yaml` 中的 routing、Q-matrix 引用和 evidence contracts 必须从 `12` 抽取。
+- `stage2_handoff.yaml` 中的 routing、Q-matrix 引用、evidence contracts 和数量约束必须从 `12` 抽取。
+- `execution_plan.md` 与 `stage2_handoff.yaml` 不得把已选真实数据或已选 benchmark 数据集改写成抽样采集；也不得把仿真器场景的最低采集规模降到每场景 50 个时刻帧以下。

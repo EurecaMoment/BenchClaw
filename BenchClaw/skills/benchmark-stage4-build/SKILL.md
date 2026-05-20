@@ -1,5 +1,16 @@
 # BenchClaw Stage4 Skill — 评测集合成、指标代码与质量过滤（Opencode-ready DAG 版）
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
+## 路径入口校验
+
+开始执行前必须先确认：
+
+- 本次收到的 `BENCHCLAW_ROOT` 与 `WORKSPACE_ROOT` 与上游 pipeline 冻结值完全一致，禁止 Stage4 自行重新猜测或覆盖。
+- `BENCHCLAW_ROOT` 必须解析为当前 BenchClaw 项目根目录。
+- `WORKSPACE_ROOT` 必须是位于 BenchClaw 根外部的独立工作目录，不能落在 `BENCHCLAW_ROOT` 内，不能等于 `BENCHCLAW_ROOT`，不能写成 `BENCHCLAW_ROOT/workspace*`。
+- 若路径校验失败，Stage4 必须立即阻塞并报错，不能继续读取 Stage1/Stage3 或写任何 Stage4 输出。
+
 ## 0. 任务边界
 
 本 Skill 对应手绘图中的 **Stage4**。它接收：
@@ -168,13 +179,23 @@ WORKSPACE_ROOT/config/stage4_input_paths.json
 ```text
 WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/
   EVALSET_DATASET/
-    eval_dataset.jsonl
-    metric_registry.json
-    answer_programs.py
+    README.md
+    data/
+      test.jsonl
+    images/
+    metrics/
+      evaluate.py
   FINAL_BENCHMARK_CARD.md
   STAGE4_REPORT.md
   DONE.json
 ```
+
+其中 `EVALSET_DATASET/` 是最终 benchmark 的类 HuggingFace 落盘目录，要求如下：
+
+1. `README.md` 用于描述 benchmark 任务边界、数据字段、媒体组织、评测入口和许可证/限制；
+2. `data/test.jsonl` 是面向评测消费的主数据文件；
+3. `images/` 存放 `data/test.jsonl` 所引用的图像媒体资产，必须在 workspace 内真实落盘；
+4. `metrics/evaluate.py` 提供可执行的本地评测入口，但不得是空文件、占位文件或只写 TODO。
 
 最终完成条件：
 
@@ -191,6 +212,9 @@ python scripts/check_stage4_outputs.py --workspace WORKSPACE_ROOT
 3. **小批量合成与灰度测试留空**：`33` 和 `34` 只能输出 `WAIVED.json`，不得偷偷实现。
 4. **pilot 依赖指标不得伪造**：CTT/IRT、CDM/Q-matrix、Qwen-scope/Gemma-scope/Llama-scope 等需要模型响应或 pilot 数据的指标只能写成 deferred hooks。
 5. **全量合成必须可复现**：每个 item 必须记录 seed、template_id、source_record_id、gt_source_type、answer_program_id、metric_id。
+6. **评测资产必须可消费**：Stage4 不能只生成 `eval_dataset.jsonl`、路径字符串和说明文档；凡被 benchmark item 引用的图像、视频、深度图、官方标签或融合证据，必须在 workspace 内有稳定可读的物化副本或可直接消费的打包路径。
+7. **不得凭空补题**：若上游 Stage2/Stage3 没有真实落盘的媒体、标注或 GT 证据，Stage4 必须阻塞，不能凭模板、样例、摘要、外部绝对路径或人工编造答案继续合成 item。
+8. **最终 benchmark 必须落成类 HuggingFace 文件夹**：`WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/` 必须包含 `README.md`、`data/test.jsonl`、`images/`、`metrics/evaluate.py`，并可被科研评测流程直接消费。
 
 ---
 

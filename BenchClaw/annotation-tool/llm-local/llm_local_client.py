@@ -5,8 +5,13 @@ import os
 import urllib.request
 
 
-BASE_URL = os.environ.get("LLM_LOCAL_BASE_URL", "http://127.0.0.1:9000")
-DEFAULT_MODEL = os.environ.get("LLM_LOCAL_MODEL", "qwen3.6-35b-a3b")
+BASE_URL = os.environ.get("LLM_LOCAL_BASE_URL", "http://127.0.0.1:9001")
+DEFAULT_MODEL = os.environ.get("LLM_LOCAL_MODEL", "qwen3.5-0.8b")
+
+
+def load_json_file(path_value):
+    with open(path_value, "r", encoding="utf-8-sig") as handle:
+        return json.load(handle)
 
 
 def _http_get(path):
@@ -56,8 +61,7 @@ def cmd_chat(args):
 
 
 def cmd_chat_request(args):
-    with open(args.request_file, "r", encoding="utf-8") as handle:
-        payload = json.load(handle)
+    payload = load_json_file(args.request_file)
     payload.setdefault("model", args.model)
     print_json(_http_post("/v1/chat/completions", payload))
 

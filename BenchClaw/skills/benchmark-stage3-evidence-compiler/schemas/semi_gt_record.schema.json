@@ -90,6 +90,24 @@
           },
           "artifact_paths": {
             "type": "object",
+            "properties": {
+              "original": {
+                "type": "string",
+                "pattern": "^WORKSPACE_ROOT/stage3/(realdata|benchmarkdataset)/.+/original/.+"
+              },
+              "semantic_entity_segmentation": {
+                "type": "string",
+                "pattern": "^WORKSPACE_ROOT/stage3/(realdata|benchmarkdataset)/.+/semantic_entity_segmentation/.+"
+              },
+              "depth": {
+                "type": "string",
+                "pattern": "^WORKSPACE_ROOT/stage3/(realdata|benchmarkdataset)/.+/depth/.+"
+              },
+              "gt": {
+                "type": "string",
+                "pattern": "^WORKSPACE_ROOT/stage3/(realdata|benchmarkdataset)/.+/gt/.+"
+              }
+            },
             "additionalProperties": {
               "type": "string"
             }

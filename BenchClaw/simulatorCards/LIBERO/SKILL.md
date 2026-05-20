@@ -6,16 +6,45 @@
 - Simulator root: `/home/maqiang/simulators/LIBERO`
 - Skill directory: `BENCHCLAW_ROOT/simulatorCards/LIBERO`
 - Conda environment: `libero`
+- Local service policy: attach to an already-running local LIBERO service; do not start or restart LIBERO from this skill during normal Stage2 collection.
 
 ## Goal
 
-This skill exposes a model-facing LIBERO workflow without requiring the model user to enter LIBERO source directories.
+This skill exposes a model-facing LIBERO workflow while reusing an already-running local LIBERO service during normal Stage2 collection.
 
 If a model only reads this directory and follows this file, it should be able to:
 
-1. Verify the LIBERO environment is installed.
-2. Extract RGB images and GT from demonstration HDF5 files.
-3. Launch live offscreen LIBERO environments and collect RGB observations plus as much GT as the environment exposes.
+1. Connect to an already-running local LIBERO service endpoint.
+2. Verify the service is healthy and reports the expected runtime.
+3. Extract RGB images and GT from demonstration HDF5 files when needed.
+4. Use the validated local scripts when manual adapter-level revalidation is needed.
+
+## Connection Policy
+
+Normal Stage2 collection must reuse an already-running local LIBERO service.
+
+1. Default endpoint is `http://127.0.0.1:8402` unless the caller explicitly provides another local endpoint.
+2. This skill must not run `ensure_libero_service.sh` or start `libero_service.py` during normal Stage2 collection.
+3. If the target local endpoint is unhealthy, fail fast and report the endpoint problem to the caller instead of trying to restart the service.
+
+## Service Health Check
+
+Run against the target endpoint:
+
+```bash
+python - <<'PY'
+import json, urllib.request
+print(json.load(urllib.request.urlopen('http://127.0.0.1:8402/health', timeout=10)))
+PY
+```
+
+Healthy output must include at least:
+
+1. `host: 127.0.0.1`
+2. `port: 8402`
+3. `offscreen_env_import_ok: true`
+
+If `/health` fails, treat the current endpoint as unhealthy and stop. Do not restart LIBERO from this skill; hand the failure back to the caller.
 
 ## Environment Activation
 
@@ -28,9 +57,11 @@ export MUJOCO_GL=egl
 export PYOPENGL_PLATFORM=egl
 ```
 
+These environment-setup steps remain useful for manual adapter validation, but they are not a reason to relaunch the LIBERO service during Stage2 normal workflow.
+
 ## Skill-Local Health Check
 
-Run:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run:
 
 ```bash
 python BENCHCLAW_ROOT/simulatorCards/LIBERO/test_connect.py
@@ -94,7 +125,7 @@ Validated live observation keys include:
 
 ## HDF5 Batch Extraction
 
-Run:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run:
 
 ```bash
 python BENCHCLAW_ROOT/simulatorCards/LIBERO/extract_hdf5_dataset.py \
@@ -132,7 +163,7 @@ Each `gt.json` contains:
 
 ## Live Environment Batch Collection
 
-Run:
+For manual adapter validation outside the normal Stage2 service-attached workflow, run:
 
 ```bash
 python BENCHCLAW_ROOT/simulatorCards/LIBERO/collect_env_dataset.py \

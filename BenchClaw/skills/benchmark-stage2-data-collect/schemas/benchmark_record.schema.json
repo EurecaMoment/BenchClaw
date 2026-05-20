@@ -19,7 +19,8 @@
       "type": "string"
     },
     "raw_data_path": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^benchmarkdataset/.+"
     },
     "modalities": {
       "type": "array"

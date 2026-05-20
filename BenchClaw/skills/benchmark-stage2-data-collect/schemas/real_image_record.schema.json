@@ -16,7 +16,8 @@
       "type": "string"
     },
     "image_path": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^realdata/.+"
     },
     "source": {
       "type": "string"

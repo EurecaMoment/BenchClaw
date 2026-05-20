@@ -1,5 +1,16 @@
 # BenchClaw Stage5 Skill: Evaluation and Evaluation Report
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
+## 路径入口校验
+
+开始执行前必须先确认：
+
+- 本次收到的 `BENCHCLAW_ROOT` 与 `WORKSPACE_ROOT` 与上游 pipeline 冻结值完全一致，不得在 Stage5 内重新推导。
+- `BENCHCLAW_ROOT` 必须仍然解析为当前 BenchClaw 项目根目录。
+- `WORKSPACE_ROOT` 必须是独立于 `BENCHCLAW_ROOT` 的外部工作目录，不能位于 `BENCHCLAW_ROOT` 内，不能等于 `BENCHCLAW_ROOT`，不能写成 `BENCHCLAW_ROOT/workspace*`。
+- 若路径校验失败，Stage5 必须立即阻塞并报错，不能继续读取 Stage4 或写任何 Stage5 输出。
+
 ## Purpose
 This skill executes **Stage5** of the BenchClaw pipeline exactly as shown in the handwritten Stage5 diagram:
 
@@ -37,11 +48,20 @@ WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/
 Minimum required files:
 
 ```text
-EVALSET_DATASET/eval_dataset.jsonl
-EVALSET_DATASET/metric_registry.json
-EVALSET_DATASET/answer_programs.py
+EVALSET_DATASET/README.md
+EVALSET_DATASET/data/test.jsonl
+EVALSET_DATASET/images/
+EVALSET_DATASET/metrics/evaluate.py
 FINAL_BENCHMARK_CARD.md
 DONE.json
+```
+
+Model roster and API calling contract must come from:
+
+```text
+BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml
+BENCHCLAW_ROOT/modelNeedMeasured/SKILL.md
+BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py
 ```
 
 If the exact filenames differ, node 38 must create a local `input_mapping.yaml` explaining the mapping before evaluation starts; it must not rewrite Stage4 artifacts.
@@ -85,4 +105,6 @@ WORKSPACE_ROOT/stage5/39-evaluation-report/
 - Node 39 depends only on node 38.
 - No direct model-result fabrication is allowed.
 - All scored answers must come from model predictions, model API calls, or already materialized prediction files.
+- Stage5 must evaluate the full fixed candidate roster declared in `BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml`; it must not silently subset, replace, or rename the required models.
 - All metrics must be reproducible from logged predictions and scoring scripts.
+- No simulated, pseudo-random, rule-based, hash-based, or manually fabricated predictions/scores are allowed. If real model outputs are unavailable, Stage5 must block instead of reporting completion.

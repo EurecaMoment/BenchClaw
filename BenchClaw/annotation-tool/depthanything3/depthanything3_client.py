@@ -13,9 +13,13 @@ HOST = os.environ.get("DEPTHANYTHING3_HOST", "127.0.0.1")
 PORT = int(os.environ.get("DEPTHANYTHING3_PORT", "8008"))
 BASE_URL = f"http://{HOST}:{PORT}"
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-BENCHCLAW_ROOT = os.environ.get("BENCHCLAW_ROOT", os.path.abspath(os.path.join(ROOT_DIR, "..", "..")))
+BENCHCLAW_ROOT = os.environ.get(
+    "BENCHCLAW_ROOT", os.path.abspath(os.path.join(ROOT_DIR, "..", ".."))
+)
 BENCHCLAW_PARENT = os.path.abspath(os.path.join(BENCHCLAW_ROOT, ".."))
-THIRD_PARTY_ROOT = os.environ.get("THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part"))
+THIRD_PARTY_ROOT = os.environ.get(
+    "THIRD_PARTY_ROOT", os.path.join(BENCHCLAW_PARENT, "thirty_part")
+)
 SERVICE_LOG = os.path.join(ROOT_DIR, "service.log")
 CONDA_EXE = os.environ.get("CONDA_EXE", "/home/maqiang/miniconda3/bin/conda")
 CONDA_ENV = os.environ.get("DEPTHANYTHING3_CONDA_ENV", "depthanythingv3")
@@ -29,8 +33,34 @@ DEFAULT_MODEL_DIR = os.environ.get(
 )
 DEFAULT_GALLERY_DIR = os.environ.get(
     "DEPTHANYTHING3_GALLERY_DIR",
-    os.path.join(THIRD_PARTY_ROOT, "annotationTools", "Depth-Anything-3", "workspace", "gallery"),
+    os.path.join(
+        THIRD_PARTY_ROOT, "annotationTools", "Depth-Anything-3", "workspace", "gallery"
+    ),
 )
+
+
+def load_json_file(path_value):
+    with open(path_value, "r", encoding="utf-8-sig") as handle:
+        return json.load(handle)
+
+
+def resolve_local_path(path_value):
+    if not path_value:
+        return path_value
+    text = str(path_value).replace("\\", "/")
+    if text == "BENCHCLAW_ROOT":
+        return BENCHCLAW_ROOT
+    if text.startswith("BENCHCLAW_ROOT/"):
+        return os.path.abspath(
+            os.path.join(BENCHCLAW_ROOT, text[len("BENCHCLAW_ROOT/") :])
+        )
+    if text == "THIRD_PARTY_ROOT":
+        return THIRD_PARTY_ROOT
+    if text.startswith("THIRD_PARTY_ROOT/"):
+        return os.path.abspath(
+            os.path.join(THIRD_PARTY_ROOT, text[len("THIRD_PARTY_ROOT/") :])
+        )
+    return os.path.abspath(path_value)
 
 
 def _http_get(path, timeout=30):
@@ -64,13 +94,22 @@ def service_is_ready():
     try:
         payload = _http_get("/status", timeout=10)
         return isinstance(payload, dict) and "model_loaded" in payload
-    except (urllib.error.URLError, TimeoutError, ConnectionError, OSError, json.JSONDecodeError):
+    except (
+        urllib.error.URLError,
+        TimeoutError,
+        ConnectionError,
+        OSError,
+        json.JSONDecodeError,
+    ):
         return False
 
 
 def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_dir=None):
     if service_is_ready():
         return {"reused": True, "url": BASE_URL}
+
+    resolved_model_dir = resolve_local_path(model_dir or DEFAULT_MODEL_DIR)
+    resolved_gallery_dir = resolve_local_path(gallery_dir or DEFAULT_GALLERY_DIR)
 
     command = [
         CONDA_EXE,
@@ -81,7 +120,7 @@ def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_di
         "da3",
         "backend",
         "--model-dir",
-        model_dir or DEFAULT_MODEL_DIR,
+        resolved_model_dir,
         "--device",
         device,
         "--host",
@@ -89,7 +128,7 @@ def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_di
         "--port",
         str(PORT),
         "--gallery-dir",
-        gallery_dir or DEFAULT_GALLERY_DIR,
+        resolved_gallery_dir,
     ]
     log_handle = open(SERVICE_LOG, "a", encoding="utf-8")
     subprocess.Popen(
@@ -107,7 +146,8 @@ def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_di
                 "reused": False,
                 "url": BASE_URL,
                 "log": SERVICE_LOG,
-                "model_dir": model_dir or DEFAULT_MODEL_DIR,
+                "model_dir": resolved_model_dir,
+                "gallery_dir": resolved_gallery_dir,
             }
         time.sleep(2)
 
@@ -119,7 +159,7 @@ def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_di
 def _normalize_optional_path(path_value):
     if not path_value:
         return None
-    return os.path.abspath(path_value)
+    return resolve_local_path(path_value)
 
 
 def cmd_health(_args):
@@ -178,7 +218,9 @@ def cmd_submit(args):
         "export_format": args.export_format,
         "process_res": args.process_res,
         "process_res_method": args.process_res_method,
-        "export_feat_layers": [int(item) for item in args.export_feat.split(",") if item.strip()],
+        "export_feat_layers": [
+            int(item) for item in args.export_feat.split(",") if item.strip()
+        ],
         "require_metric_depth": True,
         "align_to_input_ext_scale": args.align_to_input_ext_scale,
         "use_ray_pose": args.use_ray_pose,
@@ -189,11 +231,9 @@ def cmd_submit(args):
         "feat_vis_fps": args.feat_vis_fps,
     }
     if args.extrinsics_json:
-        with open(args.extrinsics_json, "r", encoding="utf-8") as handle:
-            payload["extrinsics"] = json.load(handle)
+        payload["extrinsics"] = load_json_file(args.extrinsics_json)
     if args.intrinsics_json:
-        with open(args.intrinsics_json, "r", encoding="utf-8") as handle:
-            payload["intrinsics"] = json.load(handle)
+        payload["intrinsics"] = load_json_file(args.intrinsics_json)
     print_json(_http_post("/inference", payload, timeout=60))
 
 
@@ -204,10 +244,20 @@ def cmd_wait_task(args):
         if args.quiet:
             if payload.get("status") in {"completed", "failed"}:
                 print_json(payload)
+                if payload.get("status") == "failed":
+                    raise RuntimeError(
+                        payload.get("message")
+                        or f"DepthAnything3 task {args.task_id} failed"
+                    )
                 return
         else:
             print_json(payload)
         if payload.get("status") in {"completed", "failed"}:
+            if payload.get("status") == "failed":
+                raise RuntimeError(
+                    payload.get("message")
+                    or f"DepthAnything3 task {args.task_id} failed"
+                )
             return
         time.sleep(args.poll_interval)
     raise RuntimeError(f"Timed out waiting for task {args.task_id}")
@@ -229,11 +279,11 @@ def cmd_auto(args):
         CONDA_ENV,
         "da3",
         "auto",
-        os.path.abspath(args.input_path),
+        resolve_local_path(args.input_path),
         "--model-dir",
-        args.model_dir or DEFAULT_MODEL_DIR,
+        resolve_local_path(args.model_dir or DEFAULT_MODEL_DIR),
         "--export-dir",
-        os.path.abspath(args.export_dir),
+        resolve_local_path(args.export_dir),
         "--export-format",
         args.export_format,
         "--backend-url",
@@ -315,7 +365,9 @@ def build_parser():
     submit_parser.add_argument("--process-res", type=int, default=504)
     submit_parser.add_argument("--process-res-method", default="upper_bound_resize")
     submit_parser.add_argument("--export-feat", default="")
-    submit_parser.add_argument("--align-to-input-ext-scale", action="store_true", default=True)
+    submit_parser.add_argument(
+        "--align-to-input-ext-scale", action="store_true", default=True
+    )
     submit_parser.add_argument("--use-ray-pose", action="store_true")
     submit_parser.add_argument("--ref-view-strategy", default="saddle_balanced")
     submit_parser.add_argument("--conf-thresh-percentile", type=float, default=40.0)
@@ -347,7 +399,9 @@ def build_parser():
     auto_parser.add_argument("--auto-cleanup", action="store_true")
     auto_parser.add_argument("--fps", type=float, default=1.0)
     auto_parser.add_argument("--sparse-subdir", default="")
-    auto_parser.add_argument("--align-to-input-ext-scale", action="store_true", default=True)
+    auto_parser.add_argument(
+        "--align-to-input-ext-scale", action="store_true", default=True
+    )
     auto_parser.add_argument("--use-ray-pose", action="store_true")
     auto_parser.add_argument("--ref-view-strategy", default="saddle_balanced")
     auto_parser.add_argument("--conf-thresh-percentile", type=float, default=40.0)

@@ -13,8 +13,7 @@
     },
     "status": {
       "enum": [
-        "done",
-        "skipped_with_reason"
+        "done"
       ]
     },
     "outputs": {

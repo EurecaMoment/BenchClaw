@@ -25,3 +25,16 @@ BENCHCLAW_ROOT/../thirty_part/annotationTools/sam3/sam3/model_builder.py:8: User
   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
 /tmp/tmpoo0jdwa1: line 17: 1798281 Killed                  python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
 ERROR conda.cli.main_run:execute(142): `conda run python3 BENCHCLAW_ROOT/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Terminated
+SAM3 local service listening on http://127.0.0.1:8765
+Terminated
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)

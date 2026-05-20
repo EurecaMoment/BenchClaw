@@ -1,5 +1,7 @@
 # Skill 13 — Stage1 执行计划入口校验与导入
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## 角色
 
 本节点对应手绘图中的 **13 执行计划**。  
@@ -15,6 +17,7 @@ parents = []
 ## 允许读取
 
 ```text
+WORKSPACE_ROOT/stage1/13_execution_plan/**
 WORKSPACE_ROOT/stage1/13-execution-plan/**
 WORKSPACE_ROOT/stage1/**/execution_plan.*
 WORKSPACE_ROOT/stage1/**/benchmark_draft.*
@@ -69,11 +72,20 @@ WORKSPACE_ROOT/stage2/13-execution-plan-ingest/
   "real_image_targets": [],
   "existing_benchmark_targets": [],
   "simulator_targets": [],
+  "real_image_flow_policy": "full_selected_dataset",
+  "existing_benchmark_flow_policy": "full_selected_dataset",
+  "simulator_scene_min_timepoints": 50,
   "required_modalities": [],
   "required_gt_fields": [],
   "quality_constraints": []
 }
 ```
+
+语义要求：
+
+- `real_image_flow_policy` 必须表达被选中真实数据源图文数据全量进入后续流程；
+- `existing_benchmark_flow_policy` 必须表达被选中已有 benchmark 图文数据全量进入后续流程；
+- `simulator_scene_min_timepoints` 必须给出每个选中仿真器场景的最小时刻帧数，当前最低允许值为 `50`。
 
 ## 执行步骤
 
@@ -83,9 +95,13 @@ WORKSPACE_ROOT/stage2/13-execution-plan-ingest/
    - 真实图片；
    - 已有 benchmark；
    - 仿真器多模态数据 + GT。
-4. 写 `stage2_collection_targets.json`。
-5. 写 `USED_INPUTS.json`，记录实际读取路径。
-6. 写 `DONE.json`。
+4. 将 Stage1 规定的数量执行约束写入 machine-readable handoff：
+   - 被选中的真实图片目标必须标记为全量流入；
+   - 被选中的已有 benchmark 目标必须标记为全量流入；
+   - 被选中的仿真器场景必须写明每场景至少 50 个时刻帧。
+5. 写 `stage2_collection_targets.json`。
+6. 写 `USED_INPUTS.json`，记录实际读取路径。
+7. 写 `DONE.json`。
 
 ## DONE.json 格式
 

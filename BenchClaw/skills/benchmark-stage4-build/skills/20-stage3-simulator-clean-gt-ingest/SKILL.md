@@ -1,5 +1,7 @@
 # Skill 20 — Stage3 仿真器GT输入
 
+全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+
 ## 输入
 
 读取 `contracts/node_io_contracts.json` 中 `20.may_read` 声明的路径。
