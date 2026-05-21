@@ -55,6 +55,10 @@
         }
       ],
       "artifact_paths": {
+        "original": "WORKSPACE_ROOT/stage3/realdata/example_scene/original/example_real_000001.jpg",
+        "semantic_entity_segmentation": "WORKSPACE_ROOT/stage3/realdata/example_scene/semantic_entity_segmentation/example_real_000001.png",
+        "depth": "WORKSPACE_ROOT/stage3/realdata/example_scene/depth/example_real_000001_depth.png",
+        "gt": "WORKSPACE_ROOT/stage3/realdata/example_scene/gt/example_real_000001.json",
         "yoloe_boxes": "annotations/yoloe/example_real_000001.json",
         "sam3_masks": "annotations/sam3/example_real_000001.json",
         "depthanything3_depth": "annotations/depthanything3/example_real_000001_depth.png",

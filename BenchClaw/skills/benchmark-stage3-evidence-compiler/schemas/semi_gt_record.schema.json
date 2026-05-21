@@ -19,7 +19,8 @@
           "value",
           "source_type",
           "confidence",
-          "evidence"
+          "evidence",
+          "artifact_paths"
         ],
         "properties": {
           "candidate_id": {
@@ -90,6 +91,12 @@
           },
           "artifact_paths": {
             "type": "object",
+            "required": [
+              "original",
+              "semantic_entity_segmentation",
+              "depth",
+              "gt"
+            ],
             "properties": {
               "original": {
                 "type": "string",

@@ -6,6 +6,8 @@
 
 Convert simulator observations, trajectories, poses, and privileged GT into the Stage3 unified multimodal-record schema.
 
+This node must convert **all** simulator samples that Stage2 node 17 passed into Stage3. It is not allowed to keep only a few scenes, a few episodes, or a few records as a demonstration subset.
+
 ## Parents
 
 ```text
@@ -20,7 +22,8 @@ Convert simulator observations, trajectories, poses, and privileged GT into the 
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.jsonl`
+- `WORKSPACE_ROOT/stage3/stage3.db`
+- `WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.sqlite_export.jsonl`
 - `WORKSPACE_ROOT/stage3/23-simulator-unified-format/field_mapping.md`
 - `WORKSPACE_ROOT/stage3/23-simulator-unified-format/modality_inventory.json`
 - `WORKSPACE_ROOT/stage3/23-simulator-unified-format/normalization_report.md`
@@ -42,6 +45,11 @@ Convert simulator observations, trajectories, poses, and privileged GT into the 
 - `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**`
 
 ## Completion
+
+数量闭合要求：
+
+- `stage3.db.unified_simulator_records` 中的 `record_id` 数量必须与 Stage3 node 17 读入的保留 simulator 记录数量一致；
+- 不得把全量 simulator 记录缩减成少量样例后宣称统一格式完成。
 
 完成后必须写：
 

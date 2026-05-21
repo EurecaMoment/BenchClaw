@@ -16,17 +16,20 @@
 - GT 来源类型是否合法；
 - 数值范围/坐标系/单位是否一致；
 - 图像、mask、bbox、depth、pose 等证据路径是否可解析；
-- 对每个拒绝样本写 `binding_rejection_log.jsonl`。
+- 对每个拒绝样本写 SQLite rejection 记录；如需导出文本副本，可生成 `binding_rejection_log.sqlite_export.jsonl`。
 
 ## 输出
 
 ```text
-WORKSPACE_ROOT/stage4/30-template-evidence-binding/template_evidence_bindings.jsonl
-WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_rejection_log.jsonl
+WORKSPACE_ROOT/stage4/stage4.db
+WORKSPACE_ROOT/stage4/30-template-evidence-binding/template_evidence_bindings.sqlite_export.jsonl
+WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_rejection_log.sqlite_export.jsonl
 WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_summary.md
 USED_INPUTS.json
 DONE.json
 ```
+
+规范真相源应写入 `stage4.db.template_evidence_bindings` 与 `stage4.db.binding_rejections`；导出 `jsonl` 仅作为兼容性副本。
 
 
 ---

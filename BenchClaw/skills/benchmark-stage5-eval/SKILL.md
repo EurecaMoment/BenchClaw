@@ -14,6 +14,14 @@
 ## Purpose
 This skill executes **Stage5** of the BenchClaw pipeline exactly as shown in the handwritten Stage5 diagram:
 
+Stage5 的内部结构化真相源统一使用 SQLite。推荐主库位置：
+
+```text
+WORKSPACE_ROOT/stage5/stage5.db
+```
+
+模型调用、预测、失败样本、聚合分数、报告载荷等都应以 SQLite 表为准；`prediction_logs.sqlite_export.jsonl`、`failure_cases.sqlite_export.jsonl`、`leaderboard.csv` 等只保留为导出或报告面向的副本。
+
 ```text
 Stage5: 评测  ->  评测报告
         38        39
@@ -71,8 +79,8 @@ If the exact filenames differ, node 38 must create a local `input_mapping.yaml` 
 ```text
 WORKSPACE_ROOT/stage5/38-evaluation-run/
   eval_results.json
-  prediction_logs.jsonl
-  failure_cases.jsonl
+  prediction_logs.sqlite_export.jsonl
+  failure_cases.sqlite_export.jsonl
   report_payload.json
   run_config.yaml
   DONE.json

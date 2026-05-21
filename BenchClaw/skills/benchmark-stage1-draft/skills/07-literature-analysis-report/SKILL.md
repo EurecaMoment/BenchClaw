@@ -28,7 +28,7 @@
 
 ## 具体步骤
 
-1. 读取 `03_intent_doc/expanded_intent.md` 与 `04_literature_search/candidate_papers.jsonl`。
+1. 读取 `03_intent_doc/expanded_intent.md` 与 `04_literature_search/literature.db`（必要时可同时读取其兼容性导出 `candidate_papers.sqlite_export.jsonl`）。
 2. 对候选文献进行分组：已有 benchmark、构念定义、任务模板、指标、质量控制、失效模式。
 3. 提取对 Stage1 有用的设计证据，而不是写泛泛综述。
 4. 输出 `literature_analysis_report.md` 与 `benchmark_design_evidence.md`。

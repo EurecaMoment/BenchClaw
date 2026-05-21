@@ -37,19 +37,24 @@ WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/**
 ## 必须输出
 
 ```text
+WORKSPACE_ROOT/stage2/stage2.db
 WORKSPACE_ROOT/stage2/15-real-image-acquisition/
   images/
   realdata/
     <real_scene_or_source>/
       ...materialized image files...
-  real_image_manifest.jsonl
+  real_image_manifest.sqlite_export.jsonl
   expected_annotation_spec.json
   acquisition_report.md
   USED_INPUTS.json
   DONE.json
 ```
 
-## real_image_manifest.jsonl
+## SQLite canonical storage
+
+本节点的规范化记录应写入 `WORKSPACE_ROOT/stage2/stage2.db` 的 `real_image_records` 表。`real_image_manifest.sqlite_export.jsonl` 仅作为兼容性导出，不再是唯一真相源。
+
+## real_image_manifest.sqlite_export.jsonl
 
 每行一条图片记录：
 
@@ -98,8 +103,8 @@ WORKSPACE_ROOT/stage2/15-real-image-acquisition/
 
 ## 强制约束
 
-- `real_image_manifest.jsonl` 中的 `image_path` 必须优先指向 `WORKSPACE_ROOT/stage2/15-real-image-acquisition/realdata/` 下按真实场景或稳定来源分层保存的已物化文件；若同时保留 `images/` 入口，也不得只在 `images/` 中保存少量示例图。
-- `real_image_manifest.jsonl` 中每条记录都必须能追溯到：`13` 中被选中的 `real_image_targets` 之一，以及 `BENCHCLAW_ROOT/realDataCards/**/SKILL.md` 中的某个已登记真实数据源；不得出现无法回溯到这两者的样本。
+- `stage2.db.real_image_records` 中的 `image_path` 必须优先指向 `WORKSPACE_ROOT/stage2/15-real-image-acquisition/realdata/` 下按真实场景或稳定来源分层保存的已物化文件；若同时保留 `images/` 入口，也不得只在 `images/` 中保存少量示例图。
+- `stage2.db.real_image_records` 中每条记录都必须能追溯到：`13` 中被选中的 `real_image_targets` 之一，以及 `BENCHCLAW_ROOT/realDataCards/**/SKILL.md` 中的某个已登记真实数据源；不得出现无法回溯到这两者的样本。
 - 不得只写 `source_path`、`raw_source_path`、样本统计或 `manifest_truncated` 说明而省略真实图像物化。
 - 对被 13 选中的真实图片数据，Stage2 必须把后续需要消费的图像全量落盘到 `WORKSPACE_ROOT/stage2/15-real-image-acquisition/realdata/` 下，不得只保存代表图、抽样图、缩略图或样例集。
 - 若 `stage2_collection_targets.json` 已声明某个真实数据源被选中，本节点不得再以“体量过大”“先取代表样本”“先跑一部分”为理由缩减其图文数据；除非上游 Stage1 明确写了更强的用户限制，否则必须按全量执行。
@@ -114,7 +119,7 @@ WORKSPACE_ROOT/stage2/15-real-image-acquisition/
   "status": "done",
   "outputs": [
     "images/",
-    "real_image_manifest.jsonl",
+    "real_image_manifest.sqlite_export.jsonl",
     "expected_annotation_spec.json",
     "acquisition_report.md"
   ],

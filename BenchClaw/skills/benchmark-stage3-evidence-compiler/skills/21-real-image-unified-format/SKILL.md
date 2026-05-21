@@ -6,6 +6,8 @@
 
 Convert real-image records into the Stage3 unified multimodal-record schema.
 
+This node must convert **all** real-image samples that Stage2 node 15 passed into Stage3. It is not allowed to downsample, keep only examples, or emit a small demonstration subset.
+
 ## Parents
 
 ```text
@@ -20,7 +22,8 @@ Convert real-image records into the Stage3 unified multimodal-record schema.
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.jsonl`
+- `WORKSPACE_ROOT/stage3/stage3.db`
+- `WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.sqlite_export.jsonl`
 - `WORKSPACE_ROOT/stage3/21-real-image-unified-format/field_mapping.md`
 - `WORKSPACE_ROOT/stage3/21-real-image-unified-format/modality_inventory.json`
 - `WORKSPACE_ROOT/stage3/21-real-image-unified-format/normalization_report.md`
@@ -42,6 +45,12 @@ Convert real-image records into the Stage3 unified multimodal-record schema.
 - `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**`
 
 ## Completion
+
+数量闭合要求：
+
+- `stage3.db.unified_real_records` 中的 `record_id` 数量必须与 Stage3 node 15 读入的保留真实图像数量一致；
+- 若 Stage2 node 15 流入 6201 张图像，则本节点必须对 6201 张都形成统一格式记录；
+- 不得把 `6201 -> 200` 这类大幅缩减包装成“统一格式完成”。
 
 完成后必须写：
 

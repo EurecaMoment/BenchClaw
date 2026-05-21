@@ -163,3 +163,1088 @@ Build text model mobileclip:blt
 Build text model mobileclip:blt
 Build text model mobileclip:blt
 Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 42766)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 48962)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47358)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47394)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47406)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47440)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47442)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47454)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47466)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 47470)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 38986)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 49532)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 54362)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+Build text model mobileclip:blt
+YOLOE service error on /text-infer: BrokenPipeError(32, 'Broken pipe')
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 45142)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 418, in do_POST
+    _json_response(self, response)
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 64, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 683, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 360, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 747, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 437, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 425, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 421, in do_POST
+    _json_response(
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/yoloe/yoloe_service.py", line 63, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 539, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/http/server.py", line 543, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/yoloe/lib/python3.10/socketserver.py", line 826, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------

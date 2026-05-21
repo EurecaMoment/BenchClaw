@@ -22,6 +22,14 @@
 
 Stage4 的目标是把模板、证据、GT 和指标约束转成 **可评测、可追踪、可执行评分的最终 benchmark 数据包**。
 
+Stage4 的内部结构化真相源统一使用 SQLite。推荐主库位置：
+
+```text
+WORKSPACE_ROOT/stage4/stage4.db
+```
+
+中间过程如 evidence pool、template binding、question blueprint、item traceability、quality rejection 等，都应以 SQLite 表为准；最终 `EVALSET_DATASET/data/test.jsonl` 是对外 benchmark 交付格式，不应反向充当 Stage4 内部唯一真相源。
+
 按你的要求：
 
 - `33 小批量合成`：**留空**；
@@ -215,6 +223,8 @@ python scripts/check_stage4_outputs.py --workspace WORKSPACE_ROOT
 6. **评测资产必须可消费**：Stage4 不能只生成 `eval_dataset.jsonl`、路径字符串和说明文档；凡被 benchmark item 引用的图像、视频、深度图、官方标签或融合证据，必须在 workspace 内有稳定可读的物化副本或可直接消费的打包路径。
 7. **不得凭空补题**：若上游 Stage2/Stage3 没有真实落盘的媒体、标注或 GT 证据，Stage4 必须阻塞，不能凭模板、样例、摘要、外部绝对路径或人工编造答案继续合成 item。
 8. **最终 benchmark 必须落成类 HuggingFace 文件夹**：`WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/` 必须包含 `README.md`、`data/test.jsonl`、`images/`、`metrics/evaluate.py`，并可被科研评测流程直接消费。
+9. **题目必须真正被实例化**：正式 benchmark item 不允许停留在模板句、抽象变量名或泛化问法层面；题面、输入变量、GT、模态和可判分接口都必须真实落地。
+10. **正式 benchmark 不是 smoke test**：若 Stage4 只能生成元数据表、占位 GT、构念错位题面或高度重复的模板壳样本，则该产物最多只能算 pipeline smoke test，必须阻塞，不得作为正式 benchmark 完成。
 
 ---
 

@@ -6,6 +6,8 @@
 
 Ingest Stage2 node-15 real-image acquisition output as a read-only Stage3 source.
 
+This node only reads and re-indexes real-image data that has already been collected and materialized by Stage2 node 15. It must not re-collect, re-download, replace, extend, or otherwise fetch new real-image samples from external sources.
+
 ## Parents
 
 ```text
@@ -19,15 +21,22 @@ Ingest Stage2 node-15 real-image acquisition output as a read-only Stage3 source
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/stage3.db`
+- `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.sqlite_export.jsonl`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_summary.md`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/DONE.json`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/USED_INPUTS.json`
+
+本节点的规范化真相源应写入 `stage3.db` 的 `stage2_real_sources` 表；`source_manifest.sqlite_export.jsonl` 仅作为兼容性导出。
 
 ## Must not read
 
 - `WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**`
+
+## Non-negotiable Constraint
+
+- 若 Stage2 node 15 没有提供足够的已落盘真实图像，本节点必须阻塞并报告缺口；不得自行返回真实数据源重新采集。
 
 ## Completion
 

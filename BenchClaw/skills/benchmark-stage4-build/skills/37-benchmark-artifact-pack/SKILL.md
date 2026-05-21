@@ -14,6 +14,8 @@
 
 本节点必须把最终 benchmark 整理成一个类 HuggingFace 的 benchmark 文件夹 `EVALSET_DATASET/`，供科研评测直接消费。
 
+只有当 36 号节点产出的 item 已经通过“具体题面、具体 GT、具体变量、模态一致、构念一致、重复率受控、evaluation_ready 程序化通过”这些检查后，本节点才允许把它们打成正式 benchmark。否则本节点必须阻塞，不得把 smoke-test 级别的元数据表包装成正式 benchmark。
+
 ## 输出
 
 ```text
@@ -35,6 +37,7 @@ WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/DONE.json
 - 最终 item 是否具备完整 traceability。
 - 数据包内媒体、标签和 evidence 引用是否已在 workspace 内物化，且 Stage5 无需回读外部原始数据目录即可评测。
 - `EVALSET_DATASET/README.md`、`data/test.jsonl`、`images/`、`metrics/evaluate.py` 是否完整，且能作为科研风格 benchmark 文件夹被直接消费。
+- `data/test.jsonl` 是否已经消除了模板壳题目、占位 GT、模态错配、构念错位和异常重复分布；若没有，则必须在 `STAGE4_REPORT.md` 中明确写出阻塞原因，并禁止产出正式 `DONE.json`。
 
 
 ---

@@ -10,8 +10,9 @@ ws = Path(args.workspace)
 
 required = [
     ws / "stage5" / "38-evaluation-run" / "eval_results.json",
-    ws / "stage5" / "38-evaluation-run" / "prediction_logs.jsonl",
-    ws / "stage5" / "38-evaluation-run" / "failure_cases.jsonl",
+    ws / "stage5" / "stage5.db",
+    ws / "stage5" / "38-evaluation-run" / "prediction_logs.sqlite_export.jsonl",
+    ws / "stage5" / "38-evaluation-run" / "failure_cases.sqlite_export.jsonl",
     ws / "stage5" / "38-evaluation-run" / "report_payload.json",
     ws / "stage5" / "38-evaluation-run" / "run_config.yaml",
     ws / "stage5" / "38-evaluation-run" / "model_call_summary.json",
@@ -55,7 +56,9 @@ if node39_done.get("status") != "done":
 if not eval_results.get("leaderboard"):
     errors.append("leaderboard is empty; Stage5 requires at least one scored model")
 
-prediction_logs_path = ws / "stage5" / "38-evaluation-run" / "prediction_logs.jsonl"
+prediction_logs_path = (
+    ws / "stage5" / "38-evaluation-run" / "prediction_logs.sqlite_export.jsonl"
+)
 model_summary_path = ws / "stage5" / "38-evaluation-run" / "model_call_summary.json"
 prediction_lines = [
     line
@@ -64,13 +67,13 @@ prediction_lines = [
 ]
 if not prediction_lines:
     errors.append(
-        "prediction_logs.jsonl is empty; Stage5 requires real model predictions"
+        "prediction_logs.sqlite_export.jsonl is empty; Stage5 requires real model predictions"
     )
 for idx, line in enumerate(prediction_lines[:20], 1):
     try:
         row = json.loads(line)
     except json.JSONDecodeError as exc:
-        errors.append(f"invalid prediction_logs.jsonl line {idx}: {exc}")
+        errors.append(f"invalid prediction_logs.sqlite_export.jsonl line {idx}: {exc}")
         continue
     if row.get("metadata", {}).get("simulated") is True:
         errors.append(f"prediction log line {idx} is marked simulated")

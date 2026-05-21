@@ -3,14 +3,10 @@ import argparse
 from pathlib import Path
 import subprocess
 
+
 DIRS = [
-    "stage2/13-execution-plan-ingest",
-    "stage2/14-simulator-skill-registry",
-    "stage2/15-real-image-acquisition/images",
-    "stage2/16-existing-benchmark-acquisition/raw",
-    "stage2/17-simulator-multimodal-gt-acquisition/observations",
-    "stage2/17-simulator-multimodal-gt-acquisition/provenance",
-    "config",
+    "stage5/38-evaluation-run",
+    "stage5/39-evaluation-report",
 ]
 
 
@@ -24,13 +20,13 @@ def main():
     subprocess.run(
         [
             "python3",
-            str(Path(__file__).with_name("init_stage2_db.py")),
+            str(Path(__file__).with_name("init_stage5_db.py")),
             "--workspace",
             str(base),
         ],
         check=True,
     )
-    print(f"OK: initialized {base}/stage2 workspace skeleton")
+    print(f"OK: initialized Stage5 workspace dirs for {base}")
 
 
 if __name__ == "__main__":

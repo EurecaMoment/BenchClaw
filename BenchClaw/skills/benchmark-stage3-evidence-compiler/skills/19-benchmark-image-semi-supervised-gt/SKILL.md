@@ -30,8 +30,9 @@ input image
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl`
-- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/stage3.db`
+- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.sqlite_export.jsonl`
 - `WORKSPACE_ROOT/stage3/benchmarkdataset/`
 - `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/`
 - `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/yoloe/`
@@ -71,16 +72,28 @@ input image
    - `semantic_entity_segmentation/`: 由 `YOLOE + LLM -> SAM3` 链路得到的语义实体分割图；
    - `depth/`: 由 Depth Anything 3 得到的深度图；
    同时将对应 GT/候选记录落盘到 `gt/`。
-7. 以 `record_id + candidate_id` 对齐 YOLOE 语义/候选框、SAM3 实体分割和 Depth Anything 3 深度统计，生成“带语义/深度信息的实体分割结果” `object_instances_with_depth`，写入 `annotations/fused/{record_id}.json` 并追加到 `semi_gt_manifest.jsonl`。
-8. 与官方 label 冲突时，必须保留官方 label，并把工具候选写入 `conflict_report.md`；工具输出不得覆盖 `official_label_manifest.jsonl`。
+7. 以 `record_id + candidate_id` 对齐 YOLOE 语义/候选框、SAM3 实体分割和 Depth Anything 3 深度统计，生成“带语义/深度信息的实体分割结果” `object_instances_with_depth`，写入 `annotations/fused/{record_id}.json`，并把候选写入 `stage3.db.semi_gt_candidates`；如需导出清单，只能生成 `semi_gt_manifest.sqlite_export.jsonl` 兼容副本。
+8. 与官方 label 冲突时，必须保留官方 label，并把工具候选写入 `conflict_report.md`；工具输出不得覆盖 `stage3.db.benchmark_label_records` 中的官方标签真相源；如需导出，只能生成 `official_label_manifest.sqlite_export.jsonl` 兼容副本。
 9. 融合候选必须保留 `tool_chain`、`artifact_paths`、`quality_checks` 和全部证据路径；其中 `artifact_paths` 至少应能解析到 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 下的真实文件。融合结果仍是 `tool_generated_candidate`，`is_final_gt` 必须为 `false`，除非后续人工审核节点显式提升。
+
+这里的“真实文件”不是只要求目录存在，而是要求每个保留样本逐样本拥有：
+
+- 原图文件；
+- 由 `YOLOE + LLM -> SAM3` 生成的语义实体分割图文件；
+- 由 `Depth Anything 3` 生成的深度图文件；
+- 对应 GT/融合候选文件；
+
+且这些文件都必须通过 `artifact_paths` 与 `record_id + candidate_id` 回溯到具体样本。
+
+数量上也必须闭合：凡是从 Stage2 node 16 被保留并流入 Stage3 的 benchmark 图像，都必须在本节点逐样本完成上述链路并产出四类文件。不得只处理其中一小部分样本后就写 `DONE.json`。
 
 ## Blocking Conditions
 
 - 若 `annotations/yoloe/`、`annotations/sam3/`、`annotations/depthanything3/`、`annotations/fused/` 中缺少对应逐样本产物，则不得写 `DONE.json`。
 - 若 benchmark image 分支没有对逐样本真实执行 `YOLOE(+LLM) -> SAM3 -> Depth Anything 3 -> 融合` 链路，而只是保留官方标签、写模板 JSON、健康检查结果或样例条目，则不得写 `DONE.json`。
 - 若 `WORKSPACE_ROOT/stage3/benchmarkdataset/<dataset_name>/<existing_dataset_split_or_category>/` 下未对保留样本全量落盘 `original/`、`semantic_entity_segmentation/`、`depth/` 三类图像及 `gt/`，则不得写 `DONE.json`。
-- `semi_gt_manifest.jsonl` 中不得以 `pending`、`planned`、`to_be_generated` 或样例条目替代真实工具输出记录。
+- 若 `stage3.db.semi_gt_candidates` 中完成闭环的 `record_id` 数量少于 Stage2 node 16 流入 Stage3 的保留 benchmark 图像数量，则不得写 `DONE.json`。
+- `stage3.db.semi_gt_candidates` 中不得以 `pending`、`planned`、`to_be_generated` 或样例条目替代真实工具输出记录。
 - 不允许只保留官方 label 和增强计划说明，就宣称已有 benchmark 图像的半监督增强已完成。
 
 ## Completion
@@ -102,3 +115,5 @@ input image
 python scripts/check_used_inputs.py --node 19
 python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
 ```
+
+注意：本节点写出 `DONE.json` 不代表 Stage3 真正完成。只有当 `scripts/check_stage3_outputs.py` 生成的 `WORKSPACE_ROOT/stage3/STAGE3_VALIDATION_REPORT.json` 与 `.md` 明确证明 benchmarkdataset 分支数量闭合、逐样本四类产物闭合时，本节点产物才算有效完成。

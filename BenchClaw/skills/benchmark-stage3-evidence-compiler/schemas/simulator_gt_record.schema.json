@@ -4,7 +4,8 @@
   "required": [
     "record_id",
     "simulator_gt",
-    "provenance"
+    "provenance",
+    "artifact_paths"
   ],
   "properties": {
     "record_id": {
@@ -12,6 +13,36 @@
     },
     "simulator_gt": {
       "type": "object"
+    },
+    "artifact_paths": {
+      "type": "object",
+      "required": [
+        "original",
+        "semantic_entity_segmentation",
+        "depth",
+        "gt"
+      ],
+      "properties": {
+        "original": {
+          "type": "string",
+          "pattern": "^WORKSPACE_ROOT/stage3/simulator/.+/original/.+"
+        },
+        "semantic_entity_segmentation": {
+          "type": "string",
+          "pattern": "^WORKSPACE_ROOT/stage3/simulator/.+/semantic_entity_segmentation/.+"
+        },
+        "depth": {
+          "type": "string",
+          "pattern": "^WORKSPACE_ROOT/stage3/simulator/.+/depth/.+"
+        },
+        "gt": {
+          "type": "string",
+          "pattern": "^WORKSPACE_ROOT/stage3/simulator/.+/gt/.+"
+        }
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "source_type": {
       "const": "simulator_privileged_gt"

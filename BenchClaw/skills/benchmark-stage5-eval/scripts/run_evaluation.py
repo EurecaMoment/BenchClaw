@@ -245,7 +245,7 @@ def main():
                             },
                         }
                     )
-            model_pred_path = pred_dir / f"{model_name}.jsonl"
+            model_pred_path = pred_dir / f"{model_name}.sqlite_export.jsonl"
             model_pred_path.parent.mkdir(parents=True, exist_ok=True)
             with open(model_pred_path, "w", encoding="utf-8") as f:
                 for record in model_rows:
@@ -363,10 +363,10 @@ def main():
             d["n"] += 1
             d["score_sum"] += score
 
-    with open(out / "prediction_logs.jsonl", "w", encoding="utf-8") as f:
+    with open(out / "prediction_logs.sqlite_export.jsonl", "w", encoding="utf-8") as f:
         for r in logs:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    with open(out / "failure_cases.jsonl", "w", encoding="utf-8") as f:
+    with open(out / "failure_cases.sqlite_export.jsonl", "w", encoding="utf-8") as f:
         for r in failures:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 

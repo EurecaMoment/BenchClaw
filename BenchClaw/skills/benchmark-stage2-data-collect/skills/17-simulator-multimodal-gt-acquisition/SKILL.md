@@ -39,6 +39,7 @@ WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/**
 ## 必须输出
 
 ```text
+WORKSPACE_ROOT/stage2/stage2.db
 WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/
   observations/
   simulator/
@@ -50,8 +51,8 @@ WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/
         instance/
         ...other required modalities...
   provenance/
-  sim_trace_manifest.jsonl
-  gt_manifest.jsonl
+  sim_trace_manifest.sqlite_export.jsonl
+  gt_manifest.sqlite_export.jsonl
   collection_report.md
   USED_INPUTS.json
   DONE.json
@@ -78,7 +79,11 @@ observations/
       object_state.jsonl
 ```
 
-## sim_trace_manifest.jsonl
+## SQLite canonical storage
+
+本节点的规范化记录应写入 `WORKSPACE_ROOT/stage2/stage2.db` 的 `simulator_trace_records` 与 `simulator_gt_records` 表。`sim_trace_manifest.sqlite_export.jsonl` 与 `gt_manifest.sqlite_export.jsonl` 仅作为兼容性导出，不再是唯一真相源。
+
+## sim_trace_manifest.sqlite_export.jsonl
 
 每行一个 episode 或 sample：
 
@@ -99,7 +104,7 @@ observations/
 }
 ```
 
-## gt_manifest.jsonl
+## gt_manifest.sqlite_export.jsonl
 
 每行一个 GT 字段：
 
@@ -130,8 +135,8 @@ observations/
 
 - `observations/` 与 `provenance/` 中必须存在后续 Stage3/Stage4 可实际读取的多模态观测和 GT 证据文件，不能只写 summary、统计数字或空目录。
 - 图像型观测文件必须优先落在 `WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/simulator/<simulator_id>/<scene_or_map_id>/` 下，并按 execution-plan 中的 scene/map/task context 分层；不得把不同场景或不同仿真器的图像混写。
-- `sim_trace_manifest.jsonl` 与 `gt_manifest.jsonl` 中的路径必须解析到本节点输出目录下的真实文件或内联 GT 值。
-- `sim_trace_manifest.jsonl` 中每条记录都必须能追溯到：`13` 中被选中的 `simulator_targets` 之一，以及 `BENCHCLAW_ROOT/simulatorCards/**/SKILL.md` 中被 14 登记为可用的某个仿真器；不得出现无法回溯到这两者的采集记录。
+- `stage2.db.simulator_trace_records` 与 `stage2.db.simulator_gt_records` 中的路径必须解析到本节点输出目录下的真实文件或内联 GT 值。
+- `stage2.db.simulator_trace_records` 中每条记录都必须能追溯到：`13` 中被选中的 `simulator_targets` 之一，以及 `BENCHCLAW_ROOT/simulatorCards/**/SKILL.md` 中被 14 登记为可用的某个仿真器；不得出现无法回溯到这两者的采集记录。
 - 对 execution-plan 要求采集的 RGB/depth/semantic/instance 等图像型观测，必须全量保存对应帧文件；不得仅保留压缩视频、抽样截图、统计表、缩略图或“可按需重采”的说明来替代完整落盘。
 - 对每个被 13 选中的仿真器场景，实际采集的时刻帧数不得低于 `stage2_collection_targets.json` 中的 `simulator_scene_min_timepoints`，且当前最低允许值为 `50`；低于该值即视为数量不足，节点必须阻塞。
 - 若仿真器通过本地端口提供服务，采集前必须先做 endpoint 健康检查；若本地 endpoint 未启动、端口不可达或健康检查失败，本节点必须阻塞，而不是尝试重新启动仿真器。
@@ -147,8 +152,8 @@ observations/
   "outputs": [
     "observations/",
     "provenance/",
-    "sim_trace_manifest.jsonl",
-    "gt_manifest.jsonl",
+    "sim_trace_manifest.sqlite_export.jsonl",
+    "gt_manifest.sqlite_export.jsonl",
     "collection_report.md"
   ],
   "terminal": true,

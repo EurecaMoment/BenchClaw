@@ -87,6 +87,8 @@ WORKSPACE_ROOT/stage2/13-execution-plan-ingest/
 - `existing_benchmark_flow_policy` 必须表达被选中已有 benchmark 图文数据全量进入后续流程；
 - `simulator_scene_min_timepoints` 必须给出每个选中仿真器场景的最小时刻帧数，当前最低允许值为 `50`。
 
+对 Stage2 而言，这些 collection targets 进入后续执行时，规范真相源应写入 `WORKSPACE_ROOT/stage2/stage2.db` 的配置表或 target 表；`stage2_collection_targets.json` 与 `input_manifest.json` 只可作为兼容性导出或人工审阅副本。
+
 ## 执行步骤
 
 1. 定位 Stage1 node-13 目录。

@@ -6,6 +6,8 @@
 
 Ingest Stage2 node-17 simulator multimodal observations and privileged GT as a read-only Stage3 source.
 
+This node only reads and re-indexes simulator observations and privileged GT that have already been collected and materialized by Stage2 node 17. It must not reconnect to simulator services to capture fresh frames, rerun scenes, or regenerate raw simulator GT inside Stage3.
+
 ## Parents
 
 ```text
@@ -19,16 +21,23 @@ Ingest Stage2 node-17 simulator multimodal observations and privileged GT as a r
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.jsonl`
-- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/stage3.db`
+- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.sqlite_export.jsonl`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_summary.md`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/DONE.json`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/USED_INPUTS.json`
+
+本节点的规范化真相源应写入 `stage3.db` 的 `stage2_simulator_sources` 与 `stage2_simulator_gt_sources` 表；导出 `jsonl` 仅作为兼容性副本。
 
 ## Must not read
 
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**`
 - `WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**`
+
+## Non-negotiable Constraint
+
+- 若 Stage2 node 17 没有提供足够的已落盘 simulator 观测或 GT，本节点必须阻塞并报告缺口；不得在 Stage3 中重新调用仿真器补采原始数据。
 
 ## Completion
 

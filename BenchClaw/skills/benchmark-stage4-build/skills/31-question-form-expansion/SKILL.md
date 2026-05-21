@@ -19,15 +19,28 @@
 - `source_trace`：必须能回溯到 Stage3 source record；
 - 不得在 blueprint 中凭空生成 GT。
 
+blueprint 必须是“可实例化题目合同”，不能只是模板名套壳。每个 blueprint 还必须明确：
+
+- 题面需要被实例化的关键变量集合，例如 `start_pose`、`goal_pose`、`target_object`、`subject_object`、`reference_object`、`instruction`、`candidate_options` 等；
+- 哪些变量必须进入最终 item 的 `input_fields`；
+- 题面如何避免退化成空泛模板句，例如只写“optimal path from start to goal in ...”；
+- 该题型实际需要的模态约束，不能只写 family 名称而不约束 `rgb/depth/language`；
+- 最终 item 期望输出的 `expected_output_schema`。
+
+若 blueprint 不能说明“最终题面如何被具体变量实例化为可回答问题”，则该 blueprint 不得进入后续全量合成。
+
 ## 输出
 
 ```text
-WORKSPACE_ROOT/stage4/31-question-form-expansion/question_blueprints.jsonl
+WORKSPACE_ROOT/stage4/stage4.db
+WORKSPACE_ROOT/stage4/31-question-form-expansion/question_blueprints.sqlite_export.jsonl
 WORKSPACE_ROOT/stage4/31-question-form-expansion/blueprint_manifest.json
 WORKSPACE_ROOT/stage4/31-question-form-expansion/distractor_policy.md
 USED_INPUTS.json
 DONE.json
 ```
+
+规范真相源应写入 `stage4.db.question_blueprints`；`question_blueprints.sqlite_export.jsonl` 仅作为兼容性导出。
 
 
 ---

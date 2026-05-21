@@ -41,8 +41,9 @@ Required outputs:
 
 ```text
 eval_results.json
-prediction_logs.jsonl
-failure_cases.jsonl
+WORKSPACE_ROOT/stage5/stage5.db
+prediction_logs.sqlite_export.jsonl
+failure_cases.sqlite_export.jsonl
 report_payload.json
 run_config.yaml
 DONE.json
@@ -69,6 +70,8 @@ When Stage5 performs real model calls itself, it must use `BENCHCLAW_ROOT/modelN
 - If the Stage4 artifact pack is not self-contained enough to resolve media and metric inputs inside the workspace, this node must fail/block rather than guessing or rewriting the benchmark.
 - For image-based eval items, node 38 must send real multimodal requests to `https://yeysai.com/v1/chat/completions` using the required model roster from `modelNeedMeasured`; it must not degrade such items to text-only unless the item truly has no image/media refs.
 - Node 38 must evaluate all required candidate models: `qwen3-vl-235b-a22b-instruct`, `kimi-k2.5`, `llama-4-maverick-17b-128e-instruct`, `grok-4-fast`, `gpt-5.4-mini-2026-03-17`, `glm-4.5v`, `gemini-3-flash-preview`, `claude-haiku-4-5-20251001-thinking`, `claude-sonnet-4-5-20250929`.
+
+规范真相源应把样本级预测、失败样本、调用统计与聚合结果写入 `stage5.db`；`prediction_logs.sqlite_export.jsonl` 与 `failure_cases.sqlite_export.jsonl` 仅作为兼容性导出。
 
 ## Reproducibility Requirements
 

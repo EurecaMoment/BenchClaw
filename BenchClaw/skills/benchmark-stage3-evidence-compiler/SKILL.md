@@ -27,6 +27,13 @@ Stage3 的目标不是制造最终评测集，而是把三类原始数据变成 
 
 这些“高可信数据资产”必须是 **真实落盘并可被后续节点直接消费的清洗结果、标注文件、融合记录和证据文件**，而不是只含有 `pending`、`candidate only`、说明文字或空目录的结构壳子。
 
+Stage3 的数据来源是 **只读继承 Stage2 已经采集并落盘好的结果**，而不是重新采集流程。换句话说：
+
+- Stage3 不得重新采集真实数据；
+- Stage3 不得重新下载或重新获取已有 benchmark 数据；
+- Stage3 不得重新运行仿真器去补采新的原始观测或 GT；
+- Stage3 只能读取 `WORKSPACE_ROOT/stage2/15-*`、`16-*`、`17-*` 中已经物化好的数据，并在其基础上做 ingest、统一格式、清洗、半监督标注和 GT 打包。
+
 严禁把本阶段写成 `15→16→17→18→19→20` 串行链。编号是节点 ID，不是执行顺序。
 
 ---
@@ -191,6 +198,15 @@ WORKSPACE_ROOT/stage3/
 python scripts/check_stage3_outputs.py --workspace WORKSPACE_ROOT
 ```
 
+并且该检查不能只在终端打印通过或失败，必须把结构化验证结果落盘到：
+
+```text
+WORKSPACE_ROOT/stage3/STAGE3_VALIDATION_REPORT.json
+WORKSPACE_ROOT/stage3/STAGE3_VALIDATION_REPORT.md
+```
+
+Stage3 只有在这两个验证报告存在、且明确表明 Stage2→L1→L2→L3 的数量闭合、四类产物闭合、目录树闭合全部通过时，才允许把本阶段视为完成。
+
 ---
 
 ## 5. GT 原则
@@ -203,6 +219,7 @@ python scripts/check_stage3_outputs.py --workspace WORKSPACE_ROOT
 6. 若工具执行失败、产物缺失或数量不足，节点必须阻塞并写失败/冲突报告，不得使用 `pending`、`to_be_generated`、空 annotation 目录、样例条目或说明文档冒充完成。
 7. 对 image-based 半监督 GT，18 与 19 必须执行同一条共享链路：`输入图像 -> YOLOE + LLM -> SAM3 -> Depth Anything 3 -> 融合`，最终产出带语义/深度信息的实体分割结果；27 只负责登记这条链路的工具契约，不代替逐图执行。
 8. 对 realdata、benchmarkdataset、simulator 三条 image-based 分支，保留下来的样本必须在 `WORKSPACE_ROOT/stage3` 下全量保存三类图像：原图、语义实体分割图、深度图。尤其 simulator 分支的图像型观测不得只保留抽样帧、摘要视频、统计结果或代表样例，必须对被保留样本全量落盘。
+9. Stage3 不承担新的原始数据采集职责；若 Stage2 没有提供足够的已落盘样本、观测或 GT，Stage3 必须阻塞并记录缺口，而不是自行回到数据源、数据集官网、仿真器端口或其他外部路径重新采集。
 
 ---
 
