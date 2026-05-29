@@ -38,3 +38,599 @@ SAM3 local service listening on http://127.0.0.1:8765
   import pkg_resources
 /home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+Terminated
+SAM3 local service listening on http://127.0.0.1:8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 458, in __init__
+    self.server_activate()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 487, in server_activate
+    self.socket.listen(self.request_queue_size)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmpggdk1b6w: line 17: 1874465 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmpuqgtfrof: line 17: 1882490 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 45554)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 463, in do_POST
+    return _json_response(
+           ^^^^^^^^^^^^^^^
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 46, in _json_response
+    handler.wfile.write(body)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 480, in do_POST
+    return _json_response(
+           ^^^^^^^^^^^^^^^
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 45, in _json_response
+    handler.end_headers()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 542, in end_headers
+    self.flush_headers()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 546, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+/tmp/tmpx52vjr43: line 17: 1892712 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/tmp/tmpoto5oxoy: line 14: 2599005 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmpyirh3rmy: line 14: 2603925 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmp_wsj1bv_: line 14: 2606284 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+/tmp/tmplmahu2ve: line 14: 2608730 Killed                  python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+SAM3 local service listening on http://127.0.0.1:8765
+Traceback (most recent call last):
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 502, in <module>
+    main()
+  File "/home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py", line 496, in main
+    server = ThreadingHTTPServer((args.host, args.port), Sam3Handler)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/home/maqiang/miniconda3/envs/sam3/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+ERROR conda.cli.main_run:execute(142): `conda run python3 /home/maqiang/BenchClaw/BenchClaw/annotation-tool/sam3/sam3_service.py --host 127.0.0.1 --port 8765` failed. (See above for error)
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+SAM3 local service listening on http://127.0.0.1:8765
+/home/maqiang/BenchClaw/thirty_part/annotationTools/sam3/sam3/model_builder.py:8: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/home/maqiang/miniconda3/envs/sam3/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)

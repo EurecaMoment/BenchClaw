@@ -12,6 +12,6 @@ export DEPTHANYTHING3_CONDA_ENV="${DEPTHANYTHING3_CONDA_ENV:-depthanythingv3}"
 export DEPTHANYTHING3_PROJECT_DIR="${DEPTHANYTHING3_PROJECT_DIR:-$THIRD_PARTY_ROOT/annotationTools/Depth-Anything-3}"
 export DEPTHANYTHING3_MODEL_DIR="${DEPTHANYTHING3_MODEL_DIR:-/home/maqiang/model/DA3NESTED-GIANT-LARGE-1.1}"
 export DEPTHANYTHING3_GALLERY_DIR="${DEPTHANYTHING3_GALLERY_DIR:-$THIRD_PARTY_ROOT/annotationTools/Depth-Anything-3/workspace/gallery}"
-
+export CUDA_VISIBLE_DEVICES=2
 python3 "$SCRIPT_DIR/depthanything3_client.py" ensure-server --timeout 240 --model-dir "$DEPTHANYTHING3_MODEL_DIR" --device "${DEPTHANYTHING3_DEVICE:-cuda}" --gallery-dir "$DEPTHANYTHING3_GALLERY_DIR"
 python3 "$SCRIPT_DIR/depthanything3_client.py" status

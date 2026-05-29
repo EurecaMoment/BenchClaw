@@ -104,9 +104,39 @@ required = [
     term / "STAGE4_REPORT.md",
     term / "DONE.json",
 ]
+stage4_db_path = workspace_path("WORKSPACE_ROOT/stage4/stage4.db")
+required.append(stage4_db_path)
 for p in required:
     if not p.exists():
         errors.append(f"missing final artifact: {p}")
+
+if stage4_db_path.exists():
+    try:
+        import sqlite3
+
+        conn = sqlite3.connect(stage4_db_path)
+        try:
+            existing = {
+                r[0]
+                for r in conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'"
+                ).fetchall()
+            }
+            canonical_tables = ["question_blueprints", "eval_items"]
+            missing_tables = [t for t in canonical_tables if t not in existing]
+            if missing_tables:
+                errors.append(f"stage4.db is missing required tables: {missing_tables}")
+            for tbl in canonical_tables:
+                if tbl in existing:
+                    cnt = conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
+                    if cnt == 0:
+                        errors.append(
+                            f"stage4.db.{tbl} is empty; Stage4 cannot be marked done without truth-source rows"
+                        )
+        finally:
+            conn.close()
+    except Exception as exc:
+        errors.append(f"failed to inspect stage4.db: {exc}")
 
 images_dir = term / "EVALSET_DATASET" / "images"
 if images_dir.exists() and not has_files(images_dir):

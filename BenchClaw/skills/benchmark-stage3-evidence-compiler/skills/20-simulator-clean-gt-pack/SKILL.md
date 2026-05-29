@@ -85,7 +85,7 @@ Here:
 ```json
 {
   "node_id": "20",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack",
   "timestamp_utc": "<ISO-8601>"
 }

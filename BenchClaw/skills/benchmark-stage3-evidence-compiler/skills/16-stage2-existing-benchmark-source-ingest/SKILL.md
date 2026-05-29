@@ -45,7 +45,7 @@ This node only reads and re-indexes existing-benchmark data that has already bee
 ```json
 {
   "node_id": "16",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest",
   "timestamp_utc": "<ISO-8601>"
 }

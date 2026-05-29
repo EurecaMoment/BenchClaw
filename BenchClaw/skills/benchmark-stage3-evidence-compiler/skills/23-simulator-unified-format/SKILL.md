@@ -56,7 +56,7 @@ This node must convert **all** simulator samples that Stage2 node 17 passed into
 ```json
 {
   "node_id": "23",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/23-simulator-unified-format",
   "timestamp_utc": "<ISO-8601>"
 }

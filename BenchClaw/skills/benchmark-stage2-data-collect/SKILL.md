@@ -253,8 +253,11 @@ skills/17-simulator-multimodal-gt-acquisition/SKILL.md
 在开始前：
 
 ```bash
+python scripts/init_stage2_workspace.py --workspace WORKSPACE_ROOT
 python scripts/validate_dag.py dag.json
 ```
+
+`init_stage2_workspace.py` 会调用 `init_stage2_db.py` 建好 `stage2.db` 的全部主表（`real_image_records`、`benchmark_records`、`benchmark_label_records`、`simulator_trace_records`、`simulator_gt_records`）。如果不先 init，后续节点的写表会失败，checker 也会因为 `stage2.db` 缺失而 fail。
 
 在每个节点完成后：
 

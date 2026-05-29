@@ -118,7 +118,7 @@ for nid in dag["terminal_nodes"]:
         if done_obj is not None:
             if done_obj.get("node_id") != nid:
                 errors.append(f"node_id mismatch in {done}")
-            if done_obj.get("status") != "DONE":
+            if done_obj.get("status") != "done":
                 errors.append(
                     f"invalid DONE status in {done}: {done_obj.get('status')!r}"
                 )

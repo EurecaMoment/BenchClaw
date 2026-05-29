@@ -2,34 +2,37 @@
 
 ## Purpose
 
-This document specifies the executable reference interface for the non-simulator fixed semi-supervised chain used by Stage3 nodes 18 and 19.
+This document specifies the executable interface for the non-simulator semi-supervised chain used by Stage3 nodes 18 and 19. It is the canonical contract for `scripts/run_semi_supervised_annotation.py`, which is the **only** allowed execution entry point in those nodes.
 
 ## Script
 
-`scripts/run_fixed_semi_supervised_chain.py`
+`scripts/run_semi_supervised_annotation.py`  (conda env: `sam3`)
 
-## Required inputs
+## Required inputs (CLI flags)
 
-- original image file
-- llm-local output JSON
-- YOLOE output JSON
-- SAM3 output JSON
-- Depth Anything 3 output JSON
-- branch name: `realdata` or `benchmarkdataset`
-- logical group name and optional split name
-- target output paths for fused record and stage3 asset tree
+- `--image`              absolute path to the input image
+- `--out-dir`            per-record working directory (free-form scratch space)
+- `--workspace-root`     BenchClaw workspace root used to materialize the Stage3 contract
+- `--branch`             `realdata` or `benchmarkdataset`
+- `--group-name`         `realdata` scene/source name, or `benchmarkdataset` dataset name
+- `--split-name`         (only for benchmarkdataset) split or category name
+- `--record-id`          stable record identifier; defaults to the image stem
 
 ## Required outputs
 
-- `original/` image file
-- `semantic_entity_segmentation/` image file
-- `depth/` image file
-- `gt/` fused GT candidate JSON
-- appended `semi_gt_manifest.sqlite_export.jsonl` compatibility record with `artifact_paths.original`, `artifact_paths.semantic_entity_segmentation`, `artifact_paths.depth`, and `artifact_paths.gt`, while the canonical truth is stored in `stage3.db.semi_gt_candidates`
+For every retained sample the script writes:
+
+- `WORKSPACE_ROOT/stage3/<branch>/<group>[/<split>]/<record_id>/original/<record_id>.<ext>`
+- `WORKSPACE_ROOT/stage3/<branch>/<group>[/<split>]/<record_id>/semantic_entity_segmentation/<record_id>.png`
+- `WORKSPACE_ROOT/stage3/<branch>/<group>[/<split>]/<record_id>/depth/<record_id>.png`
+- `WORKSPACE_ROOT/stage3/<branch>/<group>[/<split>]/<record_id>/gt/<record_id>.json`
+- one appended record in:
+  `WORKSPACE_ROOT/stage3/{18-real-image-semi-supervised-gt|19-benchmark-image-semi-supervised-gt}/semi_gt_manifest.sqlite_export.jsonl`
+- canonical truth-source rows in `WORKSPACE_ROOT/stage3/stage3.db`, table `semi_gt_candidates`, with `artifact_paths_json` referencing the four files above
 
 ## Non-negotiable rules
 
-- the runner is a reference interface for path organization and manifest closure;
-- it does not replace real YOLOE, SAM3, Depth Anything 3, or LLM inference;
-- nodes 18 and 19 must still ensure the upstream tool outputs are real and correspond to the same `record_id`;
-- no retained sample may skip any of the four asset classes.
+- The runner does not replace real YOLOE / SAM3 / Depth Anything 3 / LLM inference; if any of the four services fails, the node must block.
+- Nodes 18 and 19 must call the script via `subprocess`; they must not handcraft `semi_gt_manifest.sqlite_export.jsonl` rows nor insert rows into `stage3.db.semi_gt_candidates` directly.
+- No retained sample may skip any of the four asset classes (`original`, `semantic_entity_segmentation`, `depth`, `gt`).
+- Manifest and SQLite rows must remain in sync: every JSONL row must be reproducible from the SQLite truth source.

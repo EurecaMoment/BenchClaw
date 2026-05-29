@@ -1,8 +1,8 @@
 {
-  "provider": "xxxxx",
-  "api_base": "https://xxxxx.com/v1/chat/completions",
-  "api_key": "xxxxxx",
-  "api_key_env": "XXXXXX_API_KEY",
+  "provider": "yeysai",
+  "api_base": "https://yeysai.com/v1/chat/completions",
+  "api_key": "sk-mgp48izJ4wSVIrF9wJKifGmWba4oZDdw0PrRBdU53NrgyDPn",
+  "api_key_env": "YEYSAI_API_KEY",
   "models": [
     {"name": "qwen3-vl-235b-a22b-instruct", "multimodal": true},
     {"name": "kimi-k2.5", "multimodal": true},

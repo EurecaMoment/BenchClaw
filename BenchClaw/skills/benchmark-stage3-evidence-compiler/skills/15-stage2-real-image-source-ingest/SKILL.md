@@ -45,7 +45,7 @@ This node only reads and re-indexes real-image data that has already been collec
 ```json
 {
   "node_id": "15",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest",
   "timestamp_utc": "<ISO-8601>"
 }

@@ -14,7 +14,7 @@
 - 直接读取外部描述 skill/card 目录：
   - `BENCHCLAW_ROOT/simulatorCards`：仿真器能力描述。
   - `BENCHCLAW_ROOT/benchmarkDatasetCards`：已有 benchmark 数据集描述。
-  - `BENCHCLAW_ROOT/realDatasetCards`：真实数据源描述。
+  - `BENCHCLAW_ROOT/realDataCards`：真实数据源描述。
 - 若外部能力文档缺失，仍要产出空矩阵和缺失说明，不得从 `03` 推断能力。
 
 ## 必写输出
@@ -33,7 +33,7 @@
 
 1. 读取 `BENCHCLAW_ROOT/simulatorCards`，抽取每个仿真器客观支持的场景、对象、动作、关系、GT 字段、可观测变量、可复现实验变量、可执行限制。
 2. 读取 `BENCHCLAW_ROOT/benchmarkDatasetCards`，抽取已有 benchmark 数据集的任务类型、数据模态、标注/GT、评测指标、许可和复用限制。
-3. 读取 `BENCHCLAW_ROOT/realDatasetCards`，抽取真实数据源的采集条件、数据模态、标注/GT、覆盖范围、质量风险和许可限制。
+3. 读取 `BENCHCLAW_ROOT/realDataCards`，抽取真实数据源的采集条件、数据模态、标注/GT、覆盖范围、质量风险和许可限制。
 4. 建立数据/仿真器能力矩阵，并为每条能力保留外部来源引用。
 5. 输出 `observable_gt_fields.json`，为后续模板证据合同提供字段基础。
 

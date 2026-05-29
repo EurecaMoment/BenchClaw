@@ -57,7 +57,7 @@ This node must convert **all** real-image samples that Stage2 node 15 passed int
 ```json
 {
   "node_id": "21",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/21-real-image-unified-format",
   "timestamp_utc": "<ISO-8601>"
 }

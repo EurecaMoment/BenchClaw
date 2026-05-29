@@ -252,9 +252,12 @@ skills/37-benchmark-artifact-pack/SKILL.md
 ## 7. 强制检查
 
 ```bash
+python scripts/init_stage4_workspace.py --workspace WORKSPACE_ROOT --dag dag.json
 python scripts/validate_dag.py dag.json
 python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
 python scripts/check_stage4_outputs.py --workspace WORKSPACE_ROOT
 ```
+
+`init_stage4_workspace.py` 会调用 `init_stage4_db.py` 建好 `stage4.db` 的全部内部真相源表（`stage1_template_metric_inputs`、`stage3_*_inputs`、`evidence_pool`、`template_evidence_bindings`、`binding_rejections`、`question_blueprints`、`eval_items`、`quality_rejections`）。跳过 init 会让节点写表失败，并使 checker 因为 `stage4.db` 缺表/缺行而 fail。
 
 若 `validate_dag.py` 发现该图被改写为单链串行图，本 Skill 必须停止执行。

@@ -56,7 +56,7 @@ This node must convert **all** benchmark samples that Stage2 node 16 passed into
 ```json
 {
   "node_id": "22",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/22-benchmark-unified-format",
   "timestamp_utc": "<ISO-8601>"
 }

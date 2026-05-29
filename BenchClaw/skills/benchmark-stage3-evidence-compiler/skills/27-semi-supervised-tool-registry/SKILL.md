@@ -68,8 +68,8 @@ This shared chain is mandatory, not optional, for every non-simulator image coll
 4. 融合阶段必须按 `record_id + candidate_id` 对齐 YOLOE 语义/候选框、SAM3 实体分割、Depth Anything 3 深度图，生成“带语义/深度信息的实体分割结果”，即 `object_instances_with_depth` 或等价结构。
 5. 上述链路必须同时适用于 real-image 分支和 existing-benchmark image 分支；不得只为其中一个分支登记工具契约。
 6. 若某工具不可用、endpoint 不健康、I/O 契约不闭合或无法支撑上述融合结果，27 必须阻塞并在 `tool_probe_report.md` 中写明缺口，而不是把不完整链路交给 18/19。
-7. 这条链路的目标不是“做一个候选标签演示”，而是尽可能把非仿真器图像推进到接近 simulator 分支可消费程度的证据形态：至少要产出可追溯的 GT 候选记录、深度图、语义实体分割图，以及它们之间可对齐的融合结果。
-8. 27 必须把上述链路落成一个可执行参考入口，并在 contract 中显式引用 `scripts/run_fixed_semi_supervised_chain.py`，使 18/19 不需要根据抽象文字自行猜测 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 以及 `artifact_paths` 的组织方式。
+7. 这条链路的目标不是"做一个候选标签演示"，而是尽可能把非仿真器图像推进到接近 simulator 分支可消费程度的证据形态：至少要产出可追溯的 GT 候选记录、深度图、语义实体分割图，以及它们之间可对齐的融合结果。
+8. 27 必须把上述链路落成一个可执行参考入口，并在 contract 中显式引用 `scripts/run_semi_supervised_annotation.py`。18/19 节点**必须直接调用该脚本**，不得绕开它自行编排 YOLOE/SAM3/DA3 调用顺序或参数。
 
 ## 非仿真器图像的强制处理范围
 
@@ -82,23 +82,28 @@ This shared chain is mandatory, not optional, for every non-simulator image coll
 
 ## 可执行参考入口
 
-27 必须在 `annotation_tool_contracts.json` 与 `fixed_chain_runner_contract.md` 中明确引用以下可执行参考脚本：
+27 必须在 `annotation_tool_contracts.json` 与 `fixed_chain_runner_contract.md` 中明确引用以下**标准执行脚本**：
 
 ```text
-scripts/run_fixed_semi_supervised_chain.py
+scripts/run_semi_supervised_annotation.py
 ```
 
-该脚本的职责是把以下固定链路接口写清楚并稳定落盘：
+运行环境固定为 `conda activate sam3`。该脚本是节点 18/19 唯一允许的半监督标注执行入口，封装了：
 
-1. 输入：原图、LLM 输出、YOLOE 输出、SAM3 输出、Depth Anything 3 输出；
-2. 产物：
-   - `original/` 原图；
-   - `semantic_entity_segmentation/` 由 `YOLOE + LLM -> SAM3` 得到的语义实体分割图；
-   - `depth/` 由 `Depth Anything 3` 得到的深度图；
-   - `gt/` 带 `source_type`、`tool_chain`、`artifact_paths`、`quality_checks` 的 GT 候选或融合记录；
-3. SQLite 映射：把上述四类产物通过 `artifact_paths` 写入 `stage3.db.semi_gt_candidates`；如需导出 `semi_gt_manifest`，只能生成 `sqlite_export` 兼容副本。
+1. **输入**：单张原图绝对路径 + 输出目录；
+2. **执行**：
+   - 调用本地 VLM/LLM (`http://127.0.0.1:9001`) 生成 `candidate_terms`；
+   - 调用 YOLOE (`http://127.0.0.1:8766`) 做开放词表验证，仅保留 LLM 通过且 YOLOE 检测到的标签；
+   - 对每个保留标签调用 SAM3 (`http://127.0.0.1:8765`) 做 text-only 实体分割；
+   - 对整图调用 Depth Anything 3 (`http://127.0.0.1:8008`) 拿原分辨率深度，并按 SAM3 mask 算每实例 `min/max/mean/median`；
+3. **产物**（在 `--out-dir` 下）：
+   - `result.json`：`instances[*]` 含 `semantic_label`、`segmentation.sam3`、`depth` 四件套；
+   - `semantic_entity_segmentation.png`：按 instance 上色的语义实体分割图；
+   - `depth_map.png`：归一化深度可视化；
+   - `da3_export/`：DA3 原始导出（含绝对深度的 npy 或 depth_vis）；
+4. **SQLite 映射**：把每个 instance 作为一行 candidate 写入 `stage3.db.semi_gt_candidates`，`artifact_paths` 指向上述四件套真实文件；如需导出 `semi_gt_manifest`，只能生成 `sqlite_export` 兼容副本。
 
-27 自身不执行逐图推理，但必须把 18/19 所需的可执行参考脚本路径、输入参数语义、以及输出文件组织方式写进 contract，避免实现方把固定链路理解成仅输出抽象 JSON 说明。
+27 自身不执行逐图推理，但必须在 contract 中明确：18/19 节点**禁止自行决策调用顺序、参数或环境**，必须直接 `subprocess.run(['python', 'scripts/run_semi_supervised_annotation.py', '--image', ..., '--out-dir', ...])`，且必须在 `sam3` conda 环境下执行。
 
 ## 与 simulator 分支的对齐目标
 
@@ -119,7 +124,7 @@ scripts/run_fixed_semi_supervised_chain.py
 2. 没有把 non-simulator 图像的全覆盖处理要求写进 contract；
 3. 工具可用性无法支撑“原图 -> 语义实体分割图 -> 深度图 -> 融合 GT 候选”这一整条固定链路；
 4. 任何试图把 non-simulator 图像降级成只保留原图、只保留文本候选、只保留样例条目、或只保留部分融合结果的方案。
-5. 没有把固定链路的可执行参考入口 `scripts/run_fixed_semi_supervised_chain.py` 写入 contract，导致 18/19 只能依赖抽象描述自行猜测落盘组织方式的情况。
+5. 没有把固定链路的可执行入口 `scripts/run_semi_supervised_annotation.py` 写入 contract，或允许 18/19 自行决策半监督调用，则必须阻塞。
 
 ## Completion
 
@@ -128,7 +133,7 @@ scripts/run_fixed_semi_supervised_chain.py
 ```json
 {
   "node_id": "27",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry",
   "timestamp_utc": "<ISO-8601>"
 }

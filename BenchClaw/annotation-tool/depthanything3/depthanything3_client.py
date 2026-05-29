@@ -131,12 +131,17 @@ def ensure_server(timeout_seconds=240, model_dir=None, device="cuda", gallery_di
         resolved_gallery_dir,
     ]
     log_handle = open(SERVICE_LOG, "a", encoding="utf-8")
+    env = os.environ.copy()
+    env["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    env["CUDA_VISIBLE_DEVICES"] = os.environ.get("DEPTHANYTHING3_GPU_ID", "1")
+
     subprocess.Popen(
         command,
         stdout=log_handle,
         stderr=subprocess.STDOUT,
         cwd=PROJECT_DIR,
         start_new_session=True,
+        env=env,
     )
 
     deadline = time.time() + timeout_seconds

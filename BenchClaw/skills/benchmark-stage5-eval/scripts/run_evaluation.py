@@ -10,7 +10,7 @@ Evalset rows should contain an id and a gold answer using common field names:
   sample_id/id/qid and answer/gold/label/target
 """
 
-import argparse, csv, hashlib, json, os, sys, time
+import argparse, csv, hashlib, json, os, sqlite3, sys, time
 from pathlib import Path
 
 try:
@@ -437,6 +437,110 @@ def main():
         f"stage4_package: {stage4}\npredictions_dir: {pred_dir}\nscoring_mode: exact_match_fallback\nmodel_roster: {benchclaw_root / 'modelNeedMeasured' / 'model_roster.yaml'}\napi_client: {benchclaw_root / 'modelNeedMeasured' / 'yeysai_multimodal_client.py'}\n",
         encoding="utf-8",
     )
+
+    # Materialize the SQLite truth source for Stage5.
+    workspace_dir = Path(args.workspace)
+    stage5_db_path = workspace_dir / "stage5" / "stage5.db"
+    stage5_db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(stage5_db_path)
+    try:
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS prediction_logs (
+              sample_id TEXT NOT NULL,
+              model TEXT NOT NULL,
+              prediction TEXT,
+              gold TEXT,
+              score REAL,
+              dimension TEXT,
+              metadata_json TEXT,
+              PRIMARY KEY (sample_id, model)
+            );
+            CREATE TABLE IF NOT EXISTS failure_cases (
+              sample_id TEXT NOT NULL,
+              model TEXT NOT NULL,
+              failure_json TEXT NOT NULL,
+              PRIMARY KEY (sample_id, model)
+            );
+            CREATE TABLE IF NOT EXISTS model_call_summary (
+              model TEXT PRIMARY KEY,
+              endpoint TEXT,
+              prediction_file TEXT,
+              summary_json TEXT
+            );
+            CREATE TABLE IF NOT EXISTS aggregated_scores (
+              model TEXT PRIMARY KEY,
+              overall_score REAL,
+              sample_count INTEGER,
+              missing_count INTEGER,
+              invalid_count INTEGER,
+              dimensions_json TEXT
+            );
+            """
+        )
+        for r in logs:
+            conn.execute(
+                "INSERT OR REPLACE INTO prediction_logs "
+                "(sample_id, model, prediction, gold, score, dimension, metadata_json) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    str(r.get("sample_id", "")),
+                    str(r.get("model", "")),
+                    None if r.get("prediction") is None else str(r.get("prediction")),
+                    None if r.get("gold") is None else str(r.get("gold")),
+                    float(r.get("score", 0.0)) if r.get("score") is not None else None,
+                    str(r.get("dimension", "")) or None,
+                    json.dumps(r.get("metadata") or {}, ensure_ascii=False),
+                ),
+            )
+        for fr in failures:
+            conn.execute(
+                "INSERT OR REPLACE INTO failure_cases (sample_id, model, failure_json) "
+                "VALUES (?, ?, ?)",
+                (
+                    str(fr.get("sample_id", "")),
+                    str(fr.get("model", "")),
+                    json.dumps(fr, ensure_ascii=False),
+                ),
+            )
+        # model_call_summary should mirror model_call_summary.json
+        try:
+            summary_payload = json.loads(
+                (out / "model_call_summary.json").read_text(encoding="utf-8")
+            )
+        except Exception:
+            summary_payload = {"models": []}
+        for item in summary_payload.get("models", []) or []:
+            conn.execute(
+                "INSERT OR REPLACE INTO model_call_summary "
+                "(model, endpoint, prediction_file, summary_json) VALUES (?, ?, ?, ?)",
+                (
+                    str(item.get("model", "")),
+                    str(item.get("endpoint", "")) or None,
+                    str(item.get("prediction_file", "")) or None,
+                    json.dumps(item, ensure_ascii=False),
+                ),
+            )
+        for row in leaderboard:
+            model_name = str(row.get("model", ""))
+            dims_obj = (aggregate.get(model_name) or {}).get("dims", {})
+            conn.execute(
+                "INSERT OR REPLACE INTO aggregated_scores "
+                "(model, overall_score, sample_count, missing_count, invalid_count, dimensions_json) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    model_name,
+                    float(row.get("overall_score", 0.0)),
+                    int(row.get("n", 0)),
+                    int(row.get("missing", 0)),
+                    int(row.get("invalid", 0)),
+                    json.dumps(dims_obj, ensure_ascii=False),
+                ),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
     (out / "DONE.json").write_text(
         json.dumps(
             {
@@ -444,6 +548,7 @@ def main():
                 "status": "done",
                 "time": time.time(),
                 "model_count": len(aggregate),
+                "stage5_db": str(stage5_db_path),
             },
             ensure_ascii=False,
             indent=2,

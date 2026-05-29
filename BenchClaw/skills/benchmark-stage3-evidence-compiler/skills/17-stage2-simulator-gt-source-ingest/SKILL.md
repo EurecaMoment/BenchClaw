@@ -46,7 +46,7 @@ This node only reads and re-indexes simulator observations and privileged GT tha
 ```json
 {
   "node_id": "17",
-  "status": "DONE",
+  "status": "done",
   "output_dir": "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest",
   "timestamp_utc": "<ISO-8601>"
 }

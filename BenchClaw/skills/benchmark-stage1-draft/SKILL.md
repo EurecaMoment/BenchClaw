@@ -86,7 +86,7 @@ graph LR
 
 - `BENCHCLAW_ROOT/simulatorCards`：仿真器能力描述 skill/card。
 - `BENCHCLAW_ROOT/benchmarkDatasetCards`：已有 benchmark 数据集描述 skill/card。
-- `BENCHCLAW_ROOT/realDatasetCards`：真实数据源描述 skill/card。
+- `BENCHCLAW_ROOT/realDataCards`：真实数据源描述 skill/card。
 
 `06 标注能力描述` 的优先外部输入：
 

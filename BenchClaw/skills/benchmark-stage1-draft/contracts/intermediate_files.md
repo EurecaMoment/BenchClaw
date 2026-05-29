@@ -68,11 +68,16 @@
 
 ## 04 搜索可用文献
 
-- `stage1/04_literature_search/candidate_papers.jsonl`
-  - 含义：候选文献、benchmark、指标或工具材料的去重召回列表，每行一条记录。
+- `stage1/04_literature_search/literature.db`
+  - 含义：候选文献、benchmark、指标或工具材料的规范化 SQLite 真相源，至少包含 `candidate_papers` 表，每行一条候选记录。
   - 消费方：`07`、`12`。
+  - 表 `candidate_papers` 字段建议：`paper_id`(主键)、`title`、`year`、`venue`、`url_or_id`、`matched_query`、`candidate_use`、`risk_note`、`confidence`、`source_refs_json`。
+  - 边界：只是候选召回真相源，不是设计证据。
+- `stage1/04_literature_search/candidate_papers.sqlite_export.jsonl`
+  - 含义：`literature.db.candidate_papers` 的兼容性 JSONL 导出，仅用于人工审阅或与不支持 SQLite 的下游互通；不是真相源。
+  - 消费方：`07`、`12`（只读对照）。
   - 至少包含：`title`、`year`、`venue`、`url_or_id`、`matched_query`、`candidate_use`、`risk_note`、`confidence`、`source_refs`。
-  - 边界：只是候选，不是设计证据。
+  - 边界：与 `literature.db` 内容不一致时以 DB 为准；不允许只产出 JSONL 而不写 DB。
 - `stage1/04_literature_search/search_log.md`
   - 含义：检索过程审计记录。
   - 消费方：`07`、`12`。
@@ -85,7 +90,7 @@
 
 - `BENCHCLAW_ROOT/simulatorCards`：仿真器能力描述 skill/card。
 - `BENCHCLAW_ROOT/benchmarkDatasetCards`：已有 benchmark 数据集描述 skill/card。
-- `BENCHCLAW_ROOT/realDatasetCards`：真实数据源描述 skill/card。
+- `BENCHCLAW_ROOT/realDataCards`：真实数据源描述 skill/card。
 
 - `stage1/05_data_capability/simulator_capability_matrix.md`
   - 含义：从外部数据/仿真器能力文档整理出的可用数据源和仿真器能力人读矩阵。
