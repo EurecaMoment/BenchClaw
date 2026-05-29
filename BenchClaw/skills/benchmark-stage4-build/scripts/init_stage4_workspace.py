@@ -2,7 +2,6 @@
 import argparse
 import json
 from pathlib import Path
-import subprocess
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--workspace", default="WORKSPACE_ROOT")
@@ -24,13 +23,4 @@ def workspace_path(path_value):
 
 for node in dag["nodes"].values():
     workspace_path(node["output_dir"]).mkdir(parents=True, exist_ok=True)
-subprocess.run(
-    [
-        "python3",
-        str(Path(__file__).with_name("init_stage4_db.py")),
-        "--workspace",
-        str(Path(args.workspace)),
-    ],
-    check=True,
-)
 print("OK: Stage4 workspace directories created.")

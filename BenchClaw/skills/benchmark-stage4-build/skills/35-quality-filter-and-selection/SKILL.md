@@ -32,7 +32,7 @@
 
 若上述任一规则被大规模触发，本节点的结论必须是“仅可作为 smoke test / metadata test，不可作为正式 benchmark”，并阻止 36/37 生成正式评测包。
 
-规范真相源应把通过/拒绝结果写入 `stage4.db.eval_items` 与 `stage4.db.quality_rejections`；如需导出 rejection log，只能生成兼容性 `sqlite_export` 文本副本。
+规范真相源应把通过/拒绝结果写入 `eval_dataset.jsonl` 与 `quality_gate_report.md`；如需导出 rejection log，只能生成兼容性 `jsonl` 文本副本。
 
 仅声明、不执行的 deferred hooks：
 

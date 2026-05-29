@@ -18,8 +18,7 @@
         "WORKSPACE_ROOT/config/stage3_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/DONE.json",
         "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/USED_INPUTS.json"
@@ -36,8 +35,7 @@
         "WORKSPACE_ROOT/config/stage3_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/DONE.json",
         "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/USED_INPUTS.json"
@@ -54,9 +52,8 @@
         "WORKSPACE_ROOT/config/stage3_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.jsonl",
+        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/DONE.json",
         "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/USED_INPUTS.json"
@@ -76,8 +73,7 @@
         "templates/unified_record.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.jsonl",
         "WORKSPACE_ROOT/stage3/21-real-image-unified-format/field_mapping.md",
         "WORKSPACE_ROOT/stage3/21-real-image-unified-format/modality_inventory.json",
         "WORKSPACE_ROOT/stage3/21-real-image-unified-format/normalization_report.md",
@@ -108,8 +104,7 @@
         "templates/unified_record.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/unified_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/unified_records.jsonl",
         "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/field_mapping.md",
         "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/modality_inventory.json",
         "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/normalization_report.md",
@@ -140,8 +135,7 @@
         "templates/unified_record.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.jsonl",
         "WORKSPACE_ROOT/stage3/23-simulator-unified-format/field_mapping.md",
         "WORKSPACE_ROOT/stage3/23-simulator-unified-format/modality_inventory.json",
         "WORKSPACE_ROOT/stage3/23-simulator-unified-format/normalization_report.md",
@@ -172,8 +166,7 @@
         "schemas/unified_multimodal_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaned_records.jsonl",
         "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/rejected_records.jsonl",
         "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/data_juicer_recipe.yaml",
         "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/data_juicer_report.json",
@@ -193,8 +186,7 @@
         "schemas/unified_multimodal_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaned_records.jsonl",
         "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/rejected_records.jsonl",
         "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/data_juicer_recipe.yaml",
         "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/data_juicer_report.json",
@@ -214,8 +206,7 @@
         "schemas/unified_multimodal_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaned_records.jsonl",
         "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/rejected_records.jsonl",
         "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/data_juicer_recipe.yaml",
         "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/data_juicer_report.json",
@@ -231,7 +222,6 @@
         "BENCHCLAW_ROOT/annotation-tool/**"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
         "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/tool_registry.json",
         "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/annotation_tool_contracts.json",
         "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/tool_probe_report.md",
@@ -251,8 +241,7 @@
         "schemas/semi_gt_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/realdata/",
         "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/",
         "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/yoloe/",
@@ -281,9 +270,8 @@
         "schemas/semi_gt_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl",
+        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/benchmarkdataset/",
         "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/",
         "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/yoloe/",
@@ -310,9 +298,8 @@
         "schemas/simulator_gt_record.schema.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage3/stage3.db",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/cleaned_sim_records.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/cleaned_sim_records.jsonl",
+        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/simulator/",
         "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/provenance/",
         "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/consistency_report.md",

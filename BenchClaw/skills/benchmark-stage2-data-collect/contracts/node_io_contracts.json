@@ -61,10 +61,9 @@
         "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage2/stage2.db",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/images/",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/realdata/",
-        "WORKSPACE_ROOT/stage2/15-real-image-acquisition/real_image_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage2/15-real-image-acquisition/real_image_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/expected_annotation_spec.json",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/acquisition_report.md",
         "WORKSPACE_ROOT/stage2/15-real-image-acquisition/DONE.json",
@@ -85,9 +84,8 @@
         "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage2/stage2.db",
-        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmark_manifest.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/existing_labels_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmark_manifest.jsonl",
+        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/existing_labels_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/expected_extra_annotation_spec.json",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/license_and_split_report.md",
         "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/raw/",
@@ -113,9 +111,8 @@
         "WORKSPACE_ROOT/config/stage2_input_paths.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage2/stage2.db",
-        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/sim_trace_manifest.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/gt_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/sim_trace_manifest.jsonl",
+        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/observations/",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/simulator/",
         "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/provenance/",

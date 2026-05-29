@@ -37,8 +37,8 @@ WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/**
 
 ```text
 WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/
-  benchmark_manifest.sqlite_export.jsonl
-  existing_labels_manifest.sqlite_export.jsonl
+  benchmark_manifest.jsonl
+  existing_labels_manifest.jsonl
   expected_extra_annotation_spec.json
   license_and_split_report.md
   raw/
@@ -50,11 +50,11 @@ WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/
   DONE.json
 ```
 
-## SQLite canonical storage
+## JSONL canonical storage
 
-本节点的规范化记录应写入 `WORKSPACE_ROOT/stage2/stage2.db` 的 `benchmark_records` 与 `benchmark_label_records` 表。`benchmark_manifest.sqlite_export.jsonl` 与 `existing_labels_manifest.sqlite_export.jsonl` 仅作为兼容性导出，不再是唯一真相源。
+本节点的规范化记录应写入 `WORKSPACE_ROOT/stage2/<node>/manifest.jsonl` 的 `benchmark_records` 与 `benchmark_label_records` 表。`benchmark_manifest.jsonl` 与 `existing_labels_manifest.jsonl` 仅作为兼容性导出，不再是唯一真相源。
 
-## benchmark_manifest.sqlite_export.jsonl
+## benchmark_manifest.jsonl
 
 每行一条样本：
 
@@ -78,7 +78,7 @@ WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/
 }
 ```
 
-## existing_labels_manifest.sqlite_export.jsonl
+## existing_labels_manifest.jsonl
 
 只记录已有官方 label / QA / metadata，不新造标签：
 
@@ -119,8 +119,8 @@ WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/
 
 ## 强制约束
 
-- `stage2.db.benchmark_records` 与 `stage2.db.benchmark_label_records` 中引用的样本必须能在 `WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmarkdataset/` 下被直接解析与消费；若同时保留 `raw/` 入口，也不得只在 `raw/` 中保存少量示例样本。
-- `stage2.db.benchmark_records` 中每条记录都必须能追溯到：`13` 中被选中的 `existing_benchmark_targets` 之一，以及 `BENCHCLAW_ROOT/benchmarkDatasetCards/**/SKILL.md` 中的某个已登记 benchmark 数据集；不得出现无法回溯到这两者的样本。
+- `benchmark_manifest.jsonl` 与 `existing_labels_manifest.jsonl` 中引用的样本必须能在 `WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmarkdataset/` 下被直接解析与消费；若同时保留 `raw/` 入口，也不得只在 `raw/` 中保存少量示例样本。
+- `benchmark_manifest.jsonl` 中每条记录都必须能追溯到：`13` 中被选中的 `existing_benchmark_targets` 之一，以及 `BENCHCLAW_ROOT/benchmarkDatasetCards/**/SKILL.md` 中的某个已登记 benchmark 数据集；不得出现无法回溯到这两者的样本。
 - 不得用“已知 benchmark 名称 + 外部数据位置 + 字段说明”冒充样本采集完成。
 - 对被 13 选中的 benchmark 图像型数据，Stage2 必须把后续需要消费的图像/样本全量落盘到 `WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmarkdataset/` 下，不得只保存样例集、摘要集或部分代表样本。
 - 若 `stage2_collection_targets.json` 已声明某个已有 benchmark 数据集被选中，本节点不得再以“规模太大”“先取 benchmark 子集”“仅保留部分 split”为理由缩减其图文数据；除非上游 Stage1 明确写了更强的用户限制，否则必须按全量执行。
@@ -134,8 +134,8 @@ WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/
   "node_id": "16",
   "status": "done",
   "outputs": [
-    "benchmark_manifest.sqlite_export.jsonl",
-    "existing_labels_manifest.sqlite_export.jsonl",
+    "benchmark_manifest.jsonl",
+    "existing_labels_manifest.jsonl",
     "expected_extra_annotation_spec.json",
     "license_and_split_report.md"
   ],

@@ -19,19 +19,17 @@ REQUIRED = {
         "DONE.json",
     ],
     "15-real-image-acquisition": [
-        "../stage2.db",
         "images",
         "realdata",
-        "real_image_manifest.sqlite_export.jsonl",
+        "real_image_manifest.jsonl",
         "expected_annotation_spec.json",
         "acquisition_report.md",
         "USED_INPUTS.json",
         "DONE.json",
     ],
     "16-existing-benchmark-acquisition": [
-        "../stage2.db",
-        "benchmark_manifest.sqlite_export.jsonl",
-        "existing_labels_manifest.sqlite_export.jsonl",
+        "benchmark_manifest.jsonl",
+        "existing_labels_manifest.jsonl",
         "expected_extra_annotation_spec.json",
         "license_and_split_report.md",
         "benchmarkdataset",
@@ -39,12 +37,11 @@ REQUIRED = {
         "DONE.json",
     ],
     "17-simulator-multimodal-gt-acquisition": [
-        "../stage2.db",
         "observations",
         "simulator",
         "provenance",
-        "sim_trace_manifest.sqlite_export.jsonl",
-        "gt_manifest.sqlite_export.jsonl",
+        "sim_trace_manifest.jsonl",
+        "gt_manifest.jsonl",
         "collection_report.md",
         "USED_INPUTS.json",
         "DONE.json",
@@ -206,12 +203,8 @@ def main():
             f"real image acquisition has no materialized realdata scene/source subtree: {realdata_dir}"
         )
 
-    stage2_db = base / "stage2.db"
-    if not stage2_db.exists():
-        errors.append(f"missing SQLite truth source: {stage2_db}")
-
     real_manifest = (
-        base / "15-real-image-acquisition" / "real_image_manifest.sqlite_export.jsonl"
+        base / "15-real-image-acquisition" / "real_image_manifest.jsonl"
     )
     if "15-real-image-acquisition" in required_nodes and real_manifest.exists():
         try:
@@ -221,12 +214,12 @@ def main():
                     errors,
                     image_path,
                     "realdata/",
-                    f"real_image_manifest.sqlite_export.jsonl line {idx} image_path",
+                    f"real_image_manifest.jsonl line {idx} image_path",
                 )
                 resolved = base / "15-real-image-acquisition" / image_path
                 if not resolved.exists() or not resolved.is_file():
                     errors.append(
-                        f"real_image_manifest.sqlite_export.jsonl line {idx} points to missing file: {resolved}"
+                        f"real_image_manifest.jsonl line {idx} points to missing file: {resolved}"
                     )
         except Exception as e:
             errors.append(f"invalid real image manifest jsonl: {real_manifest}: {e}")
@@ -252,7 +245,7 @@ def main():
     benchmark_manifest = (
         base
         / "16-existing-benchmark-acquisition"
-        / "benchmark_manifest.sqlite_export.jsonl"
+        / "benchmark_manifest.jsonl"
     )
     if (
         "16-existing-benchmark-acquisition" in required_nodes
@@ -265,12 +258,12 @@ def main():
                     errors,
                     raw_path,
                     "benchmarkdataset/",
-                    f"benchmark_manifest.sqlite_export.jsonl line {idx} raw_data_path",
+                    f"benchmark_manifest.jsonl line {idx} raw_data_path",
                 )
                 resolved = base / "16-existing-benchmark-acquisition" / raw_path
                 if not resolved.exists():
                     errors.append(
-                        f"benchmark_manifest.sqlite_export.jsonl line {idx} points to missing path: {resolved}"
+                        f"benchmark_manifest.jsonl line {idx} points to missing path: {resolved}"
                     )
         except Exception as e:
             errors.append(
@@ -297,7 +290,7 @@ def main():
     sim_trace_manifest = (
         base
         / "17-simulator-multimodal-gt-acquisition"
-        / "sim_trace_manifest.sqlite_export.jsonl"
+        / "sim_trace_manifest.jsonl"
     )
     if (
         "17-simulator-multimodal-gt-acquisition" in required_nodes
@@ -309,7 +302,7 @@ def main():
                 obs_paths = record.get("observation_paths", {})
                 if not isinstance(obs_paths, dict) or not obs_paths:
                     errors.append(
-                        f"sim_trace_manifest.sqlite_export.jsonl line {idx} has empty observation_paths"
+                        f"sim_trace_manifest.jsonl line {idx} has empty observation_paths"
                     )
                     continue
                 for modality, rel_path in obs_paths.items():
@@ -317,14 +310,14 @@ def main():
                         errors,
                         rel_path,
                         "simulator/",
-                        f"sim_trace_manifest.sqlite_export.jsonl line {idx} observation_paths[{modality!r}]",
+                        f"sim_trace_manifest.jsonl line {idx} observation_paths[{modality!r}]",
                     )
                     resolved = (
                         base / "17-simulator-multimodal-gt-acquisition" / rel_path
                     )
                     if not resolved.exists():
                         errors.append(
-                            f"sim_trace_manifest.sqlite_export.jsonl line {idx} points to missing observation path: {resolved}"
+                            f"sim_trace_manifest.jsonl line {idx} points to missing observation path: {resolved}"
                         )
                 simulator_id = str(record.get("simulator_id") or "")
                 scene_id = str(record.get("scene_id") or "")
@@ -339,7 +332,7 @@ def main():
                         and required_modality not in obs_paths
                     ):
                         errors.append(
-                            f"sim_trace_manifest.sqlite_export.jsonl line {idx} declares modality {required_modality!r} but provides no path"
+                            f"sim_trace_manifest.jsonl line {idx} declares modality {required_modality!r} but provides no path"
                         )
             for (simulator_id, scene_id), frame_count in sorted(
                 per_scene_counts.items()

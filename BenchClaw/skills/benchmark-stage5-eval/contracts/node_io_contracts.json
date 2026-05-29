@@ -15,9 +15,8 @@
     ],
     "required_outputs": [
       "WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json",
-      "WORKSPACE_ROOT/stage5/stage5.db",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.sqlite_export.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.sqlite_export.jsonl",
+      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.jsonl",
+      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.jsonl",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/report_payload.json",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/run_config.yaml",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/model_call_summary.json",
@@ -30,11 +29,10 @@
     "name": "evaluation-report",
     "allowed_inputs": [
       "WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.sqlite_export.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.sqlite_export.jsonl",
+      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.jsonl",
+      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.jsonl",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/report_payload.json",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/run_config.yaml",
-      "WORKSPACE_ROOT/stage5/stage5.db",
       "WORKSPACE_ROOT/stage5/38-evaluation-run/DONE.json"
     ],
     "required_outputs": [

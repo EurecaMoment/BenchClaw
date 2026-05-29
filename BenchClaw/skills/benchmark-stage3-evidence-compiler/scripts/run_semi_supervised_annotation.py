@@ -19,7 +19,6 @@ import base64
 import json
 import re
 import shutil
-import sqlite3
 import subprocess
 import sys
 import time
@@ -45,20 +44,6 @@ LLM_MODEL_ID = "qwen3.5-0.8b"
 # ----------------------------- stage3 contract finalizer ----------------------
 
 
-def _stage3_db_schema_sql() -> str:
-    return """
-    CREATE TABLE IF NOT EXISTS semi_gt_candidates (
-      record_id TEXT NOT NULL,
-      candidate_id TEXT NOT NULL,
-      branch TEXT NOT NULL,
-      source_type TEXT,
-      artifact_paths_json TEXT,
-      candidate_json TEXT NOT NULL,
-      PRIMARY KEY (record_id, candidate_id)
-    );
-    """
-
-
 def finalize_stage3_contract(
     *,
     workspace_root: Path,
@@ -73,7 +58,7 @@ def finalize_stage3_contract(
     instances: List[Dict[str, Any]],
     out_dir: Path,
 ) -> Dict[str, Any]:
-    """Materialize Stage3 four-class subtree + manifest + SQLite truth source.
+    """Materialize Stage3 four-class subtree and append the node manifest.
 
     Layout for non-simulator branches (called from nodes 18/19):
 
@@ -83,11 +68,8 @@ def finalize_stage3_contract(
             depth/<record_id>.png
             gt/<record_id>.json   (fused candidate record)
 
-    Also appends one manifest record to:
-        WORKSPACE_ROOT/stage3/<terminal_node_dir>/semi_gt_manifest.sqlite_export.jsonl
-
-    And inserts each candidate into stage3.db:
-        WORKSPACE_ROOT/stage3/stage3.db, table semi_gt_candidates
+    Appends one manifest record to:
+        WORKSPACE_ROOT/stage3/<terminal_node_dir>/semi_gt_manifest.jsonl
     """
     if branch not in ("realdata", "benchmarkdataset"):
         raise ValueError(f"unsupported branch: {branch!r}")
@@ -157,7 +139,7 @@ def finalize_stage3_contract(
         json.dumps(fused_record, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    candidates_for_db: List[Dict[str, Any]] = []
+    gt_candidates: List[Dict[str, Any]] = []
     for idx, inst in enumerate(instances):
         candidate_id = inst.get("instance_id") or f"{record_id}_cand_{idx:04d}"
         candidate_obj = {
@@ -172,43 +154,20 @@ def finalize_stage3_contract(
             "artifact_paths": artifact_paths,
             "is_final_gt": False,
         }
-        candidates_for_db.append(candidate_obj)
+        gt_candidates.append(candidate_obj)
 
     terminal_node_dir.mkdir(parents=True, exist_ok=True)
-    manifest_path = terminal_node_dir / "semi_gt_manifest.sqlite_export.jsonl"
+    manifest_path = terminal_node_dir / "semi_gt_manifest.jsonl"
     with manifest_path.open("a", encoding="utf-8") as f:
         manifest_row = {
             "record_id": record_id,
             "branch": branch,
-            "gt_candidates": candidates_for_db,
+            "gt_candidates": gt_candidates,
             "artifact_paths": artifact_paths,
             "source_type": "tool_generated_candidate",
             "out_dir": _ws_rel(out_dir),
         }
         f.write(json.dumps(manifest_row, ensure_ascii=False) + "\n")
-
-    db_path = stage3_root / "stage3.db"
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(db_path)
-    try:
-        conn.executescript(_stage3_db_schema_sql())
-        for cand in candidates_for_db:
-            conn.execute(
-                "INSERT OR REPLACE INTO semi_gt_candidates "
-                "(record_id, candidate_id, branch, source_type, artifact_paths_json, candidate_json) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                (
-                    cand["record_id"],
-                    cand["candidate_id"],
-                    cand["branch"],
-                    cand["source_type"],
-                    json.dumps(artifact_paths, ensure_ascii=False),
-                    json.dumps(cand, ensure_ascii=False),
-                ),
-            )
-        conn.commit()
-    finally:
-        conn.close()
 
     return {
         "branch": branch,
@@ -216,8 +175,7 @@ def finalize_stage3_contract(
         "record_root": str(record_root),
         "artifact_paths": artifact_paths,
         "manifest_path": str(manifest_path),
-        "stage3_db_path": str(db_path),
-        "num_candidates": len(candidates_for_db),
+        "num_candidates": len(gt_candidates),
     }
 
 
@@ -1841,8 +1799,8 @@ def main() -> int:
         help=(
             "（可选）BenchClaw workspace 根目录。如果提供，则脚本会按 Stage3 contract 落"
             " stage3/{realdata|benchmarkdataset}/<group>/<split?>/<record_id>/{original,"
-            "semantic_entity_segmentation,depth,gt}/ 四件套，并追加 semi_gt_manifest.sqlite_export.jsonl"
-            "（同步写入 stage3.db.semi_gt_candidates）。"
+            "semantic_entity_segmentation,depth,gt}/ 四件套，并追加 semi_gt_manifest.jsonl"
+            "。"
         ),
     )
     ap.add_argument(

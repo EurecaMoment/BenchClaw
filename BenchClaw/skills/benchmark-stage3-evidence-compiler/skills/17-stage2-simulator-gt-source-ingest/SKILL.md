@@ -21,14 +21,14 @@ This node only reads and re-indexes simulator observations and privileged GT tha
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/stage3.db`
-- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.sqlite_export.jsonl`
-- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/<node>/manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.jsonl`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_summary.md`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/DONE.json`
 - `WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/USED_INPUTS.json`
 
-本节点的规范化真相源应写入 `stage3.db` 的 `stage2_simulator_sources` 与 `stage2_simulator_gt_sources` 表；导出 `jsonl` 仅作为兼容性副本。
+本节点的规范化真相源应写入 `Stage3 JSON/JSONL manifests` 的 `stage2_simulator_sources` 与 `stage2_simulator_gt_sources` 表；导出 `jsonl` 仅作为兼容性副本。
 
 ## Must not read
 

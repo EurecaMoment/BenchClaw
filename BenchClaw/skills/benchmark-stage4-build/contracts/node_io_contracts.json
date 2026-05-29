@@ -18,8 +18,7 @@
         "contracts/node_io_contracts.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/DONE.json",
         "WORKSPACE_ROOT/stage4/09-stage1-template-metric-ingest/USED_INPUTS.json"
@@ -49,8 +48,7 @@
         "contracts/node_io_contracts.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/DONE.json",
         "WORKSPACE_ROOT/stage4/18-stage3-real-image-gt-ingest/USED_INPUTS.json"
@@ -80,8 +78,7 @@
         "contracts/node_io_contracts.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/DONE.json",
         "WORKSPACE_ROOT/stage4/19-stage3-benchmark-image-gt-ingest/USED_INPUTS.json"
@@ -111,8 +108,7 @@
         "contracts/node_io_contracts.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/source_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/source_manifest.jsonl",
         "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/source_summary.md",
         "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/DONE.json",
         "WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/USED_INPUTS.json"
@@ -184,8 +180,7 @@
         "templates/evidence_record.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_pool.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_pool.jsonl",
         "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_manifest.json",
         "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/source_balance_report.md",
         "WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/DONE.json",
@@ -218,9 +213,8 @@
         "templates/evidence_binding.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/template_evidence_bindings.sqlite_export.jsonl",
-        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_rejection_log.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/template_evidence_bindings.jsonl",
+        "WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_rejection_log.jsonl",
         "WORKSPACE_ROOT/stage4/30-template-evidence-binding/binding_summary.md",
         "WORKSPACE_ROOT/stage4/30-template-evidence-binding/DONE.json",
         "WORKSPACE_ROOT/stage4/30-template-evidence-binding/USED_INPUTS.json"
@@ -251,8 +245,7 @@
         "templates/question_blueprint.example.json"
       ],
       "must_write": [
-        "WORKSPACE_ROOT/stage4/stage4.db",
-        "WORKSPACE_ROOT/stage4/31-question-form-expansion/question_blueprints.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage4/31-question-form-expansion/question_blueprints.jsonl",
         "WORKSPACE_ROOT/stage4/31-question-form-expansion/blueprint_manifest.json",
         "WORKSPACE_ROOT/stage4/31-question-form-expansion/distractor_policy.md",
         "WORKSPACE_ROOT/stage4/31-question-form-expansion/DONE.json",

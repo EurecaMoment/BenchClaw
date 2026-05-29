@@ -30,9 +30,9 @@ input image
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/stage3.db`
-- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl`
-- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/<node>/manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.jsonl`
 - `WORKSPACE_ROOT/stage3/benchmarkdataset/`
 - `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/`
 - `WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/yoloe/`
@@ -68,7 +68,7 @@ BENCHCLAW_ROOT/skills/benchmark-stage3-evidence-compiler/scripts/run_semi_superv
 
 - 运行环境必须是 `conda activate sam3`（该环境已包含调用四个本地服务所需依赖）。
 - 该脚本封装了固定链路 `VLM/LLM 候选词 -> YOLOE 验证 -> SAM3 实体分割 -> Depth Anything 3 深度`，并在 out-dir 下产出 `result.json` + `semantic_entity_segmentation.png` + `depth_map.png` + `da3_export/`。
-- 必须同时传入 `--workspace-root` `--branch benchmarkdataset` `--group-name <dataset_name>` `--split-name <existing_dataset_split_or_category>` `--record-id <record_id>`，由脚本把样本自动落进 Stage3 四件套目录树、追加 `semi_gt_manifest.sqlite_export.jsonl`、写入 `stage3.db.semi_gt_candidates`。忽略这些参数会导致本节点 contract 未闭合并被 checker 判失败。
+- 必须同时传入 `--workspace-root` `--branch benchmarkdataset` `--group-name <dataset_name>` `--split-name <existing_dataset_split_or_category>` `--record-id <record_id>`，由脚本把样本自动落进 Stage3 四件套目录树、追加 `semi_gt_manifest.jsonl`、写入 `semi_gt_manifest.jsonl`。忽略这些参数会导致本节点 contract 未闭合并被 checker 判失败。
 - 调用方式（每张图）：
 
   ```bash
@@ -90,8 +90,8 @@ BENCHCLAW_ROOT/skills/benchmark-stage3-evidence-compiler/scripts/run_semi_superv
 3. 标准脚本会在 out-dir 下生成 `result.json`（含 `instances[*]` 的 `semantic_label` + `segmentation` + `depth` 四件套）、`semantic_entity_segmentation.png`、`depth_map.png`、`da3_export/`。本节点必须把这些产物原样保留，**不得用模板 JSON、占位或样例 JSON 替代**。
 4. 把脚本产出的逐样本制品归档到本节点目录：
    - `annotations/yoloe/{record_id}.json`、`annotations/sam3/{record_id}.json`、`annotations/depthanything3/{record_id}.json`、`annotations/fused/{record_id}.json`：均从该样本 `result.json` 中抽取对应工具部分写出，原始合并 JSON 也保留在 `evidence/{record_id}.result.json`。
-   - 同时把该样本 `result.json` 内的 `instances[*]` 候选写入 `stage3.db.semi_gt_candidates`，每条候选的 `artifact_paths` 必须解析到该样本目录下的 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 真实文件；如需导出清单，只能生成 `semi_gt_manifest.sqlite_export.jsonl` 兼容副本。
-5. 与官方 label 冲突时，必须保留官方 label，并把脚本产出的工具候选写入 `conflict_report.md`；工具输出不得覆盖 `stage3.db.benchmark_label_records` 中的官方标签真相源；如需导出，只能生成 `official_label_manifest.sqlite_export.jsonl` 兼容副本。
+   - 同时把该样本 `result.json` 内的 `instances[*]` 候选写入 `semi_gt_manifest.jsonl`，每条候选的 `artifact_paths` 必须解析到该样本目录下的 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 真实文件；如需导出清单，只能生成 `semi_gt_manifest.jsonl` 兼容副本。
+5. 与官方 label 冲突时，必须保留官方 label，并把脚本产出的工具候选写入 `conflict_report.md`；工具输出不得覆盖 `official_label_manifest.jsonl` 中的官方标签真相源；如需导出，只能生成 `official_label_manifest.jsonl` 兼容副本。
 6. 候选的 `source_type` 固定为 `tool_generated_candidate`、`is_final_gt=false`，除非后续人工审核节点显式提升。任何缺失工具输出都必须进入 `conflict_report.md` 或 `quality_report.md`，而不是补造数据。
 
 这里的“真实文件”不是只要求目录存在，而是要求每个保留样本逐样本拥有：
@@ -111,8 +111,8 @@ BENCHCLAW_ROOT/skills/benchmark-stage3-evidence-compiler/scripts/run_semi_superv
 - 脚本必须在 `conda activate sam3` 环境下运行；本节点不得使用其它环境冒充。
 - 若 `annotations/yoloe/`、`annotations/sam3/`、`annotations/depthanything3/`、`annotations/fused/` 中缺少对应逐样本产物，则不得写 `DONE.json`。
 - 若 `WORKSPACE_ROOT/stage3/benchmarkdataset/<dataset_name>/<existing_dataset_split_or_category>/<record_id>/` 下未对保留样本全量落盘 `original/`、`semantic_entity_segmentation/`、`depth/` 三类图像及 `gt/`，则不得写 `DONE.json`。
-- 若 `stage3.db.semi_gt_candidates` 中完成闭环的 `record_id` 数量少于 Stage2 node 16 流入 Stage3 的保留 benchmark 图像数量，则不得写 `DONE.json`。
-- `stage3.db.semi_gt_candidates` 中不得以 `pending`、`planned`、`to_be_generated` 或样例条目替代真实工具输出记录。
+- 若 `semi_gt_manifest.jsonl` 中完成闭环的 `record_id` 数量少于 Stage2 node 16 流入 Stage3 的保留 benchmark 图像数量，则不得写 `DONE.json`。
+- `semi_gt_manifest.jsonl` 中不得以 `pending`、`planned`、`to_be_generated` 或样例条目替代真实工具输出记录。
 - 不允许只保留官方 label 和增强计划说明，就宣称已有 benchmark 图像的半监督增强已完成。
 
 ## Completion

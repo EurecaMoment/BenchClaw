@@ -36,9 +36,9 @@ Here:
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/stage3.db`
-- `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/cleaned_sim_records.sqlite_export.jsonl`
-- `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/<node>/manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/cleaned_sim_records.jsonl`
+- `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.jsonl`
 - `WORKSPACE_ROOT/stage3/simulator/`
 - `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/provenance/`
 - `WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/consistency_report.md`
@@ -59,7 +59,7 @@ Here:
 - 允许从 privileged GT 派生几何字段，但必须标为 `derived_geometry` 并写明公式/代码路径；
 - 若 sensor 渲染与 privileged GT 冲突，写入 `consistency_report.md`，不得静默修正。
 - 对被保留的 simulator 样本，`original/`、`semantic_entity_segmentation/`、`depth/` 三类图像必须在 `WORKSPACE_ROOT/stage3/simulator/<simulator_id>/<scene_or_map_id>/` 下全量保存；不得只保留抽样帧、汇总视频、缩略图、统计表或“可重新渲染”的说明。
-- `stage3.db.simulator_gt_records` 与兼容性导出 `simulator_gt_manifest.sqlite_export.jsonl` 中的 `artifact_paths` 或等价字段应能解析到上述 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 子目录中的真实文件。
+- `simulator_gt_manifest.jsonl` 与兼容性导出 `simulator_gt_manifest.jsonl` 中的 `artifact_paths` 或等价字段应能解析到上述 `original/`、`semantic_entity_segmentation/`、`depth/`、`gt/` 子目录中的真实文件。
 
 这里的“真实文件”不是只要求目录存在，而是要求每个保留样本逐样本拥有：
 
@@ -76,7 +76,7 @@ Here:
 
 - 若 `WORKSPACE_ROOT/stage3/simulator/` 下未按 `simulator/<simulator_id>/<scene_or_map_id>/` 层级对保留样本全量落盘三类图像与 GT，则不得写 `DONE.json`。
 - 若图像型仿真器观测只剩抽样帧、摘要、视频导出或示例图片，而非逐样本完整文件集，则不得写 `DONE.json`。
-- 若 `stage3.db.simulator_gt_records` 中完成闭环的 `record_id` 数量少于 Stage2 node 17 流入 Stage3 的保留 simulator 记录数量，则不得写 `DONE.json`。
+- 若 `simulator_gt_manifest.jsonl` 中完成闭环的 `record_id` 数量少于 Stage2 node 17 流入 Stage3 的保留 simulator 记录数量，则不得写 `DONE.json`。
 
 ## Completion
 

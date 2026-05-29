@@ -257,7 +257,7 @@ python scripts/init_stage2_workspace.py --workspace WORKSPACE_ROOT
 python scripts/validate_dag.py dag.json
 ```
 
-`init_stage2_workspace.py` 会调用 `init_stage2_db.py` 建好 `stage2.db` 的全部主表（`real_image_records`、`benchmark_records`、`benchmark_label_records`、`simulator_trace_records`、`simulator_gt_records`）。如果不先 init，后续节点的写表会失败，checker 也会因为 `stage2.db` 缺失而 fail。
+`init_stage2_workspace.py` 只负责创建 Stage2 目录骨架；结构化记录由各节点写入对应的 JSON/JSONL 清单，checker 直接校验这些文件。
 
 在每个节点完成后：
 

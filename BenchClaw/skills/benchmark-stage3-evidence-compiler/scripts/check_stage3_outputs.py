@@ -148,8 +148,8 @@ for label, root in (("18", real_ann_root), ("19", bench_ann_root)):
             )
 
 for rel in [
-    "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
-    "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
+    "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.jsonl",
+    "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl",
 ]:
     manifest_path = workspace_path(rel)
     if manifest_path.exists():
@@ -172,31 +172,31 @@ benchmark_root = workspace_path("WORKSPACE_ROOT/stage3/benchmarkdataset")
 simulator_root = workspace_path("WORKSPACE_ROOT/stage3/simulator")
 
 stage2_real_manifest = workspace_path(
-    "WORKSPACE_ROOT/stage2/15-real-image-acquisition/real_image_manifest.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage2/15-real-image-acquisition/real_image_manifest.jsonl"
 )
 stage2_benchmark_manifest = workspace_path(
-    "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmark_manifest.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/benchmark_manifest.jsonl"
 )
 stage2_sim_manifest = workspace_path(
-    "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/sim_trace_manifest.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/sim_trace_manifest.jsonl"
 )
 stage3_real_unified = workspace_path(
-    "WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.jsonl"
 )
 stage3_benchmark_unified = workspace_path(
-    "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/unified_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/unified_records.jsonl"
 )
 stage3_sim_unified = workspace_path(
-    "WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.jsonl"
 )
 stage3_real_cleaned = workspace_path(
-    "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaned_records.jsonl"
 )
 stage3_benchmark_cleaned = workspace_path(
-    "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaned_records.jsonl"
 )
 stage3_sim_cleaned = workspace_path(
-    "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaned_records.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaned_records.jsonl"
 )
 
 stage2_real_ids = (
@@ -262,19 +262,19 @@ if stage3_real_cleaned_ids and not stage3_real_cleaned_ids.issubset(
     stage3_real_unified_ids
 ):
     errors.append(
-        "node 24 cleaned_records.sqlite_export.jsonl contains record_ids not present in node 21 unified_records.sqlite_export.jsonl"
+        "node 24 cleaned_records.jsonl contains record_ids not present in node 21 unified_records.jsonl"
     )
 if stage3_benchmark_cleaned_ids and not stage3_benchmark_cleaned_ids.issubset(
     stage3_benchmark_unified_ids
 ):
     errors.append(
-        "node 25 cleaned_records.sqlite_export.jsonl contains record_ids not present in node 22 unified_records.sqlite_export.jsonl"
+        "node 25 cleaned_records.jsonl contains record_ids not present in node 22 unified_records.jsonl"
     )
 if stage3_sim_cleaned_ids and not stage3_sim_cleaned_ids.issubset(
     stage3_sim_unified_ids
 ):
     errors.append(
-        "node 26 cleaned_records.sqlite_export.jsonl contains record_ids not present in node 23 unified_records.sqlite_export.jsonl"
+        "node 26 cleaned_records.jsonl contains record_ids not present in node 23 unified_records.jsonl"
     )
 
 if not has_scene_asset_tree(realdata_root):
@@ -294,11 +294,11 @@ if not has_simulator_asset_tree(simulator_root):
 
 for rel, root_prefix in [
     (
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/realdata/",
     ),
     (
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.sqlite_export.jsonl",
+        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl",
         "WORKSPACE_ROOT/stage3/benchmarkdataset/",
     ),
 ]:
@@ -370,7 +370,7 @@ for rel, root_prefix in [
         errors.append(f"invalid semi gt manifest jsonl: {manifest_path}: {e}")
 
 sim_manifest = workspace_path(
-    "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.sqlite_export.jsonl"
+    "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.jsonl"
 )
 if sim_manifest.exists():
     text = sim_manifest.read_text(encoding="utf-8")

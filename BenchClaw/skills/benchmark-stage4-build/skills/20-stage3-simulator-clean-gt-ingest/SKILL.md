@@ -17,14 +17,14 @@
 写入 `WORKSPACE_ROOT/stage4/20-stage3-simulator-clean-gt-ingest/`：
 
 ```text
-WORKSPACE_ROOT/stage4/stage4.db
-source_manifest.sqlite_export.jsonl
+WORKSPACE_ROOT/stage4/<node>/manifest.jsonl
+source_manifest.jsonl
 source_summary.md
 USED_INPUTS.json
 DONE.json
 ```
 
-规范真相源应写入 `stage4.db.stage3_simulator_inputs`；`source_manifest.sqlite_export.jsonl` 仅作为兼容性导出。
+规范真相源应写入 `source_manifest.jsonl`；`source_manifest.jsonl` 仅作为兼容性导出。
 
 ## DONE 要求
 

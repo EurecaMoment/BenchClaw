@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Minimal deterministic full-synthesis skeleton.
 
-Input: stage4.db.question_blueprints (optionally exported as question_blueprints.sqlite_export.jsonl) + metric_registry.json.
+Input: question_blueprints.jsonl (optionally exported as question_blueprints.jsonl) + metric_registry.json.
 Output: eval_dataset.jsonl with traceability fields.
 This skeleton is intentionally conservative: it only serializes blueprints that already
 contain a ground-truth answer or an answer_program_id. It does not invent GT.

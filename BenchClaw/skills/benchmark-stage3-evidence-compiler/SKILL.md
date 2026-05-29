@@ -252,6 +252,6 @@ python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
 python scripts/check_stage3_outputs.py --workspace WORKSPACE_ROOT
 ```
 
-`init_stage3_workspace.py` 会调用 `init_stage3_db.py` 建好 `stage3.db` 的全部规范化表（`stage2_*_sources`、`unified_*_records`、`cleaned_*_records`、`semi_gt_candidates`、`benchmark_label_records`、`simulator_gt_records`）。如果跳过 init 步骤，后续节点写表会失败，checker 也会因为 `stage3.db` 缺表/缺数据而 fail。
+`init_stage3_workspace.py` 只负责创建 Stage3 节点目录；结构化记录由各节点写入对应的 JSON/JSONL 清单，checker 直接校验这些文件。
 
 若 `validate_dag.py` 发现该图被改写为单链串行图，本 Skill 必须停止执行。

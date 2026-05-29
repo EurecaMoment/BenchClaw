@@ -19,15 +19,15 @@
 ## 输出
 
 ```text
-WORKSPACE_ROOT/stage4/stage4.db
-WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_pool.sqlite_export.jsonl
+WORKSPACE_ROOT/stage4/<node>/manifest.jsonl
+WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_pool.jsonl
 WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/evidence_manifest.json
 WORKSPACE_ROOT/stage4/29-evidence-pool-normalization/source_balance_report.md
 USED_INPUTS.json
 DONE.json
 ```
 
-规范真相源应写入 `stage4.db.evidence_pool`；`evidence_pool.sqlite_export.jsonl` 仅作为兼容性导出。
+规范真相源应写入 `evidence_pool.jsonl`；`evidence_pool.jsonl` 仅作为兼容性导出。
 
 
 ---

@@ -8,7 +8,7 @@
 
 ## 任务
 
-按 `stage4.db.question_blueprints`、`answer_programs.py`、`metric_registry.json` 与 `quality_filter_spec.json` 生成全量评测集。
+按 `question_blueprints.jsonl`、`answer_programs.py`、`metric_registry.json` 与 `quality_filter_spec.json` 生成全量评测集。
 
 每条 item 必须包含：
 
@@ -22,7 +22,7 @@
 - `template_id`、`binding_id`、`source_record_id`；
 - seed / version / generation timestamp。
 
-最终进入 Stage4 正式评测集的 item 还必须额外包含，并写入 `stage4.db.eval_items`：
+最终进入 Stage4 正式评测集的 item 还必须额外包含，并写入 `eval_dataset.jsonl`：
 
 - `question_type` 与 `dimension`；
 - `input_fields`，且其中必须包含该题型真正需要的具体实例变量，而不是只剩 `scene_id + modality_condition`；

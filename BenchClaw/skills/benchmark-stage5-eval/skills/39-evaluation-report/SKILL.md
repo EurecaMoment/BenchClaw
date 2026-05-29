@@ -22,8 +22,8 @@ Allowed files:
 
 ```text
 eval_results.json
-prediction_logs.sqlite_export.jsonl
-failure_cases.sqlite_export.jsonl
+prediction_logs.jsonl
+failure_cases.jsonl
 report_payload.json
 run_config.yaml
 DONE.json
@@ -53,7 +53,7 @@ DONE.json
 3. Create a leaderboard table.
 4. Create per-dimension performance tables.
 5. Summarize refusal, missing, invalid, and failure cases.
-6. Generate `error_analysis.md` from `failure_cases.sqlite_export.jsonl`.
+6. Generate `error_analysis.md` from `failure_cases.jsonl`.
 7. Generate final `report.md`.
 8. Write `DONE.json` after all outputs exist.
 
@@ -64,4 +64,4 @@ DONE.json
 - It must not change model predictions.
 - It must not invent evaluation numbers missing from `eval_results.json`.
 
-本节点生成报告时，应以 `WORKSPACE_ROOT/stage5/stage5.db` 中的聚合结果与样本级状态为准；导出 `jsonl` 只能作为辅助审阅材料，不应覆盖 SQLite 真相源。
+本节点生成报告时，应以 `WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json` 中的聚合结果与样本级状态为准；导出 `jsonl` 只能作为辅助审阅材料，不应覆盖 JSONL 真相源。

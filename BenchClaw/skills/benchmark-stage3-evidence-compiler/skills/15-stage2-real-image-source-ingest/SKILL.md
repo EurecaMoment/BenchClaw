@@ -21,13 +21,13 @@ This node only reads and re-indexes real-image data that has already been collec
 
 ## Must write
 
-- `WORKSPACE_ROOT/stage3/stage3.db`
-- `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.sqlite_export.jsonl`
+- `WORKSPACE_ROOT/stage3/<node>/manifest.jsonl`
+- `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.jsonl`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_summary.md`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/DONE.json`
 - `WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/USED_INPUTS.json`
 
-本节点的规范化真相源应写入 `stage3.db` 的 `stage2_real_sources` 表；`source_manifest.sqlite_export.jsonl` 仅作为兼容性导出。
+本节点的规范化真相源应写入 `Stage3 JSON/JSONL manifests` 的 `stage2_real_sources` 表；`source_manifest.jsonl` 仅作为兼容性导出。
 
 ## Must not read
 

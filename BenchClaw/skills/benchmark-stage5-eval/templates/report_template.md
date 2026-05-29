@@ -19,7 +19,7 @@
 
 ## Failure Analysis
 
-Summarize systematic error categories from `failure_cases.sqlite_export.jsonl`.
+Summarize systematic error categories from `failure_cases.jsonl`.
 
 ## Reproducibility
 

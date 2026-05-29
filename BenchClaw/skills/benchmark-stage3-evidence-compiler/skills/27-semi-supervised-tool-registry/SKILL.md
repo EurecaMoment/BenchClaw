@@ -101,7 +101,7 @@ scripts/run_semi_supervised_annotation.py
    - `semantic_entity_segmentation.png`：按 instance 上色的语义实体分割图；
    - `depth_map.png`：归一化深度可视化；
    - `da3_export/`：DA3 原始导出（含绝对深度的 npy 或 depth_vis）；
-4. **SQLite 映射**：把每个 instance 作为一行 candidate 写入 `stage3.db.semi_gt_candidates`，`artifact_paths` 指向上述四件套真实文件；如需导出 `semi_gt_manifest`，只能生成 `sqlite_export` 兼容副本。
+4. **JSONL 映射**：把每个 instance 作为一行 candidate 写入 `semi_gt_manifest.jsonl`，`artifact_paths` 指向上述四件套真实文件；如需导出 `semi_gt_manifest`，只能生成 `jsonl` 兼容副本。
 
 27 自身不执行逐图推理，但必须在 contract 中明确：18/19 节点**禁止自行决策调用顺序、参数或环境**，必须直接 `subprocess.run(['python', 'scripts/run_semi_supervised_annotation.py', '--image', ..., '--out-dir', ...])`，且必须在 `sam3` conda 环境下执行。
 

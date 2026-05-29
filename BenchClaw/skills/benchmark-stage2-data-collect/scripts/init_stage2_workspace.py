@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import subprocess
 
 DIRS = [
     "stage2/13-execution-plan-ingest",
@@ -21,15 +20,6 @@ def main():
     base = Path(args.workspace)
     for d in DIRS:
         (base / d).mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [
-            "python3",
-            str(Path(__file__).with_name("init_stage2_db.py")),
-            "--workspace",
-            str(base),
-        ],
-        check=True,
-    )
     print(f"OK: initialized {base}/stage2 workspace skeleton")
 
 

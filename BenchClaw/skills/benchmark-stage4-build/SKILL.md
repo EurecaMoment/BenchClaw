@@ -22,13 +22,13 @@
 
 Stage4 的目标是把模板、证据、GT 和指标约束转成 **可评测、可追踪、可执行评分的最终 benchmark 数据包**。
 
-Stage4 的内部结构化真相源统一使用 SQLite。推荐主库位置：
+Stage4 的内部结构化真相源统一使用 JSONL。推荐主库位置：
 
 ```text
-WORKSPACE_ROOT/stage4/stage4.db
+WORKSPACE_ROOT/stage4/<node>/manifest.jsonl
 ```
 
-中间过程如 evidence pool、template binding、question blueprint、item traceability、quality rejection 等，都应以 SQLite 表为准；最终 `EVALSET_DATASET/data/test.jsonl` 是对外 benchmark 交付格式，不应反向充当 Stage4 内部唯一真相源。
+中间过程如 evidence pool、template binding、question blueprint、item traceability、quality rejection 等，都应以 JSONL 表为准；最终 `EVALSET_DATASET/data/test.jsonl` 是对外 benchmark 交付格式，不应反向充当 Stage4 内部唯一真相源。
 
 按你的要求：
 
@@ -258,6 +258,6 @@ python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
 python scripts/check_stage4_outputs.py --workspace WORKSPACE_ROOT
 ```
 
-`init_stage4_workspace.py` 会调用 `init_stage4_db.py` 建好 `stage4.db` 的全部内部真相源表（`stage1_template_metric_inputs`、`stage3_*_inputs`、`evidence_pool`、`template_evidence_bindings`、`binding_rejections`、`question_blueprints`、`eval_items`、`quality_rejections`）。跳过 init 会让节点写表失败，并使 checker 因为 `stage4.db` 缺表/缺行而 fail。
+`init_stage4_workspace.py` 只负责创建 Stage4 节点目录；结构化记录由各节点写入对应的 JSON/JSONL 清单与最终 benchmark artifact，checker 直接校验这些文件。
 
 若 `validate_dag.py` 发现该图被改写为单链串行图，本 Skill 必须停止执行。
