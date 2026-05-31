@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": [
+    "PROJECT_ROOT",
+    "BENCHCLAW_ROOT",
+    "WORKSPACE_PARENT",
+    "WORKSPACE_ROOT",
+    "checks"
+  ],
+  "properties": {
+    "PROJECT_ROOT": {
+      "type": "string"
+    },
+    "BENCHCLAW_ROOT": {
+      "type": "string"
+    },
+    "WORKSPACE_PARENT": {
+      "type": "string"
+    },
+    "WORKSPACE_ROOT": {
+      "type": "string"
+    },
+    "checks": {
+      "type": "array"
+    }
+  }
+}

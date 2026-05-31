@@ -1,9 +1,0 @@
-metrics:
-  - metric_id: Mxx
-    capability_dimension: Dxx
-    target_behavior: ""
-    input_fields: []
-    score_type: exact_match|numeric|ranking|programmatic
-    computation: ""
-    failure_cases: []
-    calibration_need: none|irt|human_audit|simulator_replay

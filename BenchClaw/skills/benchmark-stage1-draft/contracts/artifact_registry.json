@@ -1,0 +1,41 @@
+{
+  "stage": "stage1",
+  "artifacts": [
+    {
+      "id": "data_02_rewritten_queries"
+    },
+    {
+      "id": "data_03_intent_expansion_doc"
+    },
+    {
+      "id": "data_04_retrieved_literature"
+    },
+    {
+      "id": "data_05_source_capability_descriptions"
+    },
+    {
+      "id": "data_06_semisupervised_capability_signals"
+    },
+    {
+      "id": "data_07_literature_review"
+    },
+    {
+      "id": "data_08_preprocessed_capability_pool"
+    },
+    {
+      "id": "data_09_benchmark_data"
+    },
+    {
+      "id": "data_10_capability_dimension_doc"
+    },
+    {
+      "id": "data_11_template_metric_initial_draft"
+    },
+    {
+      "id": "data_12_benchmark_draft"
+    },
+    {
+      "id": "data_13_execution_plan"
+    }
+  ]
+}

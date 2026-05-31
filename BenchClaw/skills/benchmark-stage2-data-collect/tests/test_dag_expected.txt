@@ -1,8 +1,0 @@
-Expected validate_dag.py output:
-
-OK: Stage2 DAG is valid and non-serial.
-L0: 13 | 14
-L1: 15 | 16 | 17
-
-Explanation:
-L1 contains 17 only after both 13 and 14 are done. Dynamic scheduling may start 15/16 immediately after 13, while 17 waits for 14.

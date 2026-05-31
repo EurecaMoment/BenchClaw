@@ -1,12 +1,5 @@
-# benchclaw_stage4_opencode_ready_skill_pack
+# benchmark-stage4-build
 
-Stage4 的 Opencode-ready DAG Skill 包。
+读取 Stage1 的模板/指标初稿与执行计划，以及 Stage3 的三类已标注数据，生成模板、指标、代码，小批量合成灰度验证，并最终合成全量 benchmark 数据集。
 
-本包按手绘图解释 Stage4：`09/18/19/20` 为并行根节点，`33 小批量合成` 与 `34 灰度测试` 按要求留空，最终输出 `37-benchmark-artifact-pack`。
-
-快速检查：
-
-```bash
-python scripts/validate_dag.py dag.json
-python scripts/ready_set_runner.py --workspace WORKSPACE_ROOT
-```
+该目录是生产 skill 定义，不包含总驱动脚本。节点由 `dag.json` 与 `skills/<node-id>/SKILL.md` 调度。

@@ -1,0 +1,23 @@
+dag_name: benchmark-pipeline
+node_semantics: stage-level only; artifact numbers are data, not nodes
+stages:
+  - stage: S1
+    skill: benchmark-stage1-draft
+    parents: []
+    terminal_artifacts: [data_13_execution_plan]
+  - stage: S2
+    skill: benchmark-stage2-data-collect
+    parents: [S1]
+    terminal_artifacts: [data_14_real_image_collection_bundle, data_15_existing_benchmark_collection_bundle, data_16_simulator_collection_bundle]
+  - stage: S3
+    skill: benchmark-stage3-evidence-compiler
+    parents: [S2]
+    terminal_artifacts: [data_17_annotated_real_image_bundle, data_18_annotated_existing_benchmark_bundle, data_19_annotated_simulator_bundle]
+  - stage: S4
+    skill: benchmark-stage4-build
+    parents: [S1, S3]
+    terminal_artifacts: [data_22_full_benchmark_dataset]
+  - stage: S5
+    skill: benchmark-stage5-eval
+    parents: [S1, S4]
+    terminal_artifacts: [data_23_evaluation_report]

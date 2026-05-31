@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "required": [
+    "status",
+    "node_id",
+    "reason",
+    "missing_or_invalid_inputs"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "BLOCKED"
+      ]
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "missing_or_invalid_inputs": {
+      "type": "array"
+    }
+  }
+}

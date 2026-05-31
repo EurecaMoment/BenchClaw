@@ -1,115 +1,43 @@
-name: benchclaw-stage1-dag
-version: 2.1.0
-principle: "非串行 DAG；按 ready-set 并行调度；05/06 是外部能力文档输入节点；13 只能依赖 12"
-parallel_layers:
-  L0: [00, 05, 06]
-  L1: [01]
-  L2: [02, 03]
-  L3: [04]
-  L4: [07]
-  L5: [08]
-  L6: [09, 10, 11]
-  L7: [12]
-  L8: [13]
+stage: stage1
+node_semantics: only listed nodes are DAG nodes; data ids are artifacts
 nodes:
-  - id: "00"
-    name: "idea-intake"
-    zh: "idea 接收与边界冻结"
+  - id: intent-understanding
+    name: 意图理解
+    skill: skills/intent-understanding/SKILL.md
     parents: []
-    outputs:
-      - "stage1/00_idea/idea_card.md"
-      - "stage1/00_idea/scope_seed.json"
-  - id: "01"
-    name: "intent-understanding"
-    zh: "意图理解"
-    parents: [00]
-    outputs:
-      - "stage1/01_intent/intent_interpretation.md"
-      - "stage1/01_intent/ambiguity_log.md"
-  - id: "02"
-    name: "query-rewrite"
-    zh: "query 改写"
-    parents: [01]
-    outputs:
-      - "stage1/02_query/query_pack.json"
-      - "stage1/02_query/search_strategy.md"
-  - id: "03"
-    name: "intent-expansion-doc"
-    zh: "意图理解扩写文档"
-    parents: [01]
-    outputs:
-      - "stage1/03_intent_doc/expanded_intent.md"
-      - "stage1/03_intent_doc/construct_hypotheses.md"
-  - id: "04"
-    name: "useful-literature-search"
-    zh: "搜索可用文献"
-    parents: [02]
-    outputs:
-      - "stage1/04_literature_search/candidate_papers.jsonl"
-      - "stage1/04_literature_search/search_log.md"
-  - id: "05"
-    name: "data-simulator-capability-description"
-    zh: "数据/仿真器能力描述"
+    outputs: [data_02_rewritten_queries, data_03_intent_expansion_doc, data_05_source_capability_descriptions]
+  - id: literature-search
+    name: 文献搜索
+    skill: skills/literature-search/SKILL.md
+    parents: [intent-understanding]
+    outputs: [data_04_retrieved_literature]
+  - id: literature-review
+    name: 文献调研
+    skill: skills/literature-review/SKILL.md
+    parents: [literature-search, intent-understanding]
+    outputs: [data_07_literature_review]
+  - id: scope-preprocess-analysis
+    name: 模型 scope 预处理分析
+    skill: skills/scope-preprocess-analysis/SKILL.md
     parents: []
-    outputs:
-      - "stage1/05_data_capability/simulator_capability_matrix.md"
-      - "stage1/05_data_capability/observable_gt_fields.json"
-  - id: "06"
-    name: "annotation-capability-description"
-    zh: "标注能力描述"
-    parents: []
-    outputs:
-      - "stage1/06_annotation_capability/annotation_capability_matrix.md"
-      - "stage1/06_annotation_capability/tool_io_contracts.md"
-  - id: "07"
-    name: "literature-analysis-report"
-    zh: "文献调研分析报告"
-    parents: [03, 04]
-    outputs:
-      - "stage1/07_literature_analysis/literature_analysis_report.md"
-      - "stage1/07_literature_analysis/benchmark_design_evidence.md"
-  - id: "08"
-    name: "capability-decomposition-doc"
-    zh: "能力拆解文档"
-    parents: [03, 05, 06, 07]
-    outputs:
-      - "stage1/08_capability_decomposition/capability_dimensions.md"
-      - "stage1/08_capability_decomposition/capability_checkpoints.yaml"
-      - "stage1/08_capability_decomposition/capability_dependency_graph.json"
-  - id: "09"
-    name: "initial-template-metric-set"
-    zh: "初版模板集与指标集"
-    parents: [08, 07]
-    outputs:
-      - "stage1/09_templates_metrics/template_set.yaml"
-      - "stage1/09_templates_metrics/metric_set.yaml"
-      - "stage1/09_templates_metrics/evidence_contracts.yaml"
-      - "stage1/09_templates_metrics/q_matrix.csv"
-  - id: "10"
-    name: "simulator-selection"
-    zh: "选择的模拟器"
-    parents: [08, 05]
-    outputs:
-      - "stage1/10_simulator_selection/selected_simulators.md"
-      - "stage1/10_simulator_selection/simulator_routing.json"
-  - id: "11"
-    name: "annotation-tool-selection"
-    zh: "选择的标注工具"
-    parents: [08, 06]
-    outputs:
-      - "stage1/11_annotation_tool_selection/selected_annotation_tools.md"
-      - "stage1/11_annotation_tool_selection/tool_routing.json"
-  - id: "12"
-    name: "benchmark-draft"
-    zh: "benchmark 草稿"
-    parents: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11]
-    outputs:
-      - "stage1/12_benchmark_draft/benchmark_draft.md"
-      - "stage1/12_benchmark_draft/design_traceability_table.csv"
-  - id: "13"
-    name: "execution-plan"
-    zh: "执行计划"
-    parents: [12]
-    outputs:
-      - "stage1/13_execution_plan/execution_plan.md"
-      - "stage1/13_execution_plan/stage2_handoff.yaml"
+    outputs: [data_06_semisupervised_capability_signals, data_08_preprocessed_capability_pool]
+  - id: capability-dimension-planning
+    name: 能力维度划分
+    skill: skills/capability-dimension-planning/SKILL.md
+    parents: [intent-understanding, literature-review, scope-preprocess-analysis]
+    outputs: [data_10_capability_dimension_doc]
+  - id: template-metric-draft-generation
+    name: 模板/指标初稿生成
+    skill: skills/template-metric-draft-generation/SKILL.md
+    parents: [capability-dimension-planning]
+    outputs: [data_11_template_metric_initial_draft]
+  - id: benchmark-draft-generation
+    name: benchmark 草稿生成
+    skill: skills/benchmark-draft-generation/SKILL.md
+    parents: [template-metric-draft-generation, capability-dimension-planning]
+    outputs: [data_12_benchmark_draft]
+  - id: execution-plan-generation
+    name: 执行计划生成
+    skill: skills/execution-plan-generation/SKILL.md
+    parents: [benchmark-draft-generation]
+    outputs: [data_13_execution_plan]

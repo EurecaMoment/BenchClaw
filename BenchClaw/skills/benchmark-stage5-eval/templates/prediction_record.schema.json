@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "required": [
+    "item_id",
+    "model_id",
+    "prediction",
+    "timestamp"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "model_id": {
+      "type": "string"
+    },
+    "prediction": {},
+    "timestamp": {
+      "type": "string"
+    }
+  }
+}

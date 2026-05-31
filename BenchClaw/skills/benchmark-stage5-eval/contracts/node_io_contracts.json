@@ -1,50 +1,25 @@
 {
-  "38": {
-    "name": "evaluation-run",
-    "allowed_inputs": [
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/README.md",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/data/test.jsonl",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/images/**",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/metrics/evaluate.py",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/FINAL_BENCHMARK_CARD.md",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/STAGE4_REPORT.md",
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/DONE.json",
-      "BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml",
-      "BENCHCLAW_ROOT/modelNeedMeasured/SKILL.md",
-      "BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py"
-    ],
-    "required_outputs": [
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/report_payload.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/run_config.yaml",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/model_call_summary.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/DONE.json"
-    ],
-    "forbidden_reads": [],
-    "notes": "Node 38 is the only Stage5 node allowed to read Stage4 node 37 artifacts."
-  },
-  "39": {
-    "name": "evaluation-report",
-    "allowed_inputs": [
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/prediction_logs.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/failure_cases.jsonl",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/report_payload.json",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/run_config.yaml",
-      "WORKSPACE_ROOT/stage5/38-evaluation-run/DONE.json"
-    ],
-    "required_outputs": [
-      "WORKSPACE_ROOT/stage5/39-evaluation-report/report.md",
-      "WORKSPACE_ROOT/stage5/39-evaluation-report/leaderboard.csv",
-      "WORKSPACE_ROOT/stage5/39-evaluation-report/per_dimension.csv",
-      "WORKSPACE_ROOT/stage5/39-evaluation-report/error_analysis.md",
-      "WORKSPACE_ROOT/stage5/39-evaluation-report/DONE.json"
-    ],
-    "forbidden_reads": [
-      "WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/"
-    ],
-    "notes": "Node 39 must use report_payload.json produced by node 38; it must not reinterpret upstream data directly."
-  }
+  "stage": "stage5",
+  "required_inputs": [
+    "data_13_execution_plan",
+    "data_22_full_benchmark_dataset"
+  ],
+  "terminal_artifacts": [
+    "data_23_evaluation_report"
+  ],
+  "nodes": [
+    {
+      "node_id": "full-evaluation",
+      "name": "全量评测",
+      "parents": [],
+      "output_artifacts": [
+        "data_23_evaluation_report"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    }
+  ]
 }

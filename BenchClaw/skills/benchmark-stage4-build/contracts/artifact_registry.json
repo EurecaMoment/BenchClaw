@@ -1,0 +1,14 @@
+{
+  "stage": "stage4",
+  "artifacts": [
+    {
+      "id": "data_20_template_metric_code_bundle"
+    },
+    {
+      "id": "data_21_grey_validation_report"
+    },
+    {
+      "id": "data_22_full_benchmark_dataset"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": [
+    "templates",
+    "metrics",
+    "traceability"
+  ],
+  "properties": {
+    "templates": {
+      "type": "array"
+    },
+    "metrics": {
+      "type": "array"
+    },
+    "traceability": {
+      "type": "array"
+    }
+  }
+}

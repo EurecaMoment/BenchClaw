@@ -1,70 +1,38 @@
 stage: stage3
-stage_name: 数据清洗、统一格式与半监督 GT 标注
-version: 3.0-opencode-ready
-terminal_nodes: [18, 19, 20]
+node_semantics: only listed nodes are DAG nodes; data ids are artifacts
 nodes:
-  15:
-    name: stage2-real-image-source-ingest
-    skill: skills/15-stage2-real-image-source-ingest/SKILL.md
+  - id: stage3-plan-generation
+    name: 本阶段执行计划生成
+    skill: skills/stage3-plan-generation/SKILL.md
     parents: []
-    output_dir: WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest
-  16:
-    name: stage2-existing-benchmark-source-ingest
-    skill: skills/16-stage2-existing-benchmark-source-ingest/SKILL.md
-    parents: []
-    output_dir: WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest
-  17:
-    name: stage2-simulator-gt-source-ingest
-    skill: skills/17-stage2-simulator-gt-source-ingest/SKILL.md
-    parents: []
-    output_dir: WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest
-  21:
-    name: real-image-unified-format
-    skill: skills/21-real-image-unified-format/SKILL.md
-    parents: [15]
-    output_dir: WORKSPACE_ROOT/stage3/21-real-image-unified-format
-  22:
-    name: benchmark-unified-format
-    skill: skills/22-benchmark-unified-format/SKILL.md
-    parents: [16]
-    output_dir: WORKSPACE_ROOT/stage3/22-benchmark-unified-format
-  23:
-    name: simulator-unified-format
-    skill: skills/23-simulator-unified-format/SKILL.md
-    parents: [17]
-    output_dir: WORKSPACE_ROOT/stage3/23-simulator-unified-format
-  24:
-    name: real-image-data-juicer-cleaning
-    skill: skills/24-real-image-data-juicer-cleaning/SKILL.md
-    parents: [21]
-    output_dir: WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning
-  25:
-    name: benchmark-data-juicer-cleaning
-    skill: skills/25-benchmark-data-juicer-cleaning/SKILL.md
-    parents: [22]
-    output_dir: WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning
-  26:
-    name: simulator-data-juicer-cleaning
-    skill: skills/26-simulator-data-juicer-cleaning/SKILL.md
-    parents: [23]
-    output_dir: WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning
-  27:
-    name: semi-supervised-tool-registry
-    skill: skills/27-semi-supervised-tool-registry/SKILL.md
-    parents: []
-    output_dir: WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry
-  18:
-    name: real-image-semi-supervised-gt
-    skill: skills/18-real-image-semi-supervised-gt/SKILL.md
-    parents: [24, 27]
-    output_dir: WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt
-  19:
-    name: benchmark-image-semi-supervised-gt
-    skill: skills/19-benchmark-image-semi-supervised-gt/SKILL.md
-    parents: [25, 27]
-    output_dir: WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt
-  20:
-    name: simulator-clean-gt-pack
-    skill: skills/20-simulator-clean-gt-pack/SKILL.md
-    parents: [26]
-    output_dir: WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack
+    outputs: [stage3_execution_plan]
+  - id: real-image-cleaning
+    name: 真实图片清洗
+    skill: skills/real-image-cleaning/SKILL.md
+    parents: [stage3-plan-generation]
+    outputs: [real_image_clean_bundle]
+  - id: existing-benchmark-cleaning
+    name: 已有 benchmark 数据清洗
+    skill: skills/existing-benchmark-cleaning/SKILL.md
+    parents: [stage3-plan-generation]
+    outputs: [existing_benchmark_clean_bundle]
+  - id: simulator-data-cleaning
+    name: 仿真器数据清洗
+    skill: skills/simulator-data-cleaning/SKILL.md
+    parents: [stage3-plan-generation]
+    outputs: [simulator_clean_bundle]
+  - id: real-image-annotation
+    name: 真实图片标注
+    skill: skills/real-image-annotation/SKILL.md
+    parents: [real-image-cleaning]
+    outputs: [data_17_annotated_real_image_bundle]
+  - id: existing-benchmark-annotation
+    name: 已有 benchmark 标注
+    skill: skills/existing-benchmark-annotation/SKILL.md
+    parents: [existing-benchmark-cleaning]
+    outputs: [data_18_annotated_existing_benchmark_bundle]
+  - id: simulator-data-organization
+    name: 仿真器数据整理
+    skill: skills/simulator-data-organization/SKILL.md
+    parents: [simulator-data-cleaning]
+    outputs: [data_19_annotated_simulator_bundle]

@@ -1,0 +1,119 @@
+{
+  "artifacts": [
+    {
+      "id": "data_01_user_idea",
+      "name": "用户输入的原始 benchmark idea",
+      "description": "外部输入到 Stage1，不是 DAG 节点"
+    },
+    {
+      "id": "data_02_rewritten_queries",
+      "name": "由意图理解产生的检索 query",
+      "description": "供文献搜索使用"
+    },
+    {
+      "id": "data_03_intent_expansion_doc",
+      "name": "意图理解扩写文档",
+      "description": "供能力维度划分与后续规划使用"
+    },
+    {
+      "id": "data_04_retrieved_literature",
+      "name": "检索得到的文献集合",
+      "description": "供文献调研使用"
+    },
+    {
+      "id": "data_05_source_capability_descriptions",
+      "name": "数据源与能力描述",
+      "description": "由意图理解与外部资源共同约束"
+    },
+    {
+      "id": "data_06_semisupervised_capability_signals",
+      "name": "半监督标注能力信号",
+      "description": "来自外部模型 scope 预处理或能力卡"
+    },
+    {
+      "id": "data_07_literature_review",
+      "name": "文献综述",
+      "description": "供能力维度划分使用"
+    },
+    {
+      "id": "data_08_preprocessed_capability_pool",
+      "name": "预处理后的能力池",
+      "description": "由模型 scope 预处理分析输出"
+    },
+    {
+      "id": "data_09_benchmark_data",
+      "name": "已有 benchmark 数据摘要与可用性索引",
+      "description": "外部资源输入到模板与指标初稿生成"
+    },
+    {
+      "id": "data_10_capability_dimension_doc",
+      "name": "能力维度组织文档",
+      "description": "Stage1 核心能力结构产物"
+    },
+    {
+      "id": "data_11_template_metric_initial_draft",
+      "name": "初版评测集模板与初始指标",
+      "description": "Stage4 的直接上游输入"
+    },
+    {
+      "id": "data_12_benchmark_draft",
+      "name": "benchmark 草稿",
+      "description": "供执行计划生成使用"
+    },
+    {
+      "id": "data_13_execution_plan",
+      "name": "Stage1 生成的执行计划",
+      "description": "Stage2 至 Stage5 的总计划依据"
+    },
+    {
+      "id": "data_14_real_image_collection_bundle",
+      "name": "真实图片采集与分析结果",
+      "description": "已物化到 workspace，并附标注需求"
+    },
+    {
+      "id": "data_15_existing_benchmark_collection_bundle",
+      "name": "已有 benchmark 采集与分析结果",
+      "description": "已物化到 workspace，并附已有标注与新增标注语义描述"
+    },
+    {
+      "id": "data_16_simulator_collection_bundle",
+      "name": "仿真器采集数据与 Ground Truth",
+      "description": "已物化到 workspace"
+    },
+    {
+      "id": "data_17_annotated_real_image_bundle",
+      "name": "标注好的真实图片数据",
+      "description": "Stage3 终端产物之一"
+    },
+    {
+      "id": "data_18_annotated_existing_benchmark_bundle",
+      "name": "标注好的已有 benchmark 数据",
+      "description": "Stage3 终端产物之一"
+    },
+    {
+      "id": "data_19_annotated_simulator_bundle",
+      "name": "整理后的仿真器数据与 GT",
+      "description": "Stage3 终端产物之一"
+    },
+    {
+      "id": "data_20_template_metric_code_bundle",
+      "name": "模板、指标与代码生成结果",
+      "description": "Stage4 关键生产产物"
+    },
+    {
+      "id": "data_21_grey_validation_report",
+      "name": "小批量合成灰度验证报告",
+      "description": "用于筛除无效模板和修正指标"
+    },
+    {
+      "id": "data_22_full_benchmark_dataset",
+      "name": "全量 benchmark 数据集",
+      "description": "Stage4 终端产物"
+    },
+    {
+      "id": "data_23_evaluation_report",
+      "name": "评测报告",
+      "description": "Stage5 终端产物"
+    }
+  ]
+}

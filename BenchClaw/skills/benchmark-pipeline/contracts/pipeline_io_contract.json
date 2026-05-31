@@ -1,0 +1,39 @@
+{
+  "required_frozen_paths": [
+    "PROJECT_ROOT",
+    "BENCHCLAW_ROOT",
+    "WORKSPACE_PARENT",
+    "WORKSPACE_ROOT"
+  ],
+  "write_scope": "WORKSPACE_ROOT only",
+  "read_scope": [
+    "PROJECT_ROOT declared project structure",
+    "BENCHCLAW_ROOT read-only",
+    "WORKSPACE_ROOT"
+  ],
+  "stage_order": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5"
+  ],
+  "terminal_artifact": "data_23_evaluation_report",
+  "stage_dependencies": {
+    "S1": [],
+    "S2": [
+      "S1"
+    ],
+    "S3": [
+      "S2"
+    ],
+    "S4": [
+      "S1",
+      "S3"
+    ],
+    "S5": [
+      "S1",
+      "S4"
+    ]
+  }
+}

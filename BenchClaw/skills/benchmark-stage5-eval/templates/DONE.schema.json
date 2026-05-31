@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "required": [
+    "status",
+    "node_id",
+    "inputs",
+    "outputs",
+    "quality_gate"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "PASS"
+      ]
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "array"
+    },
+    "outputs": {
+      "type": "array"
+    },
+    "quality_gate": {
+      "type": "object"
+    }
+  }
+}

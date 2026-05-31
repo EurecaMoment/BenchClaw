@@ -1,5 +1,0 @@
-OK: Stage3 DAG is valid and non-serial.
-L0: 15 | 16 | 17 | 27
-L1: 21 | 22 | 23
-L2: 24 | 25 | 26
-L3: 18 | 19 | 20

@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": [
+    "record_id",
+    "source_item_id",
+    "evidence",
+    "labels",
+    "provenance",
+    "review_status"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string"
+    },
+    "source_item_id": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "labels": {
+      "type": "object"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "review_status": {
+      "type": "string"
+    }
+  }
+}

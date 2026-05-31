@@ -1,118 +1,47 @@
-# BenchClaw Stage5 Skill: Evaluation and Evaluation Report
+# Benchmark Stage5 Eval Skill — 模型评测与报告
 
-全局路径约束：`BENCHCLAW_ROOT` 仅作只读输入；`WORKSPACE_ROOT` 是本次流程唯一总工作目录，所有写操作和流程产物只能落在其下。
+## 角色
 
-## 路径入口校验
+读取 Stage4 全量 benchmark 数据集，完成真实模型评测或读取用户提供的已物化预测文件，生成最终评测报告。
 
-开始执行前必须先确认：
+## 关键规则
 
-- 本次收到的 `BENCHCLAW_ROOT` 与 `WORKSPACE_ROOT` 与上游 pipeline 冻结值完全一致，不得在 Stage5 内重新推导。
-- `BENCHCLAW_ROOT` 必须仍然解析为当前 BenchClaw 项目根目录。
-- `WORKSPACE_ROOT` 必须是独立于 `BENCHCLAW_ROOT` 的外部工作目录，不能位于 `BENCHCLAW_ROOT` 内，不能等于 `BENCHCLAW_ROOT`，不能写成 `BENCHCLAW_ROOT/workspace*`。
-- 若路径校验失败，Stage5 必须立即阻塞并报错，不能继续读取 Stage4 或写任何 Stage5 输出。
+- 只有本文件 DAG 表中的节点是本阶段节点；编号数据只进入 `artifacts/`，不得进入 `nodes/`。
+- 启动本 stage 时，必须接收并复述冻结的 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT` 实际值，并与 `WORKSPACE_ROOT/path_resolution.json` 对齐。
+- 本 stage 只能写入 `WORKSPACE_ROOT/stage5/`。
+- 每个节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
+- 每个编号数据必须写入：`artifacts/<data-id>/`。
+- 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 
-## Purpose
-This skill executes **Stage5** of the BenchClaw pipeline exactly as shown in the handwritten Stage5 diagram:
+## 输入
 
-Stage5 的内部结构化真相源统一使用 JSONL。推荐主库位置：
+- `data_13_execution_plan`
+- `data_22_full_benchmark_dataset`
 
-```text
-WORKSPACE_ROOT/stage5/38-evaluation-run/eval_results.json
-```
+## DAG 节点
 
-模型调用、预测、失败样本、聚合分数、报告载荷等都应以 JSONL 表为准；`prediction_logs.jsonl`、`failure_cases.jsonl`、`leaderboard.csv` 等只保留为导出或报告面向的副本。
+| Node ID | 椭圆节点名称 | Parents | 输出数据 |
+|---|---|---|---|
+| `full-evaluation` | 全量评测 | 无 | `data_23_evaluation_report` |
 
-```text
-Stage5: 评测  ->  评测报告
-        38        39
-```
+## Ready-set 调度
 
-This stage is intentionally short. Do **not** invent extra branches, gray tests, small-batch synthesis, data cleaning, or template rewriting in Stage5. Those belong to earlier stages.
+1. 从 `dag.json` 读取节点依赖。
+2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
+3. 对 ready 节点调用 `skills/<node-id>/SKILL.md`。
+4. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
+5. 本 stage 只在所有 terminal artifacts 完成且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
-## DAG Contract
+## 终端数据
 
-Stage5 consumes the final Stage4 benchmark package from node **37** as an external input, then executes:
+- `data_23_evaluation_report`
 
-```text
-L0: 38-evaluation-run
-L1: 39-evaluation-report
-```
-
-The dependency is strict:
+## 标准目录
 
 ```text
-37 external input -> 38 -> 39
+WORKSPACE_ROOT/stage5/
+  nodes/
+  artifacts/
+  _STAGE_DONE.json
+  _stage_report.md
 ```
-
-Node **39** may only read the normalized outputs of node **38**. It must not directly bypass node 38 to reinterpret Stage4 artifacts.
-
-## Required External Input
-Expected Stage4 handoff directory:
-
-```text
-WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/
-```
-
-Minimum required files:
-
-```text
-EVALSET_DATASET/README.md
-EVALSET_DATASET/data/test.jsonl
-EVALSET_DATASET/images/
-EVALSET_DATASET/metrics/evaluate.py
-FINAL_BENCHMARK_CARD.md
-DONE.json
-```
-
-Model roster and API calling contract must come from:
-
-```text
-BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml
-BENCHCLAW_ROOT/modelNeedMeasured/SKILL.md
-BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py
-```
-
-If the exact filenames differ, node 38 must create a local `input_mapping.yaml` explaining the mapping before evaluation starts; it must not rewrite Stage4 artifacts.
-
-## Stage5 Outputs
-
-```text
-WORKSPACE_ROOT/stage5/38-evaluation-run/
-  eval_results.json
-  prediction_logs.jsonl
-  failure_cases.jsonl
-  report_payload.json
-  run_config.yaml
-  DONE.json
-
-WORKSPACE_ROOT/stage5/39-evaluation-report/
-  report.md
-  leaderboard.csv
-  per_dimension.csv
-  error_analysis.md
-  DONE.json
-```
-
-## Opencode Execution Rules
-
-1. Run `scripts/validate_dag.py` before executing the stage.
-2. Run `scripts/ready_set_runner.py --workspace WORKSPACE_ROOT` to determine executable nodes.
-3. Execute node 38 first.
-4. Execute node 39 only after node 38 has emitted `DONE.json`.
-5. Do not allow node 39 to read Stage4 files directly. Node 38 must package all required evidence into `report_payload.json`.
-6. Finish by running `scripts/check_stage5_outputs.py --workspace WORKSPACE_ROOT`.
-
-## Child Skills
-
-- `skills/38-evaluation-run/SKILL.md`
-- `skills/39-evaluation-report/SKILL.md`
-
-## Non-negotiable Constraints
-
-- Stage5 has only two subprocesses: evaluation and report generation.
-- Node 39 depends only on node 38.
-- No direct model-result fabrication is allowed.
-- All scored answers must come from model predictions, model API calls, or already materialized prediction files.
-- Stage5 must evaluate the full fixed candidate roster declared in `BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml`; it must not silently subset, replace, or rename the required models.
-- All metrics must be reproducible from logged predictions and scoring scripts.
-- No simulated, pseudo-random, rule-based, hash-based, or manually fabricated predictions/scores are allowed. If real model outputs are unavailable, Stage5 must block instead of reporting completion.

@@ -1,25 +1,5 @@
-# BenchClaw Stage2 Skill Pack
+# benchmark-stage2-data-collect
 
-这是根据手绘 Stage2「数据采集」流程整理的 Opencode-ready Skill 包。
+根据 Stage1 执行计划，分别采集并分析真实图片、已有 benchmark 和仿真器数据，并把后续阶段需要消费的媒体、元数据、标注需求与 GT 物化到 workspace。
 
-核心结构：
-
-```text
-13 执行计划入口
-14 各仿真器 skill 注册/适配
-15 真实图片数据采集
-16 已有 benchmark 数据采集
-17 仿真器多模态 GT 数据采集
-```
-
-依赖关系：
-
-```text
-13.parents = []
-14.parents = []
-15.parents = [13]
-16.parents = [13]
-17.parents = [13,14]
-```
-
-Stage2 终端输出为 15、16、17 三个独立数据源目录，不强行合并。
+该目录是生产 skill 定义，不包含总驱动脚本。节点由 `dag.json` 与 `skills/<node-id>/SKILL.md` 调度。

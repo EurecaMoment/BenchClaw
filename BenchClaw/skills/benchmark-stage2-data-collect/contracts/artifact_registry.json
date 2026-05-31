@@ -1,0 +1,14 @@
+{
+  "stage": "stage2",
+  "artifacts": [
+    {
+      "id": "data_14_real_image_collection_bundle"
+    },
+    {
+      "id": "data_15_existing_benchmark_collection_bundle"
+    },
+    {
+      "id": "data_16_simulator_collection_bundle"
+    }
+  ]
+}

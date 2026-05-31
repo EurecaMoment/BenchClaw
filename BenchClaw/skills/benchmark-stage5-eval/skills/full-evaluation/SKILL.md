@@ -1,0 +1,23 @@
+# Node Skill — 全量评测
+
+## 输入
+
+- `data_22_full_benchmark_dataset`
+- `data_13_execution_plan` 中的评测模型配置
+- 用户提供的已物化预测文件，或可实际调用的模型 endpoint 配置
+
+## 处理
+
+1. 校验全量 benchmark 数据集、媒体、GT、指标配置和答案程序。
+2. 若用户提供预测文件，检查 item_id 覆盖率、模型名、时间戳和预测格式。
+3. 若调用模型 endpoint，记录 endpoint 配置、模型名、请求参数、响应日志和失败重试记录。
+4. 执行指标计算，生成 overall、capability-wise、source-wise、template-wise、error taxonomy 和可复现评测记录。
+5. 缺少真实预测或真实模型调用结果时，必须阻塞，不得生成完成状态。
+
+## 输出
+
+- `artifacts/data_23_evaluation_report/evaluation_report.md`
+- `artifacts/data_23_evaluation_report/metrics.json`
+- `artifacts/data_23_evaluation_report/prediction_audit.jsonl`
+- `artifacts/data_23_evaluation_report/error_taxonomy.jsonl`
+- 节点执行记录文件

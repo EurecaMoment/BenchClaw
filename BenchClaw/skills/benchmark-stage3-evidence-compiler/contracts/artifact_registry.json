@@ -1,0 +1,14 @@
+{
+  "stage": "stage3",
+  "artifacts": [
+    {
+      "id": "data_17_annotated_real_image_bundle"
+    },
+    {
+      "id": "data_18_annotated_existing_benchmark_bundle"
+    },
+    {
+      "id": "data_19_annotated_simulator_bundle"
+    }
+  ]
+}

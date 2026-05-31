@@ -1,0 +1,137 @@
+{
+  "stage": "stage1",
+  "required_inputs": [
+    "data_01_user_idea",
+    "external capability cards",
+    "external dataset cards",
+    "model scope preprocessing resources"
+  ],
+  "terminal_artifacts": [
+    "data_13_execution_plan"
+  ],
+  "nodes": [
+    {
+      "node_id": "intent-understanding",
+      "name": "意图理解",
+      "parents": [],
+      "output_artifacts": [
+        "data_02_rewritten_queries",
+        "data_03_intent_expansion_doc",
+        "data_05_source_capability_descriptions"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "literature-search",
+      "name": "文献搜索",
+      "parents": [
+        "intent-understanding"
+      ],
+      "output_artifacts": [
+        "data_04_retrieved_literature"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "literature-review",
+      "name": "文献调研",
+      "parents": [
+        "literature-search",
+        "intent-understanding"
+      ],
+      "output_artifacts": [
+        "data_07_literature_review"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "scope-preprocess-analysis",
+      "name": "模型 scope 预处理分析",
+      "parents": [],
+      "output_artifacts": [
+        "data_06_semisupervised_capability_signals",
+        "data_08_preprocessed_capability_pool"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "capability-dimension-planning",
+      "name": "能力维度划分",
+      "parents": [
+        "intent-understanding",
+        "literature-review",
+        "scope-preprocess-analysis"
+      ],
+      "output_artifacts": [
+        "data_10_capability_dimension_doc"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "template-metric-draft-generation",
+      "name": "模板/指标初稿生成",
+      "parents": [
+        "capability-dimension-planning"
+      ],
+      "output_artifacts": [
+        "data_11_template_metric_initial_draft"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "benchmark-draft-generation",
+      "name": "benchmark 草稿生成",
+      "parents": [
+        "template-metric-draft-generation",
+        "capability-dimension-planning"
+      ],
+      "output_artifacts": [
+        "data_12_benchmark_draft"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "execution-plan-generation",
+      "name": "执行计划生成",
+      "parents": [
+        "benchmark-draft-generation"
+      ],
+      "output_artifacts": [
+        "data_13_execution_plan"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    }
+  ]
+}

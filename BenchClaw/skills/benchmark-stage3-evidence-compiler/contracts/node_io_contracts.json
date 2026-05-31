@@ -1,323 +1,119 @@
 {
   "stage": "stage3",
-  "default_workspace": "WORKSPACE_ROOT",
-  "input_roots": {
-    "stage2_node_15": "WORKSPACE_ROOT/stage2/15-real-image-acquisition",
-    "stage2_node_16": "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition",
-    "stage2_node_17": "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition",
-    "stage3_input_path_override": "WORKSPACE_ROOT/config/stage3_input_paths.json",
-    "tool_roots": [
-      "BENCHCLAW_ROOT/annotation-tool"
-    ]
-  },
-  "node_contracts": {
-    "15": {
+  "required_inputs": [
+    "data_13_execution_plan",
+    "data_14_real_image_collection_bundle",
+    "data_15_existing_benchmark_collection_bundle",
+    "data_16_simulator_collection_bundle"
+  ],
+  "terminal_artifacts": [
+    "data_17_annotated_real_image_bundle",
+    "data_18_annotated_existing_benchmark_bundle",
+    "data_19_annotated_simulator_bundle"
+  ],
+  "nodes": [
+    {
+      "node_id": "stage3-plan-generation",
+      "name": "本阶段执行计划生成",
       "parents": [],
-      "may_read": [
-        "WORKSPACE_ROOT/stage2/15-real-image-acquisition/**",
-        "WORKSPACE_ROOT/config/stage3_input_paths.json"
+      "output_artifacts": [
+        "stage3_execution_plan"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/source_summary.md",
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/DONE.json",
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "16": {
-      "parents": [],
-      "may_read": [
-        "WORKSPACE_ROOT/stage2/16-existing-benchmark-acquisition/**",
-        "WORKSPACE_ROOT/config/stage3_input_paths.json"
+    {
+      "node_id": "real-image-cleaning",
+      "name": "真实图片清洗",
+      "parents": [
+        "stage3-plan-generation"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/source_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/source_summary.md",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/DONE.json",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/USED_INPUTS.json"
+      "output_artifacts": [
+        "real_image_clean_bundle"
       ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "17": {
-      "parents": [],
-      "may_read": [
-        "WORKSPACE_ROOT/stage2/17-simulator-multimodal-gt-acquisition/**",
-        "WORKSPACE_ROOT/config/stage3_input_paths.json"
+    {
+      "node_id": "existing-benchmark-cleaning",
+      "name": "已有 benchmark 数据清洗",
+      "parents": [
+        "stage3-plan-generation"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/gt_source_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/source_summary.md",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/DONE.json",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/USED_INPUTS.json"
+      "output_artifacts": [
+        "existing_benchmark_clean_bundle"
       ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "21": {
+    {
+      "node_id": "simulator-data-cleaning",
+      "name": "仿真器数据清洗",
       "parents": [
-        "15"
+        "stage3-plan-generation"
       ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**",
-        "schemas/unified_multimodal_record.schema.json",
-        "templates/unified_record.example.json"
+      "output_artifacts": [
+        "simulator_clean_bundle"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/unified_records.jsonl",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/field_mapping.md",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/modality_inventory.json",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/normalization_report.md",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/DONE.json",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/**",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/**",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "22": {
+    {
+      "node_id": "real-image-annotation",
+      "name": "真实图片标注",
       "parents": [
-        "16"
+        "real-image-cleaning"
       ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**",
-        "schemas/unified_multimodal_record.schema.json",
-        "templates/unified_record.example.json"
+      "output_artifacts": [
+        "data_17_annotated_real_image_bundle"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/unified_records.jsonl",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/field_mapping.md",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/modality_inventory.json",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/normalization_report.md",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/DONE.json",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/**",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/**",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "23": {
+    {
+      "node_id": "existing-benchmark-annotation",
+      "name": "已有 benchmark 标注",
       "parents": [
-        "17"
+        "existing-benchmark-cleaning"
       ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/17-stage2-simulator-gt-source-ingest/**",
-        "schemas/unified_multimodal_record.schema.json",
-        "templates/unified_record.example.json"
+      "output_artifacts": [
+        "data_18_annotated_existing_benchmark_bundle"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/unified_records.jsonl",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/field_mapping.md",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/modality_inventory.json",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/normalization_report.md",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/DONE.json",
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/15-stage2-real-image-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/16-stage2-existing-benchmark-source-ingest/**",
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/**",
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/**",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     },
-    "24": {
+    {
+      "node_id": "simulator-data-organization",
+      "name": "仿真器数据整理",
       "parents": [
-        "21"
+        "simulator-data-cleaning"
       ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/21-real-image-unified-format/**",
-        "templates/data_juicer_recipe.example.yaml",
-        "schemas/unified_multimodal_record.schema.json"
+      "output_artifacts": [
+        "data_19_annotated_simulator_bundle"
       ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaned_records.jsonl",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/rejected_records.jsonl",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/data_juicer_recipe.yaml",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/data_juicer_report.json",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/cleaning_report.md",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/DONE.json",
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/USED_INPUTS.json"
-      ],
-      "must_not_read": []
-    },
-    "25": {
-      "parents": [
-        "22"
-      ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/22-benchmark-unified-format/**",
-        "templates/data_juicer_recipe.example.yaml",
-        "schemas/unified_multimodal_record.schema.json"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaned_records.jsonl",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/rejected_records.jsonl",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/data_juicer_recipe.yaml",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/data_juicer_report.json",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/cleaning_report.md",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/DONE.json",
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/USED_INPUTS.json"
-      ],
-      "must_not_read": []
-    },
-    "26": {
-      "parents": [
-        "23"
-      ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/23-simulator-unified-format/**",
-        "templates/data_juicer_recipe.example.yaml",
-        "schemas/unified_multimodal_record.schema.json"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaned_records.jsonl",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/rejected_records.jsonl",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/data_juicer_recipe.yaml",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/data_juicer_report.json",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/cleaning_report.md",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/DONE.json",
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/USED_INPUTS.json"
-      ],
-      "must_not_read": []
-    },
-    "27": {
-      "parents": [],
-      "may_read": [
-        "BENCHCLAW_ROOT/annotation-tool/**"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/tool_registry.json",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/annotation_tool_contracts.json",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/tool_probe_report.md",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/DONE.json",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/USED_INPUTS.json"
-      ],
-      "must_not_read": []
-    },
-    "18": {
-      "parents": [
-        "24",
-        "27"
-      ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/24-real-image-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**",
-        "schemas/semi_gt_record.schema.json"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/semi_gt_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/realdata/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/yoloe/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/sam3/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/depthanything3/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/annotations/fused/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/evidence/",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/conflict_report.md",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/quality_report.md",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/DONE.json",
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**"
-      ]
-    },
-    "19": {
-      "parents": [
-        "25",
-        "27"
-      ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/25-benchmark-data-juicer-cleaning/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**",
-        "schemas/semi_gt_record.schema.json"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/semi_gt_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/official_label_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/benchmarkdataset/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/yoloe/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/sam3/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/depthanything3/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/annotations/fused/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/evidence/",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/conflict_report.md",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/quality_report.md",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/DONE.json",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/**"
-      ]
-    },
-    "20": {
-      "parents": [
-        "26"
-      ],
-      "may_read": [
-        "WORKSPACE_ROOT/stage3/26-simulator-data-juicer-cleaning/**",
-        "schemas/simulator_gt_record.schema.json"
-      ],
-      "must_write": [
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/cleaned_sim_records.jsonl",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/simulator_gt_manifest.jsonl",
-        "WORKSPACE_ROOT/stage3/simulator/",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/provenance/",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/consistency_report.md",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/quality_report.md",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/DONE.json",
-        "WORKSPACE_ROOT/stage3/20-simulator-clean-gt-pack/USED_INPUTS.json"
-      ],
-      "must_not_read": [
-        "WORKSPACE_ROOT/stage3/18-real-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/19-benchmark-image-semi-supervised-gt/**",
-        "WORKSPACE_ROOT/stage3/27-semi-supervised-tool-registry/**"
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
       ]
     }
-  },
-  "stage_level_outputs": {
-    "must_write": [
-      "WORKSPACE_ROOT/stage3/STAGE3_VALIDATION_REPORT.json",
-      "WORKSPACE_ROOT/stage3/STAGE3_VALIDATION_REPORT.md"
-    ]
-  }
+  ]
 }
