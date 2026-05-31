@@ -4,7 +4,8 @@
     "data_01_user_idea",
     "external capability cards",
     "external dataset cards",
-    "model scope preprocessing resources"
+    "data_06_semisupervised_capability_signals",
+    "data_08_preprocessed_capability_pool"
   ],
   "terminal_artifacts": [
     "data_13_execution_plan"
@@ -57,26 +58,11 @@
       ]
     },
     {
-      "node_id": "scope-preprocess-analysis",
-      "name": "模型 scope 预处理分析",
-      "parents": [],
-      "output_artifacts": [
-        "data_06_semisupervised_capability_signals",
-        "data_08_preprocessed_capability_pool"
-      ],
-      "required_node_files": [
-        "USED_INPUTS.json",
-        "DONE.json",
-        "NODE_REPORT.md"
-      ]
-    },
-    {
       "node_id": "capability-dimension-planning",
       "name": "能力维度划分",
       "parents": [
         "intent-understanding",
-        "literature-review",
-        "scope-preprocess-analysis"
+        "literature-review"
       ],
       "output_artifacts": [
         "data_10_capability_dimension_doc"

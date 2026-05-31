@@ -1,5 +1,11 @@
 # Node Skill — 模型 scope 预处理分析
 
+## 运行策略
+
+- 本 skill 只用于离线预处理，不属于 `benchmark-stage1-draft` 的正常 pipeline DAG。
+- 正常 `benchmark-pipeline` 不得自动调度本 skill；启动 Stage1 前必须已经有它的离线产物。
+- 只有用户明确要求离线 scope 预处理时才运行；其产物是 Stage1 正常 pipeline 的必需输入。
+
 ## 输入
 
 - 外部模型 scope 分析结果、能力卡、聚类结果或用户授权的数据索引

@@ -3,9 +3,11 @@
 ## 输入
 
 - `data_03_intent_expansion_doc`
-- `data_06_semisupervised_capability_signals`
 - `data_07_literature_review`
-- `data_08_preprocessed_capability_pool`
+- 已离线物化的 `data_06_semisupervised_capability_signals`
+- 已离线物化的 `data_08_preprocessed_capability_pool`
+
+正常 pipeline 不在线运行 `scope-preprocess-analysis`，但必须消费上述离线产物；缺失时写 `BLOCKED` 并停止本节点。
 
 ## 处理
 

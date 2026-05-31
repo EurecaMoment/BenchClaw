@@ -16,15 +16,10 @@ nodes:
     skill: skills/literature-review/SKILL.md
     parents: [literature-search, intent-understanding]
     outputs: [data_07_literature_review]
-  - id: scope-preprocess-analysis
-    name: 模型 scope 预处理分析
-    skill: skills/scope-preprocess-analysis/SKILL.md
-    parents: []
-    outputs: [data_06_semisupervised_capability_signals, data_08_preprocessed_capability_pool]
   - id: capability-dimension-planning
     name: 能力维度划分
     skill: skills/capability-dimension-planning/SKILL.md
-    parents: [intent-understanding, literature-review, scope-preprocess-analysis]
+    parents: [intent-understanding, literature-review]
     outputs: [data_10_capability_dimension_doc]
   - id: template-metric-draft-generation
     name: 模板/指标初稿生成

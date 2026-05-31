@@ -28,7 +28,7 @@
     {
       "id": "data_06_semisupervised_capability_signals",
       "name": "半监督标注能力信号",
-      "description": "来自外部模型 scope 预处理或能力卡"
+      "description": "必需离线输入产物，来自外部模型 scope 预处理或能力卡；正常 pipeline 不自动生成，但会消费并校验"
     },
     {
       "id": "data_07_literature_review",
@@ -38,7 +38,7 @@
     {
       "id": "data_08_preprocessed_capability_pool",
       "name": "预处理后的能力池",
-      "description": "由模型 scope 预处理分析输出"
+      "description": "必需离线输入产物，由模型 scope 预处理分析输出；正常 pipeline 不自动生成，但会消费并校验"
     },
     {
       "id": "data_09_benchmark_data",

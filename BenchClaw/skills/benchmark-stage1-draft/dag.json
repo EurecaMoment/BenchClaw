@@ -29,15 +29,6 @@
       ]
     },
     {
-      "id": "scope-preprocess-analysis",
-      "name": "模型 scope 预处理分析",
-      "skill": "skills/scope-preprocess-analysis/SKILL.md",
-      "outputs": [
-        "data_06_semisupervised_capability_signals",
-        "data_08_preprocessed_capability_pool"
-      ]
-    },
-    {
       "id": "capability-dimension-planning",
       "name": "能力维度划分",
       "skill": "skills/capability-dimension-planning/SKILL.md",
@@ -89,10 +80,6 @@
     },
     {
       "from": "literature-review",
-      "to": "capability-dimension-planning"
-    },
-    {
-      "from": "scope-preprocess-analysis",
       "to": "capability-dimension-planning"
     },
     {
