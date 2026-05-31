@@ -16,3 +16,6 @@
 [submodule "thirty_part/annotationTools/yoloe"]
 	path = thirty_part/annotationTools/yoloe
 	url = https://github.com/EurecaAI/yoloe.git
+[submodule "thirty_part/ModelScope-CDM-IRT"]
+	path = thirty_part/ModelScope-CDM-IRT
+	url = https://github.com/EurecaAI/ModelScope-CDM-IRT.git
