@@ -6,15 +6,20 @@
       "name": "Local vLLM",
       "options": {
         "baseURL": "http://127.0.0.1:9000/v1",
-        "apiKey": "EMPTY"
+        "apiKey": "EMPTY",
+        "timeout": 600000,
+        "chunkTimeout": 60000
       },
       "models": {
-        "qwen3.6-35b-a3b": {
+        "Qwen3.6-35B-A3B": {
           "name": "Qwen3.6-35B-A3B (Local)"
         }
       }
     }
   },
+  "model": "local_vllm/Qwen3.6-35B-A3B",
+  "small_model": "local_vllm/Qwen3.6-35B-A3B",
+  "default_agent": "benchclaw-pipeline",
   "permission": {
     "read": "allow",
     "glob": "allow",
@@ -52,7 +57,7 @@
   "agent": {
     "benchclaw-pipeline": {
       "mode": "primary",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Top-level BenchClaw pipeline orchestrator. Mirrors benchmark-pipeline/SKILL.md, schedules Stage 1-5 managers, enforces gates, coordinates parallel independent work, owns pipeline_state.json, and writes the final report.",
       "steps": 120,
       "permission": {
@@ -92,7 +97,7 @@
     },
     "stage1-draft-manager": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Stage 1 manager for idea refinement, literature survey, capability scope, data source mapping, evalset prototype, benchmark draft, execution plan, and Stage 1 gate.",
       "steps": 80,
       "permission": {
@@ -132,7 +137,7 @@
     },
     "stage2-data-collect-manager": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Stage 2 manager for unified simulator, existing_dataset, and real_data collection. May dispatch independent source workers in parallel, merge manifests, and run the Stage 2 gate.",
       "steps": 90,
       "permission": {
@@ -172,7 +177,7 @@
     },
     "stage3-data-clean-manager": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Stage 3 evidence-compiler manager for unified-format normalization, Data-Juicer cleaning, semi-supervised annotation registry, cleaned GT packaging, and Stage 3 gate.",
       "steps": 90,
       "permission": {
@@ -212,7 +217,7 @@
     },
     "stage4-build-manager": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Stage 4 manager for evalset synthesis, metric establishment, executable metric library, dry-run validation, and Stage 4 gate.",
       "steps": 90,
       "permission": {
@@ -252,7 +257,7 @@
     },
     "stage5-eval-manager": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Stage 5 manager for eval system prompt, canary-first evaluation, rollback localization, full model API run, metrics, score checks, and evaluation report.",
       "steps": 90,
       "permission": {
@@ -292,7 +297,7 @@
     },
     "workspace-auditor": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Read-only auditor for workspace isolation, workspace discovery, allowed global resource paths, and upstream artifact presence.",
       "steps": 30,
       "permission": {
@@ -333,7 +338,7 @@
     },
     "skill-contract-explorer": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Read-only explorer for SKILL.md files, frontmatter, phase chains, required artifacts, allowed tools, gate rules, and stage handoff contracts.",
       "steps": 30,
       "permission": {
@@ -373,8 +378,49 @@
     },
     "atomic-skill-runner": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
-      "description": "Sub-subagent for one atomic benchmark skill invocation or one bounded phase. Produces declared artifacts and returns paths, evidence, and gate status.",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
+      "description": "Sub-subagent for one atomic benchmark child skill invocation under BENCHCLAW_ROOT/skills, including node-level skills/<node>/SKILL.md and nested subskills/<subskill>/SKILL.md. Produces only declared artifacts and returns paths, evidence, blockers, and gate status.",
+      "steps": 45,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "edit": "allow",
+        "skill": "allow",
+        "task": "allow",
+        "external_directory": "allow",
+        "doom_loop": "allow",
+        "bash": {
+          "*": "allow",
+          "sudo": "deny",
+          "sudo *": "deny",
+          "su": "deny",
+          "su *": "deny",
+          "rm": "deny",
+          "rm *": "deny",
+          "rm -r*": "deny",
+          "rm -rf *": "deny",
+          "rmdir": "deny",
+          "rmdir *": "deny",
+          "unlink": "deny",
+          "unlink *": "deny",
+          "find * -delete*": "deny",
+          "git clean*": "deny",
+          "git reset --hard*": "deny",
+          "mkfs*": "deny",
+          "dd *": "deny",
+          "shred *": "deny",
+          "shutdown*": "deny",
+          "reboot*": "deny"
+        }
+      },
+      "hidden": true
+    },
+    "child-skill-module-runner": {
+      "mode": "subagent",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
+      "description": "Subagent for executing exactly one BenchClaw child skill module under BENCHCLAW_ROOT/skills. Use for node-level skills/<node>/SKILL.md and nested subskills/<subskill>/SKILL.md only; do not run parent stages or sibling modules.",
       "steps": 45,
       "permission": {
         "read": "allow",
@@ -414,7 +460,7 @@
     },
     "artifact-contract-writer": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for writing declared benchmark artifacts, summaries, manifests, schemas, and reports while preserving stage contracts.",
       "steps": 45,
       "permission": {
@@ -455,7 +501,7 @@
     },
     "source-simulator-worker": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for simulator source work, including capability survey, collection scripts, manifests, GT preservation, and simulator cleaning/audit tasks.",
       "steps": 50,
       "permission": {
@@ -496,7 +542,7 @@
     },
     "source-dataset-worker": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for existing_dataset source work, including field mapping, ingest scripts, annotation provenance, manifests, cleaning, and QA/label checks.",
       "steps": 50,
       "permission": {
@@ -537,7 +583,7 @@
     },
     "source-realdata-worker": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for real_data source work, including registration, metadata extraction, annotation gap tracking, pseudo-annotation review, and provenance-safe cleaning.",
       "steps": 50,
       "permission": {
@@ -578,7 +624,7 @@
     },
     "datajuicer-specialist": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for Data-Juicer capability extraction, config generation, CLI/run checks, operator provenance, and cleaning lineage preservation.",
       "steps": 55,
       "permission": {
@@ -619,7 +665,7 @@
     },
     "annotation-specialist": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for optional sam3, depthanything, yolo, and related semi-supervised annotation plans. Outputs must be pseudo/tool_generated/needs_human_review.",
       "steps": 45,
       "permission": {
@@ -660,7 +706,7 @@
     },
     "evalset-builder": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for Stage 4 evalset templates, synthesis rules, official dataset, schema, grounding checks, leakage checks, and manifests.",
       "steps": 60,
       "permission": {
@@ -701,7 +747,7 @@
     },
     "metric-library-builder": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for executable metric specs, scoring rules, metric code, aggregators, tests, and tools/evaluate_evalset.py smoke validation.",
       "steps": 60,
       "permission": {
@@ -742,7 +788,7 @@
     },
     "canary-eval-runner": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for canary sample selection, limited model calls, parse/API/metric checks, cost estimate, CANARY_VERDICT, and CANARY_EVAL_REPORT.",
       "steps": 55,
       "permission": {
@@ -783,7 +829,7 @@
     },
     "model-api-runner": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for full model API execution after canary PASS or explicit waiver. Tracks retries, failures, raw outputs, and API summaries.",
       "steps": 60,
       "permission": {
@@ -824,7 +870,7 @@
     },
     "metric-runner": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for running Stage 4 metric library against model outputs, producing scores, aggregated metrics, dimension analysis, and failure cases.",
       "steps": 45,
       "permission": {
@@ -865,7 +911,7 @@
     },
     "process-evaluator": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for process metrics and process evaluation across Stage 1-5 artifacts, gates, canary/full eval evidence, costs, and reproducibility.",
       "steps": 50,
       "permission": {
@@ -906,7 +952,7 @@
     },
     "root-cause-analyst": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for failed gate diagnosis. Localizes cause to stage, phase, skill, artifact, rule gap, minimal fix target, and downstream invalidation range.",
       "steps": 55,
       "permission": {
@@ -946,7 +992,7 @@
     },
     "rollback-analyst": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for rollback localization, invalidated artifact ranges, ROLLBACK_STATE_PATCH, and rollback plans.",
       "steps": 45,
       "permission": {
@@ -987,7 +1033,7 @@
     },
     "skill-version-controller": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for git baseline, branch naming, baseline manifests, allowed edit lists, and version-control logs before skill revision.",
       "steps": 40,
       "permission": {
@@ -1028,7 +1074,7 @@
     },
     "skill-surgical-reviser": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for minimal SKILL.md revisions constrained by SKILL_FIX_CANDIDATES and ALLOWED_SKILL_EDIT_LIST.",
       "steps": 60,
       "permission": {
@@ -1069,7 +1115,7 @@
     },
     "regression-verifier": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for static regression verification, frontmatter parsing, stage contract preservation, related gate checks, and SKILL_REGRESSION_REPORT.",
       "steps": 45,
       "permission": {
@@ -1110,7 +1156,7 @@
     },
     "stage-gate-tester": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Sub-subagent for one stage quality gate. Checks required artifacts, verdict files, schema contracts, no-skip rules, and gate evidence.",
       "steps": 40,
       "permission": {
@@ -1151,7 +1197,7 @@
     },
     "cross-stage-contract-reviewer": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Read-only reviewer for Stage N output to Stage N+1 input alignment, workspace isolation, gate handoff state, and downstream invalidation rules.",
       "steps": 40,
       "permission": {
@@ -1192,7 +1238,7 @@
     },
     "stage-reviewer": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Read-only reviewer for contract regressions, missing artifacts, gate bypasses, leakage, invalid provenance, and missing tests.",
       "steps": 35,
       "permission": {
@@ -1232,7 +1278,7 @@
     },
     "final-report-writer": {
       "mode": "subagent",
-      "model": "local_vllm/qwen3.6-35b-a3b",
+      "model": "local_vllm/Qwen3.6-35B-A3B",
       "description": "Subagent for BENCHMARK_PIPELINE_REPORT.md synthesis after terminal pipeline state.",
       "steps": 45,
       "permission": {
@@ -1338,6 +1384,12 @@
       "agent": "root-cause-analyst",
       "subtask": true,
       "template": "Diagnose this failed BenchClaw pipeline gate. Localize to stage -> phase -> skill -> artifact -> rule gap -> minimal fix. Include invalidated downstream artifacts and rollback recommendation.\n\n$ARGUMENTS"
+    },
+    "benchclaw-subskill": {
+      "description": "Run one BenchClaw node skill or nested subskill as an isolated child module",
+      "agent": "child-skill-module-runner",
+      "subtask": true,
+      "template": "Run exactly one BenchClaw child skill as an isolated submodule. Resolve BENCHCLAW_ROOT as /home/maqiang/BenchClaw/BenchClaw unless the caller supplies a frozen value, and require the target SKILL.md to be under BENCHCLAW_ROOT/skills. Accept node skills at skills/<stage>/skills/<node>/SKILL.md and nested subskills at skills/<stage>/skills/<node>/subskills/<subskill>/SKILL.md. Read the parent stage SKILL.md and dag.json only as needed for inputs, dependencies, artifact names, and gate contracts. Do not run the parent stage, sibling nodes, sibling subskills, or downstream gates unless the caller explicitly delegates that single bounded scope. Preserve frozen PROJECT_ROOT, BENCHCLAW_ROOT, WORKSPACE_PARENT, and WORKSPACE_ROOT values from the caller. Write only the declared child-skill outputs, DONE/BLOCKED files, USED_INPUTS, and NODE_REPORT required by that child skill. Return status, artifact paths, evidence, and blockers.\n\nTarget child skill and task:\n\n$ARGUMENTS"
     },
     "benchclaw-contract": {
       "description": "Explore and verify SKILL.md contracts",
