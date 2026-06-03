@@ -1,0 +1,54 @@
+{
+  "endpoint": "https://api.ephone.ai/v1/chat/completions",
+  "api_keys": {
+    "key1": "sk-zemZyXeJgaux4Dj1aj00eYSS4KlYho9jSlLojkyQ4U0ctY5A",
+    "key2": "sk-WTHzIs9ktMqVjVKr135CUADG0ZZTYrSiTwVj5MzuCMfX2XNy",
+    "key3": "sk-oq9nUjwgJ4YszvxDRoHAyH6P7WV1AlrwuNttdpKv8Z9pyFbA"
+  },
+  "model_key_map": {
+    "cheap": "key1",
+    "middle": "key2",
+    "strong": "key3",
+    "*": "key1"
+  },
+  "tiers": [
+    "cheap",
+    "middle",
+    "strong"
+  ],
+  "models": [],
+  "model_groups": {
+    "cheap": {
+      "sample_ratio": 1.0,
+      "models": [
+        "gpt-4.1",
+        "claude-haiku-4-5-20251001"
+      ]
+    },
+    "middle": {
+      "sample_ratio": 0.3,
+      "models": [
+        "gpt-5.2",
+        "claude-sonnet-4-6",
+        "moonshot-v1-128k-vision-preview"
+      ]
+    },
+    "strong": {
+      "sample_ratio": 0.1,
+      "models": [
+        "gpt-5.4",
+        "claude-opus-4-5-20251101",
+        "grok-4.20-0309-reasoning"
+      ]
+    }
+  },
+  "temperature": 0.0,
+  "max_tokens": 512,
+  "timeout": 120,
+  "retries": 2,
+  "parallel_per_key": 2,
+  "progress_every": 50,
+  "flush_every": 50,
+  "max_pending": 0,
+  "system_prompt": "你是一个严谨的图文题评测模型。请只根据图片和题目作答，不要编造图片中不存在的信息。如果题目有选项，优先输出选项字母。"
+}

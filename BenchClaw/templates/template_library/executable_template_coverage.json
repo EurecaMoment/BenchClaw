@@ -1,0 +1,359 @@
+[
+  {
+    "template_id": "T001",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C1;C11",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T002",
+    "executable_in_tool": "yes",
+    "question_format": "F2 多选题",
+    "capability_ids": "C1",
+    "scoring_note": "Precision / Recall / F1"
+  },
+  {
+    "template_id": "T003",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C1",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T004",
+    "executable_in_tool": "yes",
+    "question_format": "F7 填空题",
+    "capability_ids": "C1;C8",
+    "scoring_note": "Normalized Exact Match"
+  },
+  {
+    "template_id": "T006",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C1",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T007",
+    "executable_in_tool": "yes",
+    "question_format": "F12 图文匹配题",
+    "capability_ids": "C1",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T008",
+    "executable_in_tool": "yes",
+    "question_format": "F9 区间选择题",
+    "capability_ids": "C1;C2",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T011",
+    "executable_in_tool": "yes",
+    "question_format": "F8 数值题",
+    "capability_ids": "C2",
+    "scoring_note": "Absolute Error = 0"
+  },
+  {
+    "template_id": "T012",
+    "executable_in_tool": "yes",
+    "question_format": "F10 对比选择题",
+    "capability_ids": "C2",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T013",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C2",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T014",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C2",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T015",
+    "executable_in_tool": "yes",
+    "question_format": "F9 区间选择题",
+    "capability_ids": "C2",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T020",
+    "executable_in_tool": "yes",
+    "question_format": "F24 JSON 结构化输出题",
+    "capability_ids": "C2",
+    "scoring_note": "Schema Check + Field Accuracy"
+  },
+  {
+    "template_id": "T021",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T022",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T023",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T024",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T025",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T026",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T027",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T028",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T029",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T030",
+    "executable_in_tool": "yes",
+    "question_format": "F13 区域选择题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T031",
+    "executable_in_tool": "yes",
+    "question_format": "F13 区域选择题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T032",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5;C12",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T033",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C5",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T034",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C5",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T035",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C5",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T036",
+    "executable_in_tool": "yes",
+    "question_format": "F10 对比选择题",
+    "capability_ids": "C6;C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T037",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T038",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T039",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C7",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T040",
+    "executable_in_tool": "yes",
+    "question_format": "F9 区间选择题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T041",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T042",
+    "executable_in_tool": "yes",
+    "question_format": "F10 对比选择题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T043",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C6",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T045",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C1;C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T056",
+    "executable_in_tool": "yes",
+    "question_format": "F9 区间选择题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T057",
+    "executable_in_tool": "yes",
+    "question_format": "F10 对比选择题",
+    "capability_ids": "C7",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T060",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C8",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T061",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C8",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T063",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C8",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T082",
+    "executable_in_tool": "yes",
+    "question_format": "F20 错误检测题",
+    "capability_ids": "C30",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T084",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C11;C30",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T090",
+    "executable_in_tool": "yes",
+    "question_format": "F4 三选判断题",
+    "capability_ids": "C30",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T091",
+    "executable_in_tool": "yes",
+    "question_format": "F3 判断题",
+    "capability_ids": "C6;C12",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T095",
+    "executable_in_tool": "yes",
+    "question_format": "F5 排序题",
+    "capability_ids": "C12;C7",
+    "scoring_note": "Kendall Tau / Pairwise Accuracy"
+  },
+  {
+    "template_id": "T096",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C27;C28",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T097",
+    "executable_in_tool": "yes",
+    "question_format": "F1 单选题",
+    "capability_ids": "C5;C28",
+    "scoring_note": "Exact Match"
+  },
+  {
+    "template_id": "T099",
+    "executable_in_tool": "yes",
+    "question_format": "F6 匹配题",
+    "capability_ids": "C5;C7",
+    "scoring_note": "Field Accuracy"
+  },
+  {
+    "template_id": "T100",
+    "executable_in_tool": "yes",
+    "question_format": "F24 JSON 结构化输出题",
+    "capability_ids": "C1;C7;C28",
+    "scoring_note": "Schema Check + Field Accuracy"
+  }
+]

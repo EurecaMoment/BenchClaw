@@ -1,41 +1,129 @@
 {
   "stage": "stage1",
+  "artifact_semantics": "编号数据是 artifacts；用户和外部资源不是 DAG 节点。",
   "artifacts": [
     {
-      "id": "data_02_rewritten_queries"
+      "id": "data_01_user_idea",
+      "name": "用户输入 idea",
+      "producer": "root:user",
+      "consumers": [
+        "intent-understanding",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_03_intent_expansion_doc"
+      "id": "data_02_rewritten_queries",
+      "name": "改写后的 query",
+      "producer": "intent-understanding",
+      "consumers": [
+        "literature-search",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_04_retrieved_literature"
+      "id": "data_03_intent_expansion_doc",
+      "name": "意图理解扩写文档",
+      "producer": "intent-understanding",
+      "consumers": [
+        "literature-search",
+        "literature-review",
+        "capability-dimension-planning",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_05_source_capability_descriptions"
+      "id": "data_04_retrieved_literature",
+      "name": "检索的文献",
+      "producer": "literature-search",
+      "consumers": [
+        "literature-review",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_06_semisupervised_capability_signals"
+      "id": "data_05_source_capability_descriptions",
+      "name": "数据源-能力描述",
+      "producer": "root:external-source-cards",
+      "source": [
+        "BENCHCLAW_ROOT/benchmarkDatasetCards",
+        "BENCHCLAW_ROOT/realDataCards",
+        "BENCHCLAW_ROOT/simulatorCards"
+      ],
+      "consumers": [
+        "capability-dimension-planning",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_07_literature_review"
+      "id": "data_06_semisupervised_capability_signals",
+      "name": "半监督标注能力",
+      "producer": "root:annotation-tool-cards",
+      "source": [
+        "BENCHCLAW_ROOT/annotation-tool"
+      ],
+      "consumers": [
+        "capability-dimension-planning",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_08_preprocessed_capability_pool"
+      "id": "data_07_literature_review",
+      "name": "文献综述",
+      "producer": "literature-review",
+      "consumers": [
+        "capability-dimension-planning",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_09_benchmark_data"
+      "id": "data_08_preprocessed_capability_pool",
+      "name": "预处理后的能力池",
+      "producer": "scope-preprocess-analysis",
+      "consumers": [
+        "capability-dimension-planning",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_10_capability_dimension_doc"
+      "id": "data_09_benchmark_data",
+      "name": "benchmark 数据",
+      "producer": "root:external-benchmark-data",
+      "consumers": [
+        "scope-preprocess-analysis",
+        "template-metric-draft-generation",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_11_template_metric_initial_draft"
+      "id": "data_10_capability_dimension_doc",
+      "name": "能力维度划分文档",
+      "producer": "capability-dimension-planning",
+      "consumers": [
+        "template-metric-draft-generation",
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_12_benchmark_draft"
+      "id": "data_11_template_metric_initial_draft",
+      "name": "初版评测集模板与评估指标",
+      "producer": "template-metric-draft-generation",
+      "consumers": [
+        "benchmark-draft-generation"
+      ]
     },
     {
-      "id": "data_13_execution_plan"
+      "id": "data_12_benchmark_draft",
+      "name": "benchmark 草稿",
+      "producer": "benchmark-draft-generation",
+      "consumers": [
+        "execution-plan-generation"
+      ]
+    },
+    {
+      "id": "data_13_execution_plan",
+      "name": "执行计划",
+      "producer": "execution-plan-generation",
+      "consumers": []
     }
   ]
 }

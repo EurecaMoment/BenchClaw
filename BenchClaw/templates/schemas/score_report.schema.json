@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BenchClaw Unified Score Report",
+  "type": "object",
+  "required": [
+    "overall",
+    "by_capability",
+    "by_template_family",
+    "by_answer_format",
+    "items"
+  ],
+  "properties": {
+    "overall": {
+      "type": "object"
+    },
+    "by_capability": {
+      "type": "object"
+    },
+    "by_template_family": {
+      "type": "object"
+    },
+    "by_answer_format": {
+      "type": "object"
+    },
+    "items": {
+      "type": "array"
+    }
+  }
+}

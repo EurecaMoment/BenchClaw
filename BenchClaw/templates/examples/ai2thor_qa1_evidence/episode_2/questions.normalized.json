@@ -1,0 +1,1221 @@
+[
+  {
+    "id": "obj_types_in_container_initial_001",
+    "question_text": "Initially, which types of objects were inside the the sinkbasin?",
+    "options": {
+      "A": "Mug",
+      "B": "DishSponge",
+      "C": "Fork",
+      "D": "WineBottle"
+    },
+    "correct_answer": "B,C",
+    "metadata": {
+      "question_id": "obj_types_in_container_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "Initially, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Mug",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "DishSponge",
+          "is_correct": true,
+          "matching_object_ids": [
+            "DishSponge|-01.67|+00.79|+03.66"
+          ]
+        },
+        "C": {
+          "objectType": "Fork",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Fork|-01.86|+00.79|+03.70"
+          ]
+        },
+        "D": {
+          "objectType": "WineBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_initial_002",
+    "question_text": "Initially, which types of objects were inside the the diningtable?",
+    "options": {
+      "A": "Bread",
+      "B": "SoapBottle",
+      "C": "Cup",
+      "D": "Spatula"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_types_in_container_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "Initially, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Bread",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Bread|-01.52|+00.96|+00.28"
+          ]
+        },
+        "B": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Cup",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Spatula",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_current_003",
+    "question_text": "Select all object types present in the the diningtable at this moment.",
+    "options": {
+      "A": "Spoon",
+      "B": "Egg",
+      "C": "DishSponge",
+      "D": "Mug"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_types_in_container_current",
+      "question_type": "multi_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Select all object types present in the {RE_obj} at this moment."
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28",
+          "Plate|-03.01|+00.90|+03.68",
+          "Spoon|-02.02|+00.92|+04.15"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Spoon",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Spoon|-02.02|+00.92|+04.15"
+          ]
+        },
+        "B": {
+          "objectType": "Egg",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "DishSponge",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Mug",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_current_004",
+    "question_text": "Which items does the the plate on the diningtable contain currently?",
+    "options": {
+      "A": "Tomato",
+      "B": "Spoon",
+      "C": "Kettle"
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_types_in_container_current",
+      "question_type": "multi_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Which items does the {RE_obj} contain currently?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Plate|-03.01|+00.90|+03.68",
+        "receptacleObjectIds": [
+          "Spoon|-02.02|+00.92|+04.15"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Tomato",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "Spoon",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Spoon|-02.02|+00.92|+04.15"
+          ]
+        },
+        "C": {
+          "objectType": "Kettle",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_n_steps_ago_005",
+    "question_text": "4 steps ago, which types of objects were inside the the sinkbasin?",
+    "options": {
+      "A": "Fork",
+      "B": "SoapBottle",
+      "C": "ButterKnife",
+      "D": "DishSponge"
+    },
+    "correct_answer": "A,D",
+    "metadata": {
+      "question_id": "obj_types_in_container_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "{n} steps ago, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Fork",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Fork|-01.86|+00.79|+03.70"
+          ]
+        },
+        "B": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "ButterKnife",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "DishSponge",
+          "is_correct": true,
+          "matching_object_ids": [
+            "DishSponge|-01.67|+00.79|+03.66"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_n_steps_ago_006",
+    "question_text": "4 steps ago, which types of objects were inside the the sinkbasin?",
+    "options": {
+      "A": "Fork",
+      "B": "DishSponge",
+      "C": "WineBottle",
+      "D": "ButterKnife"
+    },
+    "correct_answer": "A,B",
+    "metadata": {
+      "question_id": "obj_types_in_container_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "{n} steps ago, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Fork",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Fork|-01.86|+00.79|+03.70"
+          ]
+        },
+        "B": {
+          "objectType": "DishSponge",
+          "is_correct": true,
+          "matching_object_ids": [
+            "DishSponge|-01.67|+00.79|+03.66"
+          ]
+        },
+        "C": {
+          "objectType": "WineBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "ButterKnife",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_random_t_007",
+    "question_text": "Which items did the the diningtable contain at time 3?",
+    "options": {
+      "A": "SoapBottle",
+      "B": "Bread",
+      "C": "Spatula",
+      "D": "Potato"
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_types_in_container_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "Which items did the {RE_obj} contain at time {t}?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "Bread",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Bread|-01.52|+00.96|+00.28"
+          ]
+        },
+        "C": {
+          "objectType": "Spatula",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Potato",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_random_t_008",
+    "question_text": "At time 1, which types of objects were inside the the sinkbasin?",
+    "options": {
+      "A": "DishSponge",
+      "B": "Kettle",
+      "C": "Egg",
+      "D": "Fork"
+    },
+    "correct_answer": "A,D",
+    "metadata": {
+      "question_id": "obj_types_in_container_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 1,
+      "current_timestep": 7,
+      "template_used": "At time {t}, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 1,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "DishSponge",
+          "is_correct": true,
+          "matching_object_ids": [
+            "DishSponge|-01.67|+00.79|+03.66"
+          ]
+        },
+        "B": {
+          "objectType": "Kettle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Egg",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Fork",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Fork|-01.86|+00.79|+03.70"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_scene_current_009",
+    "question_text": "At this moment, what is the total number of garbagecan present?",
+    "options": {
+      "A": 3,
+      "B": 4,
+      "C": 1,
+      "D": 0
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_count_in_scene_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "At this moment, what is the total number of {obj} present?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "object_type": "GarbageCan",
+      "all_objects_of_type": [
+        "GarbageCan|-01.19|+00.01|+03.79"
+      ]
+    }
+  },
+  {
+    "id": "obj_count_in_scene_current_010",
+    "question_text": "How many pot are there in the scene right now?",
+    "options": {
+      "A": 3,
+      "B": 4,
+      "C": 2,
+      "D": 1
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_scene_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "How many {obj} are there in the scene right now?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "object_type": "Pot",
+      "all_objects_of_type": [
+        "Pot|-03.42|+00.97|+02.37"
+      ]
+    }
+  },
+  {
+    "id": "obj_existence_seen_011",
+    "question_text": "Select all types of objects that you have seen so far.",
+    "options": {
+      "A": "Laptop",
+      "B": "Safe",
+      "C": "Fork",
+      "D": "Spoon"
+    },
+    "correct_answer": "C,D",
+    "metadata": {
+      "question_id": "obj_existence_seen",
+      "question_type": "multi_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Select all types of objects that you have seen so far."
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "seen_object_ids": [
+        "Blinds|-01.41|+02.09|-00.30",
+        "Cabinet|-02.19|+00.39|+03.47",
+        "Plate|-03.01|+00.90|+03.68",
+        "Spatula|-02.50|+00.93|+03.89",
+        "Potato|-01.92|+00.95|+04.19",
+        "Window|-01.43|+01.34|-00.35",
+        "Kettle|-03.15|+00.97|+02.37",
+        "Chair|-01.41|+00.55|+00.96",
+        "CounterTop|-03.38|+00.95|+03.34",
+        "StoveBurner|-03.42|+00.96|+01.97",
+        "Toaster|-02.65|+00.90|+04.06",
+        "Faucet|-01.79|+00.90|+03.93",
+        "Cabinet|-02.96|+00.39|+03.46",
+        "Tomato|-03.18|+00.98|+01.52",
+        "Apple|-01.50|+00.98|+04.15",
+        "Microwave|-03.49|+01.43|+02.18",
+        "CoffeeMachine|-03.57|+00.90|+03.28",
+        "Cabinet|-01.42|+00.39|+03.46",
+        "SoapBottle|-02.91|+00.92|+04.11",
+        "StoveBurner|-03.14|+00.96|+01.97",
+        "Fork|-01.86|+00.79|+03.70",
+        "GarbageCan|-01.19|+00.01|+03.79",
+        "Pan|-02.61|+00.90|+03.62",
+        "Drawer|-03.12|+00.78|+03.30",
+        "Cabinet|-02.21|+00.39|+03.46",
+        "DiningTable|-01.35|+00.01|+00.33",
+        "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "Spatula|-02.40|+00.93|+04.00",
+        "DishSponge|-01.67|+00.79|+03.66",
+        "Spoon|-02.02|+00.92|+04.15",
+        "LightSwitch|+00.25|+01.38|+02.09",
+        "Bread|-01.52|+00.96|+00.28",
+        "Knife|-03.18|+00.94|+03.83",
+        "Sink|-01.80|+00.92|+03.66",
+        "Cabinet|-03.37|+01.93|+01.06"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Laptop",
+          "objectId": [],
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Safe",
+          "objectId": [],
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Fork",
+          "objectId": [
+            "Fork|-01.86|+00.79|+03.70"
+          ],
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Spoon",
+          "objectId": [
+            "Spoon|-02.02|+00.92|+04.15"
+          ],
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_existence_seen_012",
+    "question_text": "Select all types of objects that you have seen so far.",
+    "options": {
+      "A": "Pen",
+      "B": "Candle",
+      "C": "DiningTable",
+      "D": "Shelf"
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_existence_seen",
+      "question_type": "multi_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Select all types of objects that you have seen so far."
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "seen_object_ids": [
+        "Blinds|-01.41|+02.09|-00.30",
+        "Cabinet|-02.19|+00.39|+03.47",
+        "Plate|-03.01|+00.90|+03.68",
+        "Spatula|-02.50|+00.93|+03.89",
+        "Potato|-01.92|+00.95|+04.19",
+        "Window|-01.43|+01.34|-00.35",
+        "Kettle|-03.15|+00.97|+02.37",
+        "Chair|-01.41|+00.55|+00.96",
+        "CounterTop|-03.38|+00.95|+03.34",
+        "StoveBurner|-03.42|+00.96|+01.97",
+        "Toaster|-02.65|+00.90|+04.06",
+        "Faucet|-01.79|+00.90|+03.93",
+        "Cabinet|-02.96|+00.39|+03.46",
+        "Tomato|-03.18|+00.98|+01.52",
+        "Apple|-01.50|+00.98|+04.15",
+        "Microwave|-03.49|+01.43|+02.18",
+        "CoffeeMachine|-03.57|+00.90|+03.28",
+        "Cabinet|-01.42|+00.39|+03.46",
+        "SoapBottle|-02.91|+00.92|+04.11",
+        "StoveBurner|-03.14|+00.96|+01.97",
+        "Fork|-01.86|+00.79|+03.70",
+        "GarbageCan|-01.19|+00.01|+03.79",
+        "Pan|-02.61|+00.90|+03.62",
+        "Drawer|-03.12|+00.78|+03.30",
+        "Cabinet|-02.21|+00.39|+03.46",
+        "DiningTable|-01.35|+00.01|+00.33",
+        "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "Spatula|-02.40|+00.93|+04.00",
+        "DishSponge|-01.67|+00.79|+03.66",
+        "Spoon|-02.02|+00.92|+04.15",
+        "LightSwitch|+00.25|+01.38|+02.09",
+        "Bread|-01.52|+00.96|+00.28",
+        "Knife|-03.18|+00.94|+03.83",
+        "Sink|-01.80|+00.92|+03.66",
+        "Cabinet|-03.37|+01.93|+01.06"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Pen",
+          "objectId": [],
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Candle",
+          "objectId": [],
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "DiningTable",
+          "objectId": [
+            "DiningTable|-01.35|+00.01|+00.33"
+          ],
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Shelf",
+          "objectId": [],
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_initial_013",
+    "question_text": "At the start, which of these objects are within the agent's field of view?",
+    "options": {
+      "A": "Pan",
+      "B": "LightSwitch",
+      "C": "StoveKnob"
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "agent_vis_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "At the start, which of these objects are within the agent's field of view?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "visible_objects": [
+        "LightSwitch|+00.25|+01.38|+02.09"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Pan",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "LightSwitch",
+          "is_correct": true
+        },
+        "C": {
+          "objectType": "StoveKnob",
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_initial_014",
+    "question_text": "At the start, which of these objects are within the agent's field of view?",
+    "options": {
+      "A": "LightSwitch",
+      "B": "Fridge",
+      "C": "Blinds"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "agent_vis_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "At the start, which of these objects are within the agent's field of view?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "visible_objects": [
+        "LightSwitch|+00.25|+01.38|+02.09"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "LightSwitch",
+          "is_correct": true
+        },
+        "B": {
+          "objectType": "Fridge",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Blinds",
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_n_steps_ago_015",
+    "question_text": "6 steps back, which of these objects were within the agent's field of view?",
+    "options": {
+      "A": "Pan",
+      "B": "CounterTop",
+      "C": "Spoon",
+      "D": "Knife",
+      "E": "Fridge"
+    },
+    "correct_answer": "A,B,C",
+    "metadata": {
+      "question_id": "agent_vis_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 1,
+      "current_timestep": 7,
+      "template_used": "{n} steps back, which of these objects were within the agent's field of view?"
+    },
+    "evidence": {
+      "question_timestep": 1,
+      "current_timestep": 7,
+      "visible_objects": [
+        "Cabinet|-02.19|+00.39|+03.47",
+        "Spatula|-02.50|+00.93|+03.89",
+        "Potato|-01.92|+00.95|+04.19",
+        "CounterTop|-03.38|+00.95|+03.34",
+        "Toaster|-02.65|+00.90|+04.06",
+        "Faucet|-01.79|+00.90|+03.93",
+        "Cabinet|-02.96|+00.39|+03.46",
+        "Apple|-01.50|+00.98|+04.15",
+        "Cabinet|-01.42|+00.39|+03.46",
+        "Fork|-01.86|+00.79|+03.70",
+        "GarbageCan|-01.19|+00.01|+03.79",
+        "Pan|-02.61|+00.90|+03.62",
+        "Cabinet|-02.21|+00.39|+03.46",
+        "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "Spatula|-02.40|+00.93|+04.00",
+        "DishSponge|-01.67|+00.79|+03.66",
+        "Spoon|-02.02|+00.92|+04.15",
+        "Sink|-01.80|+00.92|+03.66"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Pan",
+          "is_correct": true
+        },
+        "B": {
+          "objectType": "CounterTop",
+          "is_correct": true
+        },
+        "C": {
+          "objectType": "Spoon",
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Knife",
+          "is_correct": false
+        },
+        "E": {
+          "objectType": "Fridge",
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_n_steps_ago_016",
+    "question_text": "Identify the objects that were visible to the agent 5 steps back.",
+    "options": {
+      "A": "LightSwitch",
+      "B": "Faucet",
+      "C": "WineBottle",
+      "D": "Apple",
+      "E": "Knife",
+      "F": "Spatula"
+    },
+    "correct_answer": "B,D,F",
+    "metadata": {
+      "question_id": "agent_vis_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 2,
+      "current_timestep": 7,
+      "template_used": "Identify the objects that were visible to the agent {n} steps back."
+    },
+    "evidence": {
+      "question_timestep": 2,
+      "current_timestep": 7,
+      "visible_objects": [
+        "Spatula|-02.50|+00.93|+03.89",
+        "Potato|-01.92|+00.95|+04.19",
+        "CounterTop|-03.38|+00.95|+03.34",
+        "Toaster|-02.65|+00.90|+04.06",
+        "Faucet|-01.79|+00.90|+03.93",
+        "Apple|-01.50|+00.98|+04.15",
+        "Fork|-01.86|+00.79|+03.70",
+        "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "Spatula|-02.40|+00.93|+04.00",
+        "DishSponge|-01.67|+00.79|+03.66",
+        "Spoon|-02.02|+00.92|+04.15",
+        "Sink|-01.80|+00.92|+03.66"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "LightSwitch",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Faucet",
+          "is_correct": true
+        },
+        "C": {
+          "objectType": "WineBottle",
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "Apple",
+          "is_correct": true
+        },
+        "E": {
+          "objectType": "Knife",
+          "is_correct": false
+        },
+        "F": {
+          "objectType": "Spatula",
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_random_t_017",
+    "question_text": "At step 7, select all objects that the agent could see.",
+    "options": {
+      "A": "Tomato",
+      "B": "Faucet",
+      "C": "Blinds",
+      "D": "Plate"
+    },
+    "correct_answer": "C,D",
+    "metadata": {
+      "question_id": "agent_vis_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "At step {t}, select all objects that the agent could see."
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "visible_objects": [
+        "Blinds|-01.41|+02.09|-00.30",
+        "Plate|-03.01|+00.90|+03.68",
+        "Window|-01.43|+01.34|-00.35",
+        "Chair|-01.41|+00.55|+00.96",
+        "DiningTable|-01.35|+00.01|+00.33",
+        "Spoon|-02.02|+00.92|+04.15",
+        "Bread|-01.52|+00.96|+00.28"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Tomato",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Faucet",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Blinds",
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Plate",
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_random_t_018",
+    "question_text": "At time 3, which object types were visible to the agent?",
+    "options": {
+      "A": "Mug",
+      "B": "Fridge",
+      "C": "Pot",
+      "D": "Spoon"
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "agent_vis_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "At time {t}, which object types were visible to the agent?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "visible_objects": [
+        "Spoon|-02.02|+00.92|+04.15"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Mug",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Fridge",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Pot",
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "Spoon",
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_initial_019",
+    "question_text": "When the task began, what was the count of objects in the the sinkbasin?",
+    "options": {
+      "A": 2,
+      "B": 1,
+      "C": 4,
+      "D": 3
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_count_in_container_initial",
+      "question_type": "single_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "When the task began, what was the count of objects in the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_initial_020",
+    "question_text": "What was the number of objects in the the sinkbasin at the beginning?",
+    "options": {
+      "A": 1,
+      "B": 4,
+      "C": 2,
+      "D": 5
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_count_in_container_initial",
+      "question_type": "single_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "What was the number of objects in the {RE_obj} at the beginning?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_current_021",
+    "question_text": "Currently, how many items are contained within the the diningtable?",
+    "options": {
+      "A": 4,
+      "B": 5,
+      "C": 2,
+      "D": 3
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Currently, how many items are contained within the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28",
+          "Plate|-03.01|+00.90|+03.68",
+          "Spoon|-02.02|+00.92|+04.15"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_current_022",
+    "question_text": "How many objects are inside the the plate on the diningtable right now?",
+    "options": {
+      "A": 4,
+      "B": 3,
+      "C": 0,
+      "D": 1
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "How many objects are inside the {RE_obj} right now?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Plate|-03.01|+00.90|+03.68",
+        "receptacleObjectIds": [
+          "Spoon|-02.02|+00.92|+04.15"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_n_steps_ago_023",
+    "question_text": "How many objects were inside the the sinkbasin 4 steps ago?",
+    "options": {
+      "A": 3,
+      "B": 0,
+      "C": 5,
+      "D": 2
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_n_steps_ago",
+      "question_type": "single_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "How many objects were inside the {RE_obj} {n} steps ago?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_n_steps_ago_024",
+    "question_text": "What was the number of objects in the the sinkbasin 4 steps before now?",
+    "options": {
+      "A": 2,
+      "B": 4,
+      "C": 3,
+      "D": 5
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_count_in_container_n_steps_ago",
+      "question_type": "single_choice",
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "template_used": "What was the number of objects in the {RE_obj} {n} steps before now?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "Sink|-01.80|+00.92|+03.66|SinkBasin",
+        "receptacleObjectIds": [
+          "Fork|-01.86|+00.79|+03.70",
+          "DishSponge|-01.67|+00.79|+03.66"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_random_t_025",
+    "question_text": "At time 2, how many items were contained within the the diningtable?",
+    "options": {
+      "A": 2,
+      "B": 0,
+      "C": 1,
+      "D": 3
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_count_in_container_random_t",
+      "question_type": "single_choice",
+      "question_timestep": 2,
+      "current_timestep": 7,
+      "template_used": "At time {t}, how many items were contained within the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 2,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_random_t_026",
+    "question_text": "At time 0, what was the count of objects in the the diningtable?",
+    "options": {
+      "A": 2,
+      "B": 1,
+      "C": 3,
+      "D": 0
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_count_in_container_random_t",
+      "question_type": "single_choice",
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "template_used": "At time {t}, what was the count of objects in the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 7,
+      "container": {
+        "objectId": "DiningTable|-01.35|+00.01|+00.33",
+        "receptacleObjectIds": [
+          "Bread|-01.52|+00.96|+00.28"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_property_current_027",
+    "question_text": "Describe the state of the tomato on the countertop at the current time.",
+    "options": {
+      "A": "INTACT",
+      "B": "SLICED"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_property_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "Describe the state of {obj} at the current time."
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "object": {
+        "objectId": "Tomato|-03.18|+00.98|+01.52",
+        "intact": false
+      }
+    }
+  },
+  {
+    "id": "obj_property_current_028",
+    "question_text": "What is the current status of the coffeemachine?",
+    "options": {
+      "A": "OFF",
+      "B": "ON"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_property_current",
+      "question_type": "single_choice",
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "template_used": "What is the current status of {obj}?"
+    },
+    "evidence": {
+      "question_timestep": 7,
+      "current_timestep": 7,
+      "object": {
+        "objectId": "CoffeeMachine|-03.57|+00.90|+03.28",
+        "off": false
+      }
+    }
+  }
+]

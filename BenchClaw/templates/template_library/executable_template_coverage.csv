@@ -1,0 +1,52 @@
+template_id,executable_in_tool,question_format,capability_ids,scoring_note
+T001,yes,F3 判断题,C1;C11,Exact Match
+T002,yes,F2 多选题,C1,Precision / Recall / F1
+T003,yes,F1 单选题,C1,Exact Match
+T004,yes,F7 填空题,C1;C8,Normalized Exact Match
+T006,yes,F3 判断题,C1,Exact Match
+T007,yes,F12 图文匹配题,C1,Exact Match
+T008,yes,F9 区间选择题,C1;C2,Exact Match
+T011,yes,F8 数值题,C2,Absolute Error = 0
+T012,yes,F10 对比选择题,C2,Exact Match
+T013,yes,F1 单选题,C2,Exact Match
+T014,yes,F5 排序题,C2,Kendall Tau / Pairwise Accuracy
+T015,yes,F9 区间选择题,C2,Exact Match
+T020,yes,F24 JSON 结构化输出题,C2,Schema Check + Field Accuracy
+T021,yes,F3 判断题,C5,Exact Match
+T022,yes,F3 判断题,C5,Exact Match
+T023,yes,F3 判断题,C5,Exact Match
+T024,yes,F3 判断题,C5,Exact Match
+T025,yes,F1 单选题,C5,Exact Match
+T026,yes,F1 单选题,C5,Exact Match
+T027,yes,F1 单选题,C5,Exact Match
+T028,yes,F1 单选题,C5,Exact Match
+T029,yes,F1 单选题,C5,Exact Match
+T030,yes,F13 区域选择题,C5,Exact Match
+T031,yes,F13 区域选择题,C5,Exact Match
+T032,yes,F3 判断题,C5;C12,Exact Match
+T033,yes,F3 判断题,C5,Exact Match
+T034,yes,F5 排序题,C5,Kendall Tau / Pairwise Accuracy
+T035,yes,F5 排序题,C5,Kendall Tau / Pairwise Accuracy
+T036,yes,F10 对比选择题,C6;C7,Exact Match
+T037,yes,F1 单选题,C7,Exact Match
+T038,yes,F1 单选题,C7,Exact Match
+T039,yes,F5 排序题,C7,Kendall Tau / Pairwise Accuracy
+T040,yes,F9 区间选择题,C7,Exact Match
+T041,yes,F3 判断题,C7,Exact Match
+T042,yes,F10 对比选择题,C7,Exact Match
+T043,yes,F3 判断题,C6,Exact Match
+T045,yes,F3 判断题,C1;C7,Exact Match
+T056,yes,F9 区间选择题,C7,Exact Match
+T057,yes,F10 对比选择题,C7,Exact Match
+T060,yes,F1 单选题,C8,Exact Match
+T061,yes,F1 单选题,C8,Exact Match
+T063,yes,F5 排序题,C8,Kendall Tau / Pairwise Accuracy
+T082,yes,F20 错误检测题,C30,Exact Match
+T084,yes,F3 判断题,C11;C30,Exact Match
+T090,yes,F4 三选判断题,C30,Exact Match
+T091,yes,F3 判断题,C6;C12,Exact Match
+T095,yes,F5 排序题,C12;C7,Kendall Tau / Pairwise Accuracy
+T096,yes,F1 单选题,C27;C28,Exact Match
+T097,yes,F1 单选题,C5;C28,Exact Match
+T099,yes,F6 匹配题,C5;C7,Field Accuracy
+T100,yes,F24 JSON 结构化输出题,C1;C7;C28,Schema Check + Field Accuracy

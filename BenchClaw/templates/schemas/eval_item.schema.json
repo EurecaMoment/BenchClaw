@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BenchClaw Unified Eval Item",
+  "type": "object",
+  "required": [
+    "item_id",
+    "template_id",
+    "source_sample_id",
+    "question_text",
+    "answer_format",
+    "capability_ids",
+    "gold_answer",
+    "scoring",
+    "evidence_ref"
+  ],
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "template_id": {
+      "type": "string"
+    },
+    "source_sample_id": {
+      "type": "string"
+    },
+    "question_text": {
+      "type": "string"
+    },
+    "answer_format": {
+      "type": "string"
+    },
+    "capability_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "primary_capability_id": {
+      "type": "string"
+    },
+    "options": {
+      "type": [
+        "object",
+        "array",
+        "null"
+      ]
+    },
+    "gold_answer": {},
+    "scoring": {
+      "type": "object",
+      "required": [
+        "metric"
+      ],
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "normalization": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tolerance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "aggregation_group": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "evidence_ref": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "answer_derivation": {
+      "type": "string"
+    },
+    "quality_gate": {
+      "type": "object"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

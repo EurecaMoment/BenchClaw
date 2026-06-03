@@ -1,0 +1,23 @@
+{
+  "package_name": "benchclaw_stage1_stage4_unified_template_pack",
+  "version": "v4_unified_executable",
+  "purpose": "统一 Stage1 benchmark design 与 Stage4 eval item construction 的模板、指标、schema、参考示例包",
+  "derived_from_user_materials": {
+    "benchmark_cards": 12,
+    "question_templates": 100,
+    "qa1_reference_questions": 111,
+    "qa1_episodes": 4,
+    "qa1_images": 29,
+    "runnable_synthesis_code": true
+  },
+  "core_logic": "capability -> answer_format -> template -> gt/evidence -> eval_item -> metric -> quality_gate",
+  "no_raw_backup_folders": true,
+  "entrypoint": "SKILL.md",
+  "executable_synthesis_engine": {
+    "tool": "tools/synthesize_static_vlm_benchmark.py",
+    "input_schema": "schemas/entity_annotations.schema.json",
+    "executable_templates": 51,
+    "coverage_matrix": "template_library/executable_template_coverage.csv",
+    "demo": "examples/uav_static_demo/generated_eval_dataset.jsonl"
+  }
+}

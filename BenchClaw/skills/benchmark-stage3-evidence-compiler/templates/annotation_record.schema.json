@@ -3,29 +3,280 @@
   "required": [
     "record_id",
     "source_item_id",
-    "evidence",
+    "data_source_type",
+    "workspace_refs",
+    "text",
     "labels",
+    "gt",
     "provenance",
-    "review_status"
+    "execution_proof",
+    "review_status",
+    "validation"
   ],
+  "additionalProperties": true,
   "properties": {
     "record_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "source_item_id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
-    "evidence": {
-      "type": "array"
+    "data_source_type": {
+      "type": "string",
+      "enum": [
+        "real_image",
+        "existing_benchmark",
+        "simulator"
+      ]
+    },
+    "dataset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "simulator_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "task_family": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "workspace_refs": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "work_unit_dir",
+        "media_paths",
+        "text_record_path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "enum": [
+            "data_17_annotated_real_image_bundle",
+            "data_18_annotated_existing_benchmark_bundle",
+            "data_19_annotated_simulator_bundle"
+          ]
+        },
+        "work_unit_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "text_record_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gt_record_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "annotation_output_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "text": {
+      "type": "object",
+      "required": [
+        "content"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "content": {
+          "type": [
+            "string",
+            "object",
+            "array"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_fields": {
+          "type": [
+            "object",
+            "array",
+            "null"
+          ]
+        }
+      }
     },
     "labels": {
       "type": "object"
     },
+    "gt": {
+      "type": "object",
+      "required": [
+        "gt_status",
+        "label_role",
+        "source",
+        "value"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "gt_status": {
+          "type": "string",
+          "enum": [
+            "verified_gt",
+            "official_gt",
+            "privileged_gt",
+            "candidate_needs_review",
+            "auxiliary_candidate",
+            "missing_blocked"
+          ]
+        },
+        "label_role": {
+          "type": "string",
+          "enum": [
+            "ground_truth",
+            "official_label",
+            "privileged_gt",
+            "tool_generated_candidate",
+            "auxiliary_tool_generated_candidate"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "official_dataset_label",
+            "default_annotation_tool",
+            "privileged_state_or_verifiable_computation",
+            "verified_human_annotation",
+            "blocked_or_review"
+          ]
+        },
+        "value": {},
+        "derivation": {
+          "type": [
+            "object",
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
     "provenance": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "stage2_record_ref",
+        "source_card_skill",
+        "cleaning_run_id",
+        "annotation_or_gt_run_id"
+      ],
+      "additionalProperties": true
+    },
+    "execution_proof": {
+      "type": "object",
+      "required": [
+        "cleaning_command",
+        "cleaning_log_paths",
+        "annotation_or_gt_command_or_call",
+        "annotation_or_gt_log_paths",
+        "tool_versions",
+        "run_manifest_path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "cleaning_command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cleaning_log_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "annotation_or_gt_command_or_call": {
+          "type": "string",
+          "minLength": 1
+        },
+        "annotation_or_gt_log_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tool_versions": {
+          "type": [
+            "object",
+            "array"
+          ]
+        },
+        "run_manifest_path": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
     "review_status": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "accepted",
+        "needs_human_review",
+        "official_label_only",
+        "auxiliary_only",
+        "blocked",
+        "invalid"
+      ]
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "media_landed",
+        "text_landed",
+        "gt_or_candidate_landed",
+        "execution_proof_present"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "media_landed": {
+          "type": "boolean"
+        },
+        "text_landed": {
+          "type": "boolean"
+        },
+        "gt_or_candidate_landed": {
+          "type": "boolean"
+        },
+        "execution_proof_present": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

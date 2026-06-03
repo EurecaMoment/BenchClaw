@@ -1,14 +1,67 @@
 {
   "stage": "stage3",
+  "artifact_semantics": "编号数据和 stage3_execution_plan 是 artifacts；每个数据源节点内部的 cleaning/annotation 中间结果不是外显 DAG artifacts。",
   "artifacts": [
     {
-      "id": "data_17_annotated_real_image_bundle"
+      "id": "data_13_execution_plan",
+      "producer": "root:stage1",
+      "consumers": [
+        "stage3-plan-generation"
+      ]
     },
     {
-      "id": "data_18_annotated_existing_benchmark_bundle"
+      "id": "data_14_real_image_collection_bundle",
+      "producer": "root:stage2-real-image",
+      "consumers": [
+        "stage3-plan-generation",
+        "real-image-evidence-compilation"
+      ]
     },
     {
-      "id": "data_19_annotated_simulator_bundle"
+      "id": "data_15_existing_benchmark_collection_bundle",
+      "producer": "root:stage2-existing-benchmark",
+      "consumers": [
+        "stage3-plan-generation",
+        "existing-benchmark-evidence-compilation"
+      ]
+    },
+    {
+      "id": "data_16_simulator_collection_bundle",
+      "producer": "root:stage2-simulator",
+      "consumers": [
+        "stage3-plan-generation",
+        "simulator-evidence-compilation"
+      ]
+    },
+    {
+      "id": "stage3_execution_plan",
+      "producer": "stage3-plan-generation",
+      "consumers": [
+        "real-image-evidence-compilation",
+        "existing-benchmark-evidence-compilation",
+        "simulator-evidence-compilation"
+      ]
+    },
+    {
+      "id": "data_17_annotated_real_image_bundle",
+      "producer": "real-image-evidence-compilation",
+      "consumers": [
+        "stage4"
+      ]
+    },
+    {
+      "id": "data_18_annotated_existing_benchmark_bundle",
+      "producer": "existing-benchmark-evidence-compilation",
+      "consumers": [
+        "stage4"
+      ]
+    },
+    {
+      "id": "data_19_annotated_simulator_bundle",
+      "producer": "simulator-evidence-compilation",
+      "consumers": [
+        "stage4"
+      ]
     }
   ]
 }

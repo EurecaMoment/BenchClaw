@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BenchClaw Unified Question Template",
+  "type": "object",
+  "required": [
+    "template_id",
+    "question_template",
+    "capability_ids",
+    "answer_format",
+    "required_gt_fields",
+    "scoring_metric",
+    "quality_gates"
+  ],
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{3}$"
+    },
+    "family_name": {
+      "type": "string"
+    },
+    "question_template": {
+      "type": "string"
+    },
+    "data_type": {
+      "type": "string"
+    },
+    "capability_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^C[0-9]+$"
+      }
+    },
+    "answer_format": {
+      "type": "string"
+    },
+    "required_gt_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scoring_metric": {
+      "type": "string"
+    },
+    "quality_gates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stage1_use": {
+      "type": "string"
+    },
+    "stage4_use": {
+      "type": "string"
+    }
+  }
+}

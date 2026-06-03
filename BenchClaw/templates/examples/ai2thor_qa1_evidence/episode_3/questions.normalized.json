@@ -1,0 +1,1326 @@
+[
+  {
+    "id": "obj_types_in_container_initial_001",
+    "question_text": "Which items did the the bathtub contain at the beginning?",
+    "options": {
+      "A": "ShowerCurtain",
+      "B": "SoapBar",
+      "C": "ScrubBrush",
+      "D": "Candle"
+    },
+    "correct_answer": "A,D",
+    "metadata": {
+      "question_id": "obj_types_in_container_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "template_used": "Which items did the {RE_obj} contain at the beginning?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Bathtub|+00.29|+00.29|-00.08",
+        "receptacleObjectIds": [
+          "Candle|-00.17|+00.56|+00.69",
+          "Candle|-00.17|+00.56|+00.18",
+          "ShowerCurtain|-00.29|+01.89|-01.03"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "ShowerCurtain",
+          "is_correct": true,
+          "matching_object_ids": [
+            "ShowerCurtain|-00.29|+01.89|-01.03"
+          ]
+        },
+        "B": {
+          "objectType": "SoapBar",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "ScrubBrush",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Candle",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Candle|-00.17|+00.56|+00.69",
+            "Candle|-00.17|+00.56|+00.18"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_initial_002",
+    "question_text": "Select all object types present in the the towelholder at time 0.",
+    "options": {
+      "A": "ToiletPaper",
+      "B": "SoapBar",
+      "C": "Cloth",
+      "D": "Towel"
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_types_in_container_initial",
+      "question_type": "multi_choice",
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "template_used": "Select all object types present in the {RE_obj} at time 0."
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "TowelHolder|-00.49|+01.35|+01.01",
+        "receptacleObjectIds": [
+          "Towel|-00.49|+01.37|+00.90"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "ToiletPaper",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "SoapBar",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Cloth",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "Towel",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Towel|-00.49|+01.37|+00.90"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_current_003",
+    "question_text": "Which types of objects are currently inside the the countertop?",
+    "options": {
+      "A": "Faucet",
+      "B": "ToiletPaper",
+      "C": "SprayBottle"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_types_in_container_current",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Which types of objects are currently inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "CounterTop|-02.30|+00.95|+00.69",
+        "receptacleObjectIds": [
+          "Faucet|-02.68|+01.02|+00.89",
+          "Faucet|-01.92|+01.02|+00.89"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Faucet",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Faucet|-02.68|+01.02|+00.89",
+            "Faucet|-01.92|+01.02|+00.89"
+          ]
+        },
+        "B": {
+          "objectType": "ToiletPaper",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "SprayBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_current_004",
+    "question_text": "Right now, what objects can be found in the the towelholder?",
+    "options": {
+      "A": "Towel",
+      "B": "ScrubBrush",
+      "C": "Cloth"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_types_in_container_current",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Right now, what objects can be found in the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "TowelHolder|-00.49|+01.35|+01.01",
+        "receptacleObjectIds": [
+          "Towel|-00.49|+01.37|+00.90"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "Towel",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Towel|-00.49|+01.37|+00.90"
+          ]
+        },
+        "B": {
+          "objectType": "ScrubBrush",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Cloth",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_n_steps_ago_005",
+    "question_text": "Which items did the the toiletpaperhanger contain 5 steps ago?",
+    "options": {
+      "A": "SprayBottle",
+      "B": "Candle",
+      "C": "ToiletPaper"
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_types_in_container_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "template_used": "Which items did the {RE_obj} contain {n} steps ago?"
+    },
+    "evidence": {
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "ToiletPaperHanger|-01.49|+00.81|+00.69",
+        "receptacleObjectIds": [
+          "ToiletPaper|-01.42|+00.82|+00.67"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "SprayBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "Candle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "ToiletPaper",
+          "is_correct": true,
+          "matching_object_ids": [
+            "ToiletPaper|-01.42|+00.82|+00.67"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_n_steps_ago_006",
+    "question_text": "6 steps ago, which types of objects were inside the the bathtub?",
+    "options": {
+      "A": "SoapBottle",
+      "B": "ToiletPaper",
+      "C": "Plunger",
+      "D": "ShowerCurtain"
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_types_in_container_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 3,
+      "current_timestep": 9,
+      "template_used": "{n} steps ago, which types of objects were inside the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 3,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Bathtub|+00.29|+00.29|-00.08",
+        "receptacleObjectIds": [
+          "Candle|-00.17|+00.56|+00.69",
+          "Candle|-00.17|+00.56|+00.18",
+          "ShowerCurtain|-00.29|+01.89|-01.03"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "ToiletPaper",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Plunger",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "ShowerCurtain",
+          "is_correct": true,
+          "matching_object_ids": [
+            "ShowerCurtain|-00.29|+01.89|-01.03"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_random_t_007",
+    "question_text": "Select all object types present in the the towelholder at time 4.",
+    "options": {
+      "A": "ScrubBrush",
+      "B": "Towel",
+      "C": "SoapBottle"
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_types_in_container_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "template_used": "Select all object types present in the {RE_obj} at time {t}."
+    },
+    "evidence": {
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "TowelHolder|-00.49|+01.35|+01.01",
+        "receptacleObjectIds": [
+          "Towel|-00.49|+01.37|+00.90"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "ScrubBrush",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "B": {
+          "objectType": "Towel",
+          "is_correct": true,
+          "matching_object_ids": [
+            "Towel|-00.49|+01.37|+00.90"
+          ]
+        },
+        "C": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_types_in_container_random_t_008",
+    "question_text": "At time 6, what objects could be found in the the handtowelholder?",
+    "options": {
+      "A": "HandTowel",
+      "B": "SoapBottle",
+      "C": "Towel",
+      "D": "ToiletPaper"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_types_in_container_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "template_used": "At time {t}, what objects could be found in the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "HandTowelHolder|-03.13|+01.69|+00.74",
+        "receptacleObjectIds": [
+          "HandTowel|-03.10|+01.59|+00.74"
+        ]
+      },
+      "options_info": {
+        "A": {
+          "objectType": "HandTowel",
+          "is_correct": true,
+          "matching_object_ids": [
+            "HandTowel|-03.10|+01.59|+00.74"
+          ]
+        },
+        "B": {
+          "objectType": "SoapBottle",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "C": {
+          "objectType": "Towel",
+          "is_correct": false,
+          "matching_object_ids": []
+        },
+        "D": {
+          "objectType": "ToiletPaper",
+          "is_correct": false,
+          "matching_object_ids": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_loc_history_009",
+    "question_text": "Which of these locations have held the handtowel at some point?",
+    "options": {
+      "A": "the toiletpaperhanger",
+      "B": "the handtowelholder",
+      "C": "the bathtub"
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_loc_history",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Which of these locations have held the {obj} at some point?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "query_object": {
+        "objectId": "HandTowel|-03.10|+01.59|+00.74",
+        "parentReceptacles": [
+          "HandTowelHolder|-03.13|+01.69|+00.74"
+        ],
+        "refType": "unique",
+        "holdOrdinal": null
+      },
+      "options_info": {
+        "A": {
+          "option_text": "the toiletpaperhanger",
+          "is_correct": false,
+          "objectId": "ToiletPaperHanger|-01.49|+00.81|+00.69",
+          "receptacleObjectIds": []
+        },
+        "B": {
+          "option_text": "the handtowelholder",
+          "is_correct": true,
+          "objectId": "HandTowelHolder|-03.13|+01.69|+00.74",
+          "receptacleObjectIds": [
+            [
+              0,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              1,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              2,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              3,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              4,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              5,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              6,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              7,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              8,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ]
+          ]
+        },
+        "C": {
+          "option_text": "the bathtub",
+          "is_correct": false,
+          "objectId": "Bathtub|+00.29|+00.29|-00.08",
+          "receptacleObjectIds": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_loc_history_010",
+    "question_text": "Select all locations where the handtowel has been placed so far.",
+    "options": {
+      "A": "the handtowelholder",
+      "B": "the bathtub",
+      "C": "the second sinkbasin to the east of the toiletpaperhanger"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_loc_history",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Select all locations where the {obj} has been placed so far."
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "query_object": {
+        "objectId": "HandTowel|-03.10|+01.59|+00.74",
+        "parentReceptacles": [
+          "HandTowelHolder|-03.13|+01.69|+00.74"
+        ],
+        "refType": "unique",
+        "holdOrdinal": null
+      },
+      "options_info": {
+        "A": {
+          "option_text": "the handtowelholder",
+          "is_correct": true,
+          "objectId": "HandTowelHolder|-03.13|+01.69|+00.74",
+          "receptacleObjectIds": [
+            [
+              0,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              1,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              2,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              3,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              4,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              5,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              6,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              7,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ],
+            [
+              8,
+              [
+                "HandTowel|-03.10|+01.59|+00.74"
+              ]
+            ]
+          ]
+        },
+        "B": {
+          "option_text": "the bathtub",
+          "is_correct": false,
+          "objectId": "Bathtub|+00.29|+00.29|-00.08",
+          "receptacleObjectIds": []
+        },
+        "C": {
+          "option_text": "the second sinkbasin to the east of the toiletpaperhanger",
+          "is_correct": false,
+          "objectId": "Sink|-01.92|+00.93|+00.68|SinkBasin",
+          "receptacleObjectIds": []
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_scene_current_011",
+    "question_text": "At this moment, what is the total number of handtowelholder present?",
+    "options": {
+      "A": 1,
+      "B": 0,
+      "C": 2,
+      "D": 3
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_count_in_scene_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "At this moment, what is the total number of {obj} present?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "object_type": "HandTowelHolder",
+      "all_objects_of_type": [
+        "HandTowelHolder|-03.13|+01.69|+00.74"
+      ]
+    }
+  },
+  {
+    "id": "obj_count_in_scene_current_012",
+    "question_text": "How many countertop are there in the scene right now?",
+    "options": {
+      "A": 4,
+      "B": 1,
+      "C": 2,
+      "D": 3
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_count_in_scene_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "How many {obj} are there in the scene right now?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "object_type": "CounterTop",
+      "all_objects_of_type": [
+        "CounterTop|-02.30|+00.95|+00.69"
+      ]
+    }
+  },
+  {
+    "id": "obj_existence_seen_013",
+    "question_text": "Identify all object types that have been visible to you.",
+    "options": {
+      "A": "Glassbottle",
+      "B": "Dresser",
+      "C": "Sink",
+      "D": "Faucet",
+      "E": "ToiletPaperHanger",
+      "F": "Chair"
+    },
+    "correct_answer": "C,D,E",
+    "metadata": {
+      "question_id": "obj_existence_seen",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Identify all object types that have been visible to you."
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "seen_object_ids": [
+        "Faucet|-02.68|+01.02|+00.89",
+        "CounterTop|-02.30|+00.95|+00.69",
+        "Sink|-01.92|+00.93|+00.68",
+        "Sink|-02.68|+00.93|+00.68",
+        "Cabinet|-01.50|+00.42|+00.43",
+        "Mirror|-02.31|+01.53|+01.00",
+        "Faucet|-01.92|+01.02|+00.89",
+        "Towel|-00.49|+01.37|+00.90",
+        "Cabinet|-02.29|+00.39|+00.42",
+        "GarbageCan|-02.92|+00.00|-01.56",
+        "SoapBar|-00.99|+01.05|+00.85",
+        "ScrubBrush|-00.49|+00.00|+00.87",
+        "Candle|-00.86|+01.09|+00.81",
+        "Sink|-01.92|+00.93|+00.68|SinkBasin",
+        "Cabinet|-03.09|+00.39|+00.42",
+        "Sink|-02.68|+00.93|+00.68|SinkBasin",
+        "Plunger|-00.71|+00.00|+00.83",
+        "Toilet|-01.05|+00.00|+00.55",
+        "ToiletPaper|-01.42|+00.82|+00.67",
+        "ToiletPaper|-02.92|+00.18|-01.56",
+        "Cabinet|-02.31|+00.42|+00.43",
+        "SoapBar|-02.11|+00.97|+00.65",
+        "Cloth|-01.69|+00.08|+00.83",
+        "SoapBottle|-00.93|+01.05|+00.94",
+        "ToiletPaperHanger|-01.49|+00.81|+00.69"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Glassbottle",
+          "objectId": [],
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "Dresser",
+          "objectId": [],
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Sink",
+          "objectId": [
+            "Sink|-01.92|+00.93|+00.68",
+            "Sink|-02.68|+00.93|+00.68"
+          ],
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Faucet",
+          "objectId": [
+            "Faucet|-02.68|+01.02|+00.89",
+            "Faucet|-01.92|+01.02|+00.89"
+          ],
+          "is_correct": true
+        },
+        "E": {
+          "objectType": "ToiletPaperHanger",
+          "objectId": [
+            "ToiletPaperHanger|-01.49|+00.81|+00.69"
+          ],
+          "is_correct": true
+        },
+        "F": {
+          "objectType": "Chair",
+          "objectId": [],
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_existence_seen_014",
+    "question_text": "Identify all object types that have been visible to you.",
+    "options": {
+      "A": "SinkBasin",
+      "B": "StoveKnob",
+      "C": "FloorLamp",
+      "D": "Plunger"
+    },
+    "correct_answer": "A,D",
+    "metadata": {
+      "question_id": "obj_existence_seen",
+      "question_type": "multi_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Identify all object types that have been visible to you."
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "seen_object_ids": [
+        "Faucet|-02.68|+01.02|+00.89",
+        "CounterTop|-02.30|+00.95|+00.69",
+        "Sink|-01.92|+00.93|+00.68",
+        "Sink|-02.68|+00.93|+00.68",
+        "Cabinet|-01.50|+00.42|+00.43",
+        "Mirror|-02.31|+01.53|+01.00",
+        "Faucet|-01.92|+01.02|+00.89",
+        "Towel|-00.49|+01.37|+00.90",
+        "Cabinet|-02.29|+00.39|+00.42",
+        "GarbageCan|-02.92|+00.00|-01.56",
+        "SoapBar|-00.99|+01.05|+00.85",
+        "ScrubBrush|-00.49|+00.00|+00.87",
+        "Candle|-00.86|+01.09|+00.81",
+        "Sink|-01.92|+00.93|+00.68|SinkBasin",
+        "Cabinet|-03.09|+00.39|+00.42",
+        "Sink|-02.68|+00.93|+00.68|SinkBasin",
+        "Plunger|-00.71|+00.00|+00.83",
+        "Toilet|-01.05|+00.00|+00.55",
+        "ToiletPaper|-01.42|+00.82|+00.67",
+        "ToiletPaper|-02.92|+00.18|-01.56",
+        "Cabinet|-02.31|+00.42|+00.43",
+        "SoapBar|-02.11|+00.97|+00.65",
+        "Cloth|-01.69|+00.08|+00.83",
+        "SoapBottle|-00.93|+01.05|+00.94",
+        "ToiletPaperHanger|-01.49|+00.81|+00.69"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "SinkBasin",
+          "objectId": [
+            "Sink|-01.92|+00.93|+00.68|SinkBasin",
+            "Sink|-02.68|+00.93|+00.68|SinkBasin"
+          ],
+          "is_correct": true
+        },
+        "B": {
+          "objectType": "StoveKnob",
+          "objectId": [],
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "FloorLamp",
+          "objectId": [],
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "Plunger",
+          "objectId": [
+            "Plunger|-00.71|+00.00|+00.83"
+          ],
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_n_steps_ago_015",
+    "question_text": "8 steps back, which of these objects were within the agent's field of view?",
+    "options": {
+      "A": "Mirror",
+      "B": "SinkBasin",
+      "C": "ToiletPaper",
+      "D": "Faucet"
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "agent_vis_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 1,
+      "current_timestep": 9,
+      "template_used": "{n} steps back, which of these objects were within the agent's field of view?"
+    },
+    "evidence": {
+      "question_timestep": 1,
+      "current_timestep": 9,
+      "visible_objects": [
+        "GarbageCan|-02.92|+00.00|-01.56",
+        "ToiletPaper|-02.92|+00.18|-01.56"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Mirror",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "SinkBasin",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "ToiletPaper",
+          "is_correct": true
+        },
+        "D": {
+          "objectType": "Faucet",
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_n_steps_ago_016",
+    "question_text": "Which objects were visible to the agent 4 steps ago?",
+    "options": {
+      "A": "Sink",
+      "B": "HandTowel",
+      "C": "GarbageCan",
+      "D": "Faucet",
+      "E": "SinkBasin"
+    },
+    "correct_answer": "A,D,E",
+    "metadata": {
+      "question_id": "agent_vis_n_steps_ago",
+      "question_type": "multi_choice",
+      "question_timestep": 5,
+      "current_timestep": 9,
+      "template_used": "Which objects were visible to the agent {n} steps ago?"
+    },
+    "evidence": {
+      "question_timestep": 5,
+      "current_timestep": 9,
+      "visible_objects": [
+        "Faucet|-02.68|+01.02|+00.89",
+        "CounterTop|-02.30|+00.95|+00.69",
+        "Sink|-01.92|+00.93|+00.68",
+        "Sink|-02.68|+00.93|+00.68",
+        "Cabinet|-01.50|+00.42|+00.43",
+        "Mirror|-02.31|+01.53|+01.00",
+        "Faucet|-01.92|+01.02|+00.89",
+        "Cabinet|-02.29|+00.39|+00.42",
+        "Sink|-01.92|+00.93|+00.68|SinkBasin",
+        "Cabinet|-03.09|+00.39|+00.42",
+        "Sink|-02.68|+00.93|+00.68|SinkBasin",
+        "Cabinet|-02.31|+00.42|+00.43",
+        "SoapBar|-02.11|+00.97|+00.65",
+        "Cloth|-01.69|+00.08|+00.83"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Sink",
+          "is_correct": true
+        },
+        "B": {
+          "objectType": "HandTowel",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "GarbageCan",
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "Faucet",
+          "is_correct": true
+        },
+        "E": {
+          "objectType": "SinkBasin",
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_random_t_017",
+    "question_text": "Which objects were visible to the agent at time 6?",
+    "options": {
+      "A": "Toilet",
+      "B": "ScrubBrush",
+      "C": "Faucet",
+      "D": "Bathtub"
+    },
+    "correct_answer": "A,B",
+    "metadata": {
+      "question_id": "agent_vis_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "template_used": "Which objects were visible to the agent at time {t}?"
+    },
+    "evidence": {
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "visible_objects": [
+        "Cabinet|-01.50|+00.42|+00.43",
+        "SoapBar|-00.99|+01.05|+00.85",
+        "ScrubBrush|-00.49|+00.00|+00.87",
+        "Candle|-00.86|+01.09|+00.81",
+        "Plunger|-00.71|+00.00|+00.83",
+        "Toilet|-01.05|+00.00|+00.55",
+        "ToiletPaper|-01.42|+00.82|+00.67",
+        "ToiletPaper|-02.92|+00.18|-01.56",
+        "SoapBottle|-00.93|+01.05|+00.94",
+        "ToiletPaperHanger|-01.49|+00.81|+00.69"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Toilet",
+          "is_correct": true
+        },
+        "B": {
+          "objectType": "ScrubBrush",
+          "is_correct": true
+        },
+        "C": {
+          "objectType": "Faucet",
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "Bathtub",
+          "is_correct": false
+        }
+      }
+    }
+  },
+  {
+    "id": "agent_vis_random_t_018",
+    "question_text": "At time 4, which of these objects were within the agent's field of view?",
+    "options": {
+      "A": "Plunger",
+      "B": "HandTowelHolder",
+      "C": "Bathtub",
+      "D": "SoapBar"
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "agent_vis_random_t",
+      "question_type": "multi_choice",
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "template_used": "At time {t}, which of these objects were within the agent's field of view?"
+    },
+    "evidence": {
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "visible_objects": [
+        "CounterTop|-02.30|+00.95|+00.69",
+        "Sink|-01.92|+00.93|+00.68",
+        "Cabinet|-01.50|+00.42|+00.43",
+        "Mirror|-02.31|+01.53|+01.00",
+        "Faucet|-01.92|+01.02|+00.89",
+        "SoapBar|-00.99|+01.05|+00.85",
+        "Candle|-00.86|+01.09|+00.81",
+        "Sink|-01.92|+00.93|+00.68|SinkBasin",
+        "Toilet|-01.05|+00.00|+00.55",
+        "ToiletPaper|-01.42|+00.82|+00.67",
+        "ToiletPaper|-02.92|+00.18|-01.56",
+        "ToiletPaperHanger|-01.49|+00.81|+00.69"
+      ],
+      "options_info": {
+        "A": {
+          "objectType": "Plunger",
+          "is_correct": false
+        },
+        "B": {
+          "objectType": "HandTowelHolder",
+          "is_correct": false
+        },
+        "C": {
+          "objectType": "Bathtub",
+          "is_correct": false
+        },
+        "D": {
+          "objectType": "SoapBar",
+          "is_correct": true
+        }
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_initial_019",
+    "question_text": "What was the number of objects in the the bathtub at the beginning?",
+    "options": {
+      "A": 5,
+      "B": 0,
+      "C": 2,
+      "D": 3
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_initial",
+      "question_type": "single_choice",
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "template_used": "What was the number of objects in the {RE_obj} at the beginning?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Bathtub|+00.29|+00.29|-00.08",
+        "receptacleObjectIds": [
+          "Candle|-00.17|+00.56|+00.69",
+          "Candle|-00.17|+00.56|+00.18",
+          "ShowerCurtain|-00.29|+01.89|-01.03"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_initial_020",
+    "question_text": "How many objects were inside the the handtowelholder at the start?",
+    "options": {
+      "A": 2,
+      "B": 0,
+      "C": 3,
+      "D": 1
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_initial",
+      "question_type": "single_choice",
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "template_used": "How many objects were inside the {RE_obj} at the start?"
+    },
+    "evidence": {
+      "question_timestep": 0,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "HandTowelHolder|-03.13|+01.69|+00.74",
+        "receptacleObjectIds": [
+          "HandTowel|-03.10|+01.59|+00.74"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_current_021",
+    "question_text": "At this moment, what is the count of objects in the the countertop?",
+    "options": {
+      "A": 4,
+      "B": 2,
+      "C": 3,
+      "D": 0
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_count_in_container_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "At this moment, what is the count of objects in the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "CounterTop|-02.30|+00.95|+00.69",
+        "receptacleObjectIds": [
+          "Faucet|-02.68|+01.02|+00.89",
+          "Faucet|-01.92|+01.02|+00.89"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_current_022",
+    "question_text": "What is the number of objects in the the toilet at the current time?",
+    "options": {
+      "A": 2,
+      "B": 5,
+      "C": 4,
+      "D": 6
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_count_in_container_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "What is the number of objects in the {RE_obj} at the current time?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Toilet|-01.05|+00.00|+00.55",
+        "receptacleObjectIds": [
+          "Candle|-00.86|+01.09|+00.81",
+          "SoapBar|-00.99|+01.05|+00.85",
+          "SoapBottle|-00.93|+01.05|+00.94",
+          "ToiletPaper|-02.92|+00.18|-01.56",
+          "ToiletPaper|-01.42|+00.82|+00.67"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_n_steps_ago_023",
+    "question_text": "4 steps ago, how many items were contained within the the toiletpaperhanger?",
+    "options": {
+      "A": 1,
+      "B": 2,
+      "C": 3,
+      "D": 4
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_count_in_container_n_steps_ago",
+      "question_type": "single_choice",
+      "question_timestep": 5,
+      "current_timestep": 9,
+      "template_used": "{n} steps ago, how many items were contained within the {RE_obj}?"
+    },
+    "evidence": {
+      "question_timestep": 5,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "ToiletPaperHanger|-01.49|+00.81|+00.69",
+        "receptacleObjectIds": [
+          "ToiletPaper|-01.42|+00.82|+00.67"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_n_steps_ago_024",
+    "question_text": "What was the number of objects in the the toilet 3 steps before now?",
+    "options": {
+      "A": 6,
+      "B": 1,
+      "C": 5,
+      "D": 4
+    },
+    "correct_answer": "D",
+    "metadata": {
+      "question_id": "obj_count_in_container_n_steps_ago",
+      "question_type": "single_choice",
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "template_used": "What was the number of objects in the {RE_obj} {n} steps before now?"
+    },
+    "evidence": {
+      "question_timestep": 6,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Toilet|-01.05|+00.00|+00.55",
+        "receptacleObjectIds": [
+          "Candle|-00.86|+01.09|+00.81",
+          "SoapBar|-00.99|+01.05|+00.85",
+          "SoapBottle|-00.93|+01.05|+00.94",
+          "ToiletPaper|-02.92|+00.18|-01.56"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_random_t_025",
+    "question_text": "What was the number of objects in the the bathtub at time 9?",
+    "options": {
+      "A": 4,
+      "B": 3,
+      "C": 2,
+      "D": 6
+    },
+    "correct_answer": "B",
+    "metadata": {
+      "question_id": "obj_count_in_container_random_t",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "What was the number of objects in the {RE_obj} at time {t}?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "Bathtub|+00.29|+00.29|-00.08",
+        "receptacleObjectIds": [
+          "Candle|-00.17|+00.56|+00.69",
+          "Candle|-00.17|+00.56|+00.18",
+          "ShowerCurtain|-00.29|+01.89|-01.03"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_count_in_container_random_t_026",
+    "question_text": "What was the number of objects in the the countertop at time 4?",
+    "options": {
+      "A": 3,
+      "B": 0,
+      "C": 2,
+      "D": 1
+    },
+    "correct_answer": "C",
+    "metadata": {
+      "question_id": "obj_count_in_container_random_t",
+      "question_type": "single_choice",
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "template_used": "What was the number of objects in the {RE_obj} at time {t}?"
+    },
+    "evidence": {
+      "question_timestep": 4,
+      "current_timestep": 9,
+      "container": {
+        "objectId": "CounterTop|-02.30|+00.95|+00.69",
+        "receptacleObjectIds": [
+          "Faucet|-02.68|+01.02|+00.89",
+          "Faucet|-01.92|+01.02|+00.89"
+        ]
+      }
+    }
+  },
+  {
+    "id": "obj_property_current_027",
+    "question_text": "What is the state of the cloth in the cabinet right now?",
+    "options": {
+      "A": "CLEAN",
+      "B": "DIRTY"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_property_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "What is the state of {obj} right now?"
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "object": {
+        "objectId": "Cloth|-01.69|+00.08|+00.83",
+        "clean": false
+      }
+    }
+  },
+  {
+    "id": "obj_property_current_028",
+    "question_text": "Describe the state of the showercurtain at the current time.",
+    "options": {
+      "A": "CLOSED",
+      "B": "OPEN"
+    },
+    "correct_answer": "A",
+    "metadata": {
+      "question_id": "obj_property_current",
+      "question_type": "single_choice",
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "template_used": "Describe the state of {obj} at the current time."
+    },
+    "evidence": {
+      "question_timestep": 9,
+      "current_timestep": 9,
+      "object": {
+        "objectId": "ShowerCurtain|-00.29|+01.89|-01.03",
+        "closed": false
+      }
+    }
+  }
+]

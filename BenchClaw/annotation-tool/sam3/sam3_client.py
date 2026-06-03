@@ -16,6 +16,23 @@ SERVICE_PATH = os.path.join(ROOT_DIR, "sam3_service.py")
 SERVICE_LOG = os.path.join(ROOT_DIR, "service.log")
 BASE_URL = f"http://{HOST}:{PORT}"
 CONDA_EXE = os.environ.get("CONDA_EXE", "/home/maqiang/miniconda3/bin/conda")
+DEFAULT_WARMUP_IMAGE = os.environ.get(
+    "SAM3_WARMUP_IMAGE",
+    "/home/maqiang/uav_eval_dataset_small_assets/img_1956/img_1956_T025_0001_overlay.jpg",
+)
+
+# Local annotation services must not go through HTTP_PROXY/HTTPS_PROXY.
+# Otherwise health checks against 127.0.0.1 can time out, causing duplicate
+# service starts and multiple heavy SAM3 model loads.
+_no_proxy_values = [HOST, "127.0.0.1", "localhost"]
+for _env_name in ("NO_PROXY", "no_proxy"):
+    existing = os.environ.get(_env_name, "")
+    merged = [x.strip() for x in existing.split(",") if x.strip()]
+    for value in _no_proxy_values:
+        if value and value not in merged:
+            merged.append(value)
+    os.environ[_env_name] = ",".join(merged)
+NO_PROXY_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
 def load_json_file(path_value):
@@ -24,7 +41,7 @@ def load_json_file(path_value):
 
 
 def _http_get(path):
-    with urllib.request.urlopen(f"{BASE_URL}{path}", timeout=10) as response:
+    with NO_PROXY_OPENER.open(f"{BASE_URL}{path}", timeout=10) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
@@ -36,7 +53,7 @@ def _http_post(path, payload):
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=3600) as response:
+    with NO_PROXY_OPENER.open(request, timeout=3600) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
@@ -103,6 +120,54 @@ def cmd_ensure_server(args):
     print_json(ensure_server(timeout_seconds=args.timeout))
 
 
+def warmup_image_runtime(image_path=None, timeout_seconds=300):
+    ensure_server(timeout_seconds=timeout_seconds)
+    health_before = _http_get("/health")
+    selected_image = image_path or DEFAULT_WARMUP_IMAGE
+    if health_before.get("image_runtime_loaded"):
+        return {
+            "ok": True,
+            "reused_runtime": True,
+            "image_runtime_loaded": True,
+            "health_before": health_before,
+        }
+    if not selected_image or not os.path.isfile(selected_image):
+        raise RuntimeError(f"SAM3 warmup image not found: {selected_image}")
+
+    session_payload = _http_post(
+        "/image/request",
+        {
+            "request": {
+                "type": "start_session",
+                "image_path": os.path.abspath(selected_image),
+            }
+        },
+    )
+    result = session_payload.get("result") or {}
+    session_id = result.get("session_id")
+    if session_id:
+        _http_post(
+            "/image/request",
+            {"request": {"type": "close_session", "session_id": session_id}},
+        )
+    health_after = _http_get("/health")
+    if not health_after.get("image_runtime_loaded"):
+        raise RuntimeError(f"SAM3 image runtime did not load: {health_after}")
+    return {
+        "ok": True,
+        "reused_runtime": False,
+        "image_runtime_loaded": True,
+        "warmup_image": os.path.abspath(selected_image),
+        "session_id": session_id,
+        "health_before": health_before,
+        "health_after": health_after,
+    }
+
+
+def cmd_warmup(args):
+    print_json(warmup_image_runtime(args.image_path, timeout_seconds=args.timeout))
+
+
 def cmd_image_infer(args):
     ensure_server(timeout_seconds=args.timeout)
     payload = {
@@ -148,6 +213,11 @@ def build_parser():
 
     health_parser = subparsers.add_parser("health")
     health_parser.set_defaults(func=cmd_health)
+
+    warmup_parser = subparsers.add_parser("warmup")
+    warmup_parser.add_argument("--image-path", default=DEFAULT_WARMUP_IMAGE)
+    warmup_parser.add_argument("--timeout", type=int, default=300)
+    warmup_parser.set_defaults(func=cmd_warmup)
 
     image_parser = subparsers.add_parser("image-infer")
     image_parser.add_argument("--image-path", required=True)

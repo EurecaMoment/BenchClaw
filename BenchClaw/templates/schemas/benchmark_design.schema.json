@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BenchClaw Unified Benchmark Design",
+  "type": "object",
+  "required": [
+    "benchmark_name",
+    "scope",
+    "capabilities",
+    "question_formats",
+    "required_gt_fields",
+    "metrics",
+    "quality_gates"
+  ],
+  "properties": {
+    "benchmark_name": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "scenario",
+        "input_modality",
+        "included_tasks",
+        "excluded_tasks"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "capability_id",
+          "name",
+          "definition",
+          "gt_dependency",
+          "reference_benchmarks"
+        ]
+      }
+    },
+    "question_formats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "answer_format",
+          "parser",
+          "scoring_metric"
+        ]
+      }
+    },
+    "required_gt_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric_name",
+          "applies_to",
+          "aggregation"
+        ]
+      }
+    },
+    "quality_gates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

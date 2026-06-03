@@ -1,0 +1,90 @@
+{"item_id": "sample_0001_T001_0001", "prediction": "是"}
+{"item_id": "sample_0001_T001_0002", "prediction": "是"}
+{"item_id": "sample_0001_T002_0001", "prediction": ["A", "C", "E"]}
+{"item_id": "sample_0001_T002_0002", "prediction": ["B", "C", "E"]}
+{"item_id": "sample_0001_T003_0001", "prediction": "C"}
+{"item_id": "sample_0001_T004_0001", "prediction": "road"}
+{"item_id": "sample_0001_T006_0001", "prediction": "是"}
+{"item_id": "sample_0001_T006_0002", "prediction": "是"}
+{"item_id": "sample_0001_T007_0001", "prediction": "A"}
+{"item_id": "sample_0001_T007_0002", "prediction": "D"}
+{"item_id": "sample_0001_T008_0001", "prediction": "B"}
+{"item_id": "sample_0001_T011_0001", "prediction": 1}
+{"item_id": "sample_0001_T011_0002", "prediction": 1}
+{"item_id": "sample_0001_T012_0001", "prediction": "是"}
+{"item_id": "sample_0001_T012_0002", "prediction": "否"}
+{"item_id": "sample_0001_T013_0001", "prediction": "D"}
+{"item_id": "sample_0001_T015_0001", "prediction": "A"}
+{"item_id": "sample_0001_T020_0001", "prediction": {"tree": 1, "car": 2, "truck": 1, "building": 1, "road": 1}}
+{"item_id": "sample_0001_T020_0002", "prediction": {"building": 1, "car": 2, "truck": 1, "tree": 1, "road": 1}}
+{"item_id": "sample_0001_T021_0001", "prediction": "否"}
+{"item_id": "sample_0001_T022_0001", "prediction": "是"}
+{"item_id": "sample_0001_T023_0001", "prediction": "否"}
+{"item_id": "sample_0001_T024_0001", "prediction": "是"}
+{"item_id": "sample_0001_T021_0002", "prediction": "否"}
+{"item_id": "sample_0001_T022_0002", "prediction": "是"}
+{"item_id": "sample_0001_T023_0002", "prediction": "否"}
+{"item_id": "sample_0001_T024_0002", "prediction": "是"}
+{"item_id": "sample_0001_T025_0001", "prediction": "B"}
+{"item_id": "sample_0001_T025_0002", "prediction": "D"}
+{"item_id": "sample_0001_T026_0001", "prediction": "B"}
+{"item_id": "sample_0001_T026_0002", "prediction": "B"}
+{"item_id": "sample_0001_T027_0001", "prediction": "B"}
+{"item_id": "sample_0001_T027_0002", "prediction": "D"}
+{"item_id": "sample_0001_T028_0001", "prediction": "C"}
+{"item_id": "sample_0001_T028_0002", "prediction": "C"}
+{"item_id": "sample_0001_T029_0001", "prediction": "D"}
+{"item_id": "sample_0001_T029_0002", "prediction": "C"}
+{"item_id": "sample_0001_T030_0001", "prediction": "B"}
+{"item_id": "sample_0001_T031_0001", "prediction": "B"}
+{"item_id": "sample_0001_T030_0002", "prediction": "H"}
+{"item_id": "sample_0001_T031_0002", "prediction": "H"}
+{"item_id": "sample_0001_T032_0001", "prediction": "否"}
+{"item_id": "sample_0001_T032_0002", "prediction": "否"}
+{"item_id": "sample_0001_T033_0001", "prediction": "是"}
+{"item_id": "sample_0001_T033_0002", "prediction": "否"}
+{"item_id": "sample_0001_T034_0001", "prediction": ["B", "A", "C", "D"]}
+{"item_id": "sample_0001_T034_0002", "prediction": ["D", "A", "C", "B"]}
+{"item_id": "sample_0001_T035_0001", "prediction": ["D", "B", "A", "C"]}
+{"item_id": "sample_0001_T036_0001", "prediction": "否"}
+{"item_id": "sample_0001_T043_0001", "prediction": "否"}
+{"item_id": "sample_0001_T036_0002", "prediction": "是"}
+{"item_id": "sample_0001_T043_0002", "prediction": "是"}
+{"item_id": "sample_0001_T037_0001", "prediction": "C"}
+{"item_id": "sample_0001_T037_0002", "prediction": "B"}
+{"item_id": "sample_0001_T038_0001", "prediction": "D"}
+{"item_id": "sample_0001_T038_0002", "prediction": "A"}
+{"item_id": "sample_0001_T039_0001", "prediction": ["B", "C", "A", "D"]}
+{"item_id": "sample_0001_T039_0002", "prediction": ["B", "D", "C", "A"]}
+{"item_id": "sample_0001_T040_0001", "prediction": "B"}
+{"item_id": "sample_0001_T040_0002", "prediction": "C"}
+{"item_id": "sample_0001_T041_0001", "prediction": "否"}
+{"item_id": "sample_0001_T041_0002", "prediction": "否"}
+{"item_id": "sample_0001_T042_0001", "prediction": "A"}
+{"item_id": "sample_0001_T042_0002", "prediction": "B"}
+{"item_id": "sample_0001_T045_0001", "prediction": "是"}
+{"item_id": "sample_0001_T045_0002", "prediction": "否"}
+{"item_id": "sample_0001_T091_0001", "prediction": "否"}
+{"item_id": "sample_0001_T091_0002", "prediction": "否"}
+{"item_id": "sample_0001_T095_0001", "prediction": ["C", "B", "A", "D"]}
+{"item_id": "sample_0001_T095_0002", "prediction": ["B", "C", "A", "D"]}
+{"item_id": "sample_0001_T099_0001", "prediction": {"最靠左": "C", "最靠右": "D", "最近": "A", "最远": "D"}}
+{"item_id": "sample_0001_T099_0002", "prediction": {"最靠左": "C", "最靠右": "D", "最近": "B", "最远": "A"}}
+{"item_id": "sample_0001_T100_0001", "prediction": []}
+{"item_id": "sample_0001_T100_0002", "prediction": []}
+{"item_id": "sample_0001_T056_0001", "prediction": "E"}
+{"item_id": "sample_0001_T056_0002", "prediction": "E"}
+{"item_id": "sample_0001_T057_0001", "prediction": "是"}
+{"item_id": "sample_0001_T057_0002", "prediction": "否"}
+{"item_id": "sample_0001_T060_0001", "prediction": "A"}
+{"item_id": "sample_0001_T060_0002", "prediction": "B"}
+{"item_id": "sample_0001_T061_0001", "prediction": "C"}
+{"item_id": "sample_0001_T061_0002", "prediction": "D"}
+{"item_id": "sample_0001_T063_0001", "prediction": ["C", "A", "B", "D"]}
+{"item_id": "sample_0001_T063_0002", "prediction": ["B", "C", "D", "A"]}
+{"item_id": "sample_0001_T082_0001", "prediction": "C"}
+{"item_id": "sample_0001_T082_0002", "prediction": "B"}
+{"item_id": "sample_0001_T084_0001", "prediction": "否"}
+{"item_id": "sample_0001_T090_0001", "prediction": "不可回答"}
+{"item_id": "sample_0001_T084_0002", "prediction": "否"}
+{"item_id": "sample_0001_T090_0002", "prediction": "不可回答"}

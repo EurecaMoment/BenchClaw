@@ -10,6 +10,7 @@
 - 启动本 stage 时，必须接收并复述冻结的 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT` 实际值，并与 `WORKSPACE_ROOT/path_resolution.json` 对齐。
 - 本 stage 只能写入 `WORKSPACE_ROOT/stage5/`。
 - 每个节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
+- 继承总入口和 pipeline 的长任务 `tmux` 执行协议：任何下载、检索、外部工具调用、批处理、模型推理、训练、仿真、清洗、标注或全量评测等可能长时间运行的命令，必须在 `tmux` 会话中执行、写入 `nodes/<node-id>/run_logs/` 并定期监控；未使用 `tmux` 必须在 `NODE_REPORT.md` 说明短任务依据和实际耗时。
 - 每个编号数据必须写入：`artifacts/<data-id>/`。
 - 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 
@@ -40,7 +41,8 @@
 
 ```text
 WORKSPACE_ROOT/stage5/
-  nodes/
+  nodes/<node-id>/
+    run_logs/
   artifacts/
   _STAGE_DONE.json
   _stage_report.md

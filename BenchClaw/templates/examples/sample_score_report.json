@@ -1,0 +1,223 @@
+{
+  "overall": {
+    "n": 12,
+    "mean_score": 0.9166666666666666,
+    "missing_predictions": []
+  },
+  "by_capability": {
+    "C13": {
+      "n": 8,
+      "mean_score": 0.875
+    },
+    "C18": {
+      "n": 8,
+      "mean_score": 0.875
+    },
+    "C1": {
+      "n": 4,
+      "mean_score": 1.0
+    },
+    "C2": {
+      "n": 4,
+      "mean_score": 1.0
+    },
+    "C11": {
+      "n": 4,
+      "mean_score": 1.0
+    }
+  },
+  "by_template_family": {
+    "obj_types_in_container_initial": {
+      "n": 2,
+      "mean_score": 1.0
+    },
+    "obj_types_in_container_current": {
+      "n": 2,
+      "mean_score": 0.5
+    },
+    "obj_types_in_container_n_steps_ago": {
+      "n": 2,
+      "mean_score": 1.0
+    },
+    "obj_types_in_container_random_t": {
+      "n": 2,
+      "mean_score": 1.0
+    },
+    "obj_count_in_scene_current": {
+      "n": 2,
+      "mean_score": 1.0
+    },
+    "obj_existence_seen": {
+      "n": 2,
+      "mean_score": 1.0
+    }
+  },
+  "by_answer_format": {
+    "F1 单选题": {
+      "n": 5,
+      "mean_score": 1.0
+    },
+    "F2 多选题": {
+      "n": 5,
+      "mean_score": 0.8
+    },
+    "F1/F3": {
+      "n": 2,
+      "mean_score": 1.0
+    }
+  },
+  "items": [
+    {
+      "item_id": "sample_001",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "B",
+        "pred_norm": "B"
+      }
+    },
+    {
+      "item_id": "sample_002",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "A",
+          "D"
+        ],
+        "pred_set": [
+          "A",
+          "D"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_003",
+      "score": 0.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 0.0,
+        "f1": 0.0,
+        "gold_set": [
+          "D",
+          "E",
+          "F"
+        ],
+        "pred_set": [
+          "A"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_004",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "C",
+        "pred_norm": "C"
+      }
+    },
+    {
+      "item_id": "sample_005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "D",
+        "pred_norm": "D"
+      }
+    },
+    {
+      "item_id": "sample_006",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "A",
+        "pred_norm": "A"
+      }
+    },
+    {
+      "item_id": "sample_007",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "B",
+          "C"
+        ],
+        "pred_set": [
+          "B",
+          "C"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_008",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "B",
+          "C",
+          "E"
+        ],
+        "pred_set": [
+          "B",
+          "C",
+          "E"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_009",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "A",
+        "pred_norm": "A"
+      }
+    },
+    {
+      "item_id": "sample_010",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "B",
+        "pred_norm": "B"
+      }
+    },
+    {
+      "item_id": "sample_011",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "D",
+        "pred_norm": "D"
+      }
+    },
+    {
+      "item_id": "sample_012",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "C",
+          "D",
+          "E"
+        ],
+        "pred_set": [
+          "C",
+          "D",
+          "E"
+        ]
+      }
+    }
+  ]
+}

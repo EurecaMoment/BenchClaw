@@ -24,6 +24,8 @@ benchmark-stage5-eval/SKILL.md
 4. 手绘图中的椭圆才是 DAG 节点；带编号的内容是中间流动数据，不是节点。用户输入与结束状态也不是节点。
 5. 所有写入只能落在本次 `WORKSPACE_ROOT` 下；`BENCHCLAW_ROOT` 只读。
 6. 缺少真实输入、真实采集结果、真实标注结果、真实 GT、真实模型预测或模型调用结果时，必须阻塞并写明原因，不能继续生成完成状态。
+7. 如果某项任务预计执行时间较长、可能等待外部下载/推理/训练/仿真/评测、或结束时间不确定，必须使用 `tmux` 启动后台会话执行，不得长期占用前台 shell；启动后要把 stdout/stderr 重定向到 workspace 日志文件，并定期监控会话与日志进展，避免因超时、断线或前台终止拿不到数据。
+8. 长任务默认必须先用 `tmux new-session -d -s <session_name> "<command> > <log> 2>&1"` 启动，再用 `tmux has-session`、`tmux capture-pane`、`tail -f` 等方式周期性查看进度；若未采用 tmux，必须在节点报告中说明为什么该任务确定会在很短时间内完成。
 
 ## 产物目录约定
 
@@ -35,6 +37,8 @@ WORKSPACE_ROOT/stageN/
     USED_INPUTS.json
     DONE.json
     NODE_REPORT.md
+    run_logs/
+      <task>.log
   artifacts/<data-id>/
     ...
 ```

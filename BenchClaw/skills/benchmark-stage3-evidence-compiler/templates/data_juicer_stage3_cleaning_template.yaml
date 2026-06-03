@@ -1,0 +1,13 @@
+# Copy this template into each Stage3 work unit output directory and replace all
+# __PLACEHOLDER__ values with absolute paths before running Data-Juicer.
+project_name: 'benchclaw-stage3-cleaning'
+dataset_path: '__ABS_INPUT_JSONL__'
+export_path: '__ABS_OUTPUT_JSONL__'
+np: 1
+
+process:
+  - clean_html_mapper: {}
+  - clean_links_mapper: {}
+  - text_length_filter:
+      min_len: 1
+      max_len: 20000

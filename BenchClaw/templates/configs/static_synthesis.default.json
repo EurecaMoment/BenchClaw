@@ -1,0 +1,18 @@
+{
+  "tool": "tools/synthesize_static_vlm_benchmark.py",
+  "default_args": {
+    "max_per_template": 8,
+    "min_conf": 0.25,
+    "min_area": 80,
+    "xy_margin_frac": 0.06,
+    "require_valid": true,
+    "include_depth": true,
+    "include_3d": true
+  },
+  "recommended_quality_checks": [
+    "schema validation against schemas/eval_item.schema.json",
+    "manual spot-check of generated overlay images",
+    "capability/template distribution inspection from generated_report.json",
+    "drop or flag items with missing evidence_ref or empty evidence_fields"
+  ]
+}

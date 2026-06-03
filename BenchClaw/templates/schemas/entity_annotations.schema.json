@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BenchClaw Static Entity Annotation Input",
+  "type": "object",
+  "required": ["objects"],
+  "properties": {
+    "image_path": {"type": "string"},
+    "image_size": {
+      "type": "object",
+      "properties": {
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1}
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["object_id", "category", "bbox_2d"],
+        "properties": {
+          "object_id": {"type": ["string", "integer"]},
+          "category": {"type": "string"},
+          "mask": {
+            "type": "object",
+            "properties": {
+              "area_px": {"type": "number", "minimum": 0},
+              "path": {"type": "string"}
+            }
+          },
+          "bbox_2d": {
+            "type": "object",
+            "required": ["xyxy", "centroid_xy"],
+            "properties": {
+              "xyxy": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}},
+              "centroid_xy": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+              "centroid_normalized_xy": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+            }
+          },
+          "depth_median": {"type": ["number", "null"]},
+          "depth_stats": {"type": "object"},
+          "centroid_3d": {
+            "type": "object",
+            "properties": {
+              "xyz": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}
+            }
+          },
+          "rough_3d_bbox": {
+            "type": "object",
+            "properties": {
+              "size_xyz": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}
+            }
+          },
+          "confidence": {
+            "type": "object",
+            "properties": {"value": {"type": "number", "minimum": 0, "maximum": 1}}
+          },
+          "valid_for_question_generation": {"type": "boolean"},
+          "source": {"type": "object"}
+        }
+      }
+    }
+  }
+}

@@ -6,16 +6,39 @@
       "id": "intent-understanding",
       "name": "意图理解",
       "skill": "skills/intent-understanding/SKILL.md",
+      "parents": [],
+      "required_inputs": [
+        "data_01_user_idea"
+      ],
       "outputs": [
         "data_02_rewritten_queries",
-        "data_03_intent_expansion_doc",
-        "data_05_source_capability_descriptions"
+        "data_03_intent_expansion_doc"
+      ]
+    },
+    {
+      "id": "scope-preprocess-analysis",
+      "name": "模型 scope 预处理分析",
+      "skill": "skills/scope-preprocess-analysis/SKILL.md",
+      "mode": "offline",
+      "parents": [],
+      "required_inputs": [
+        "data_09_benchmark_data"
+      ],
+      "outputs": [
+        "data_08_preprocessed_capability_pool"
       ]
     },
     {
       "id": "literature-search",
       "name": "文献搜索",
       "skill": "skills/literature-search/SKILL.md",
+      "parents": [
+        "intent-understanding"
+      ],
+      "required_inputs": [
+        "data_02_rewritten_queries",
+        "data_03_intent_expansion_doc"
+      ],
       "outputs": [
         "data_04_retrieved_literature"
       ]
@@ -24,6 +47,14 @@
       "id": "literature-review",
       "name": "文献调研",
       "skill": "skills/literature-review/SKILL.md",
+      "parents": [
+        "literature-search",
+        "intent-understanding"
+      ],
+      "required_inputs": [
+        "data_03_intent_expansion_doc",
+        "data_04_retrieved_literature"
+      ],
       "outputs": [
         "data_07_literature_review"
       ]
@@ -32,6 +63,18 @@
       "id": "capability-dimension-planning",
       "name": "能力维度划分",
       "skill": "skills/capability-dimension-planning/SKILL.md",
+      "parents": [
+        "intent-understanding",
+        "literature-review",
+        "scope-preprocess-analysis"
+      ],
+      "required_inputs": [
+        "data_03_intent_expansion_doc",
+        "data_05_source_capability_descriptions",
+        "data_06_semisupervised_capability_signals",
+        "data_07_literature_review",
+        "data_08_preprocessed_capability_pool"
+      ],
       "outputs": [
         "data_10_capability_dimension_doc"
       ]
@@ -40,6 +83,13 @@
       "id": "template-metric-draft-generation",
       "name": "模板/指标初稿生成",
       "skill": "skills/template-metric-draft-generation/SKILL.md",
+      "parents": [
+        "capability-dimension-planning"
+      ],
+      "required_inputs": [
+        "data_09_benchmark_data",
+        "data_10_capability_dimension_doc"
+      ],
       "outputs": [
         "data_11_template_metric_initial_draft"
       ]
@@ -48,6 +98,23 @@
       "id": "benchmark-draft-generation",
       "name": "benchmark 草稿生成",
       "skill": "skills/benchmark-draft-generation/SKILL.md",
+      "parents": [
+        "template-metric-draft-generation",
+        "capability-dimension-planning"
+      ],
+      "required_inputs": [
+        "data_01_user_idea",
+        "data_02_rewritten_queries",
+        "data_03_intent_expansion_doc",
+        "data_04_retrieved_literature",
+        "data_05_source_capability_descriptions",
+        "data_06_semisupervised_capability_signals",
+        "data_07_literature_review",
+        "data_08_preprocessed_capability_pool",
+        "data_09_benchmark_data",
+        "data_10_capability_dimension_doc",
+        "data_11_template_metric_initial_draft"
+      ],
       "outputs": [
         "data_12_benchmark_draft"
       ]
@@ -56,6 +123,12 @@
       "id": "execution-plan-generation",
       "name": "执行计划生成",
       "skill": "skills/execution-plan-generation/SKILL.md",
+      "parents": [
+        "benchmark-draft-generation"
+      ],
+      "required_inputs": [
+        "data_12_benchmark_draft"
+      ],
       "outputs": [
         "data_13_execution_plan"
       ]
@@ -80,6 +153,10 @@
     },
     {
       "from": "literature-review",
+      "to": "capability-dimension-planning"
+    },
+    {
+      "from": "scope-preprocess-analysis",
       "to": "capability-dimension-planning"
     },
     {

@@ -1,0 +1,16 @@
+{
+  "episode": "episode_1",
+  "top_level_type": "dict",
+  "top_level_keys": [
+    "metadata",
+    "objects",
+    "agent",
+    "observations",
+    "actions",
+    "summary"
+  ],
+  "objects_type": "dict",
+  "objects_len": 77,
+  "metadata_type": "dict",
+  "metadata_len": 5
+}

@@ -15,6 +15,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ./start_sam3_service.sh 8766
 export SAM3_HOST="${SAM3_HOST:-127.0.0.1}"
 export SAM3_PORT="${SAM3_PORT:-${1:-8765}}"
+export NO_PROXY="${NO_PROXY:-},127.0.0.1,localhost,$SAM3_HOST"
+export no_proxy="${no_proxy:-},127.0.0.1,localhost,$SAM3_HOST"
 
 cd "$SCRIPT_DIR"
 
@@ -30,4 +32,4 @@ python3 "$SCRIPT_DIR/sam3_client.py" health
 
 echo "[info] SAM3 service is healthy"
 echo "[info] following service.log ..."
-exec tail -F "$SCRIPT_DIR/service.log"
+exec tail -n 0 -F "$SCRIPT_DIR/service.log"

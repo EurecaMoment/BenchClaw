@@ -1,11 +1,29 @@
 {
   "stage": "stage1",
-  "required_inputs": [
-    "data_01_user_idea",
-    "external capability cards",
-    "external dataset cards",
-    "data_06_semisupervised_capability_signals",
-    "data_08_preprocessed_capability_pool"
+  "node_semantics": "用户和外部资源不是 DAG 节点；编号数据只作为 artifacts 流动。",
+  "required_root_artifacts": [
+    {
+      "id": "data_01_user_idea",
+      "source": "用户输入的原始 benchmark idea"
+    },
+    {
+      "id": "data_05_source_capability_descriptions",
+      "source": [
+        "BENCHCLAW_ROOT/benchmarkDatasetCards",
+        "BENCHCLAW_ROOT/realDataCards",
+        "BENCHCLAW_ROOT/simulatorCards"
+      ]
+    },
+    {
+      "id": "data_06_semisupervised_capability_signals",
+      "source": [
+        "BENCHCLAW_ROOT/annotation-tool"
+      ]
+    },
+    {
+      "id": "data_09_benchmark_data",
+      "source": "外部 benchmark 数据或用户授权的数据索引"
+    }
   ],
   "terminal_artifacts": [
     "data_13_execution_plan"
@@ -15,10 +33,29 @@
       "node_id": "intent-understanding",
       "name": "意图理解",
       "parents": [],
+      "required_input_artifacts": [
+        "data_01_user_idea"
+      ],
       "output_artifacts": [
         "data_02_rewritten_queries",
-        "data_03_intent_expansion_doc",
-        "data_05_source_capability_descriptions"
+        "data_03_intent_expansion_doc"
+      ],
+      "required_node_files": [
+        "USED_INPUTS.json",
+        "DONE.json",
+        "NODE_REPORT.md"
+      ]
+    },
+    {
+      "node_id": "scope-preprocess-analysis",
+      "name": "模型 scope 预处理分析",
+      "mode": "offline",
+      "parents": [],
+      "required_input_artifacts": [
+        "data_09_benchmark_data"
+      ],
+      "output_artifacts": [
+        "data_08_preprocessed_capability_pool"
       ],
       "required_node_files": [
         "USED_INPUTS.json",
@@ -31,6 +68,10 @@
       "name": "文献搜索",
       "parents": [
         "intent-understanding"
+      ],
+      "required_input_artifacts": [
+        "data_02_rewritten_queries",
+        "data_03_intent_expansion_doc"
       ],
       "output_artifacts": [
         "data_04_retrieved_literature"
@@ -48,6 +89,10 @@
         "literature-search",
         "intent-understanding"
       ],
+      "required_input_artifacts": [
+        "data_03_intent_expansion_doc",
+        "data_04_retrieved_literature"
+      ],
       "output_artifacts": [
         "data_07_literature_review"
       ],
@@ -62,7 +107,15 @@
       "name": "能力维度划分",
       "parents": [
         "intent-understanding",
-        "literature-review"
+        "literature-review",
+        "scope-preprocess-analysis"
+      ],
+      "required_input_artifacts": [
+        "data_03_intent_expansion_doc",
+        "data_05_source_capability_descriptions",
+        "data_06_semisupervised_capability_signals",
+        "data_07_literature_review",
+        "data_08_preprocessed_capability_pool"
       ],
       "output_artifacts": [
         "data_10_capability_dimension_doc"
@@ -78,6 +131,10 @@
       "name": "模板/指标初稿生成",
       "parents": [
         "capability-dimension-planning"
+      ],
+      "required_input_artifacts": [
+        "data_09_benchmark_data",
+        "data_10_capability_dimension_doc"
       ],
       "output_artifacts": [
         "data_11_template_metric_initial_draft"
@@ -95,6 +152,19 @@
         "template-metric-draft-generation",
         "capability-dimension-planning"
       ],
+      "required_input_artifacts": [
+        "data_01_user_idea",
+        "data_02_rewritten_queries",
+        "data_03_intent_expansion_doc",
+        "data_04_retrieved_literature",
+        "data_05_source_capability_descriptions",
+        "data_06_semisupervised_capability_signals",
+        "data_07_literature_review",
+        "data_08_preprocessed_capability_pool",
+        "data_09_benchmark_data",
+        "data_10_capability_dimension_doc",
+        "data_11_template_metric_initial_draft"
+      ],
       "output_artifacts": [
         "data_12_benchmark_draft"
       ],
@@ -109,6 +179,9 @@
       "name": "执行计划生成",
       "parents": [
         "benchmark-draft-generation"
+      ],
+      "required_input_artifacts": [
+        "data_12_benchmark_draft"
       ],
       "output_artifacts": [
         "data_13_execution_plan"

@@ -1,0 +1,303 @@
+{
+  "image_path": "img_0001.jpg",
+  "image_size": {
+    "width": 640,
+    "height": 480
+  },
+  "objects": [
+    {
+      "object_id": "car_001",
+      "category": "car",
+      "mask": {
+        "area_px": 5400,
+        "path": "instance_masks/car_001.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          60,
+          300,
+          150,
+          360
+        ],
+        "centroid_xy": [
+          105.0,
+          330.0
+        ],
+        "centroid_normalized_xy": [
+          0.1640625,
+          0.6875
+        ]
+      },
+      "depth_median": 3.0,
+      "depth_stats": {
+        "median": 3.0
+      },
+      "centroid_3d": {
+        "xyz": [
+          -1.8,
+          0.3,
+          3.0
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          1.8,
+          0.8,
+          3.4
+        ]
+      },
+      "confidence": {
+        "value": 0.91
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    },
+    {
+      "object_id": "car_002",
+      "category": "car",
+      "mask": {
+        "area_px": 8800,
+        "path": "instance_masks/car_002.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          430,
+          280,
+          540,
+          360
+        ],
+        "centroid_xy": [
+          485.0,
+          320.0
+        ],
+        "centroid_normalized_xy": [
+          0.7578125,
+          0.6666666666666666
+        ]
+      },
+      "depth_median": 5.2,
+      "depth_stats": {
+        "median": 5.2
+      },
+      "centroid_3d": {
+        "xyz": [
+          1.7,
+          0.5,
+          5.2
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          2.0,
+          0.9,
+          3.8
+        ]
+      },
+      "confidence": {
+        "value": 0.88
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    },
+    {
+      "object_id": "building_001",
+      "category": "building",
+      "mask": {
+        "area_px": 30600,
+        "path": "instance_masks/building_001.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          70,
+          40,
+          250,
+          210
+        ],
+        "centroid_xy": [
+          160.0,
+          125.0
+        ],
+        "centroid_normalized_xy": [
+          0.25,
+          0.2604166666666667
+        ]
+      },
+      "depth_median": 8.5,
+      "depth_stats": {
+        "median": 8.5
+      },
+      "centroid_3d": {
+        "xyz": [
+          -2.2,
+          -0.5,
+          8.5
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          5.0,
+          4.0,
+          2.0
+        ]
+      },
+      "confidence": {
+        "value": 0.84
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    },
+    {
+      "object_id": "tree_001",
+      "category": "tree",
+      "mask": {
+        "area_px": 12950,
+        "path": "instance_masks/tree_001.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          330,
+          35,
+          400,
+          220
+        ],
+        "centroid_xy": [
+          365.0,
+          127.5
+        ],
+        "centroid_normalized_xy": [
+          0.5703125,
+          0.265625
+        ]
+      },
+      "depth_median": 4.1,
+      "depth_stats": {
+        "median": 4.1
+      },
+      "centroid_3d": {
+        "xyz": [
+          0.8,
+          -0.3,
+          4.1
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          1.0,
+          3.5,
+          1.0
+        ]
+      },
+      "confidence": {
+        "value": 0.86
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    },
+    {
+      "object_id": "road_001",
+      "category": "road",
+      "mask": {
+        "area_px": 76800,
+        "path": "instance_masks/road_001.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          0,
+          360,
+          640,
+          480
+        ],
+        "centroid_xy": [
+          320.0,
+          420.0
+        ],
+        "centroid_normalized_xy": [
+          0.5,
+          0.875
+        ]
+      },
+      "depth_median": 6.0,
+      "depth_stats": {
+        "median": 6.0
+      },
+      "centroid_3d": {
+        "xyz": [
+          0.0,
+          1.0,
+          6.0
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          8.0,
+          0.2,
+          10.0
+        ]
+      },
+      "confidence": {
+        "value": 0.8
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    },
+    {
+      "object_id": "truck_001",
+      "category": "truck",
+      "mask": {
+        "area_px": 12600,
+        "path": "instance_masks/truck_001.png"
+      },
+      "bbox_2d": {
+        "xyxy": [
+          250,
+          250,
+          390,
+          340
+        ],
+        "centroid_xy": [
+          320.0,
+          295.0
+        ],
+        "centroid_normalized_xy": [
+          0.5,
+          0.6145833333333334
+        ]
+      },
+      "depth_median": 2.2,
+      "depth_stats": {
+        "median": 2.2
+      },
+      "centroid_3d": {
+        "xyz": [
+          0.2,
+          0.2,
+          2.2
+        ]
+      },
+      "rough_3d_bbox": {
+        "size_xyz": [
+          2.6,
+          1.2,
+          4.2
+        ]
+      },
+      "confidence": {
+        "value": 0.9
+      },
+      "valid_for_question_generation": true,
+      "source": {
+        "yoloe_verified": true
+      }
+    }
+  ]
+}

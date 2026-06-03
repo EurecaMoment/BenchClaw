@@ -1,38 +1,27 @@
 stage: stage3
-node_semantics: only listed nodes are DAG nodes; data ids are artifacts
+node_semantics: only listed nodes are DAG nodes; data ids are artifacts; cleaning and annotation are internal subskills under each source node
 nodes:
   - id: stage3-plan-generation
     name: 本阶段执行计划生成
     skill: skills/stage3-plan-generation/SKILL.md
     parents: []
+    required_inputs: [data_13_execution_plan, data_14_real_image_collection_bundle, data_15_existing_benchmark_collection_bundle, data_16_simulator_collection_bundle]
     outputs: [stage3_execution_plan]
-  - id: real-image-cleaning
-    name: 真实图片清洗
-    skill: skills/real-image-cleaning/SKILL.md
+  - id: real-image-evidence-compilation
+    name: 真实图片清洗与标注
+    skill: skills/real-image-evidence-compilation/SKILL.md
     parents: [stage3-plan-generation]
-    outputs: [real_image_clean_bundle]
-  - id: existing-benchmark-cleaning
-    name: 已有 benchmark 数据清洗
-    skill: skills/existing-benchmark-cleaning/SKILL.md
-    parents: [stage3-plan-generation]
-    outputs: [existing_benchmark_clean_bundle]
-  - id: simulator-data-cleaning
-    name: 仿真器数据清洗
-    skill: skills/simulator-data-cleaning/SKILL.md
-    parents: [stage3-plan-generation]
-    outputs: [simulator_clean_bundle]
-  - id: real-image-annotation
-    name: 真实图片标注
-    skill: skills/real-image-annotation/SKILL.md
-    parents: [real-image-cleaning]
+    required_inputs: [stage3_execution_plan, data_14_real_image_collection_bundle]
     outputs: [data_17_annotated_real_image_bundle]
-  - id: existing-benchmark-annotation
-    name: 已有 benchmark 标注
-    skill: skills/existing-benchmark-annotation/SKILL.md
-    parents: [existing-benchmark-cleaning]
+  - id: existing-benchmark-evidence-compilation
+    name: 已有 benchmark 清洗与标注
+    skill: skills/existing-benchmark-evidence-compilation/SKILL.md
+    parents: [stage3-plan-generation]
+    required_inputs: [stage3_execution_plan, data_15_existing_benchmark_collection_bundle]
     outputs: [data_18_annotated_existing_benchmark_bundle]
-  - id: simulator-data-organization
-    name: 仿真器数据整理
-    skill: skills/simulator-data-organization/SKILL.md
-    parents: [simulator-data-cleaning]
+  - id: simulator-evidence-compilation
+    name: 仿真器清洗与标注
+    skill: skills/simulator-evidence-compilation/SKILL.md
+    parents: [stage3-plan-generation]
+    required_inputs: [stage3_execution_plan, data_16_simulator_collection_bundle]
     outputs: [data_19_annotated_simulator_bundle]
