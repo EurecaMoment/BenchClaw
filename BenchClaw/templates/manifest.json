@@ -1,7 +1,7 @@
 {
-  "package_name": "benchclaw_stage1_stage4_unified_template_pack",
-  "version": "v4_unified_executable",
-  "purpose": "统一 Stage1 benchmark design 与 Stage4 eval item construction 的模板、指标、schema、参考示例包",
+  "package_name": "benchclaw_agent_safe_template_library_fixed",
+  "version": "strict_fixed_v1",
+  "purpose": "严格修正后的 BenchClaw 图文评测模板库；agent 默认只选择稳定核心模板，坏模板已锁定。",
   "derived_from_user_materials": {
     "benchmark_cards": 12,
     "question_templates": 100,
@@ -16,8 +16,16 @@
   "executable_synthesis_engine": {
     "tool": "tools/synthesize_static_vlm_benchmark.py",
     "input_schema": "schemas/entity_annotations.schema.json",
-    "executable_templates": 51,
+    "executable_templates": "strict_core_by_default",
     "coverage_matrix": "template_library/executable_template_coverage.csv",
-    "demo": "examples/uav_static_demo/generated_eval_dataset.jsonl"
+    "demo": "examples/uav_static_demo/generated_eval_dataset.jsonl",
+    "default_template_set": "strict_core"
+  },
+  "agent_selection_policy": "template_library/benchclaw_fixed_template_registry.yaml",
+  "strict_template_sets": {
+    "strict_core": 16,
+    "strict_depth": 29,
+    "strict_all_supported": 85,
+    "deprecated_locked": 15
   }
 }

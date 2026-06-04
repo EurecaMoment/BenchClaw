@@ -1,52 +1,52 @@
-template_id,executable_in_tool,question_format,capability_ids,scoring_note
-T001,yes,F3 判断题,C1;C11,Exact Match
-T002,yes,F2 多选题,C1,Precision / Recall / F1
-T003,yes,F1 单选题,C1,Exact Match
-T004,yes,F7 填空题,C1;C8,Normalized Exact Match
-T006,yes,F3 判断题,C1,Exact Match
-T007,yes,F12 图文匹配题,C1,Exact Match
-T008,yes,F9 区间选择题,C1;C2,Exact Match
-T011,yes,F8 数值题,C2,Absolute Error = 0
-T012,yes,F10 对比选择题,C2,Exact Match
-T013,yes,F1 单选题,C2,Exact Match
-T014,yes,F5 排序题,C2,Kendall Tau / Pairwise Accuracy
-T015,yes,F9 区间选择题,C2,Exact Match
-T020,yes,F24 JSON 结构化输出题,C2,Schema Check + Field Accuracy
-T021,yes,F3 判断题,C5,Exact Match
-T022,yes,F3 判断题,C5,Exact Match
-T023,yes,F3 判断题,C5,Exact Match
-T024,yes,F3 判断题,C5,Exact Match
-T025,yes,F1 单选题,C5,Exact Match
-T026,yes,F1 单选题,C5,Exact Match
-T027,yes,F1 单选题,C5,Exact Match
-T028,yes,F1 单选题,C5,Exact Match
-T029,yes,F1 单选题,C5,Exact Match
-T030,yes,F13 区域选择题,C5,Exact Match
-T031,yes,F13 区域选择题,C5,Exact Match
-T032,yes,F3 判断题,C5;C12,Exact Match
-T033,yes,F3 判断题,C5,Exact Match
-T034,yes,F5 排序题,C5,Kendall Tau / Pairwise Accuracy
-T035,yes,F5 排序题,C5,Kendall Tau / Pairwise Accuracy
-T036,yes,F10 对比选择题,C6;C7,Exact Match
-T037,yes,F1 单选题,C7,Exact Match
-T038,yes,F1 单选题,C7,Exact Match
-T039,yes,F5 排序题,C7,Kendall Tau / Pairwise Accuracy
-T040,yes,F9 区间选择题,C7,Exact Match
-T041,yes,F3 判断题,C7,Exact Match
-T042,yes,F10 对比选择题,C7,Exact Match
-T043,yes,F3 判断题,C6,Exact Match
-T045,yes,F3 判断题,C1;C7,Exact Match
-T056,yes,F9 区间选择题,C7,Exact Match
-T057,yes,F10 对比选择题,C7,Exact Match
-T060,yes,F1 单选题,C8,Exact Match
-T061,yes,F1 单选题,C8,Exact Match
-T063,yes,F5 排序题,C8,Kendall Tau / Pairwise Accuracy
-T082,yes,F20 错误检测题,C30,Exact Match
-T084,yes,F3 判断题,C11;C30,Exact Match
-T090,yes,F4 三选判断题,C30,Exact Match
-T091,yes,F3 判断题,C6;C12,Exact Match
-T095,yes,F5 排序题,C12;C7,Kendall Tau / Pairwise Accuracy
-T096,yes,F1 单选题,C27;C28,Exact Match
-T097,yes,F1 单选题,C5;C28,Exact Match
-T099,yes,F6 匹配题,C5;C7,Field Accuracy
-T100,yes,F24 JSON 结构化输出题,C1;C7;C28,Schema Check + Field Accuracy
+template_id,executable_in_tool,default_strict_core,strict_status,canonical_question_type,primary_capability,fixed_question_template,replacement_template_id
+T001,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A1_VISIBLE_OBJECT_CATEGORY,当前图像中是否可见 `{object_category}`？,
+T002,yes,yes,CORE_SELECTABLE,QT2_MULTI_SELECT,A1_VISIBLE_OBJECT_CATEGORY,从候选项中选择当前图像中可见的所有物体类别。,
+T003,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A1_VISIBLE_OBJECT_CATEGORY,按可见 mask 面积合计，当前图像中主要可见的物体类别是哪一个？,
+T004,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A1_VISIBLE_OBJECT_CATEGORY,按可见 mask 面积合计，当前图像中面积最大的可见物体类别是哪一个？,
+T006,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A1_VISIBLE_OBJECT_CATEGORY,当前图像中是否同时可见 `{category_A}` 和 `{category_B}`？,
+T007,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A1_VISIBLE_OBJECT_CATEGORY,下列哪一项描述与当前图像中可见的物体类别证据一致？,
+T008,yes,yes,CORE_SELECTABLE,QT4_INTERVAL_CHOICE,A1_VISIBLE_OBJECT_CATEGORY,当前图像中可见物体类别数量属于哪个区间？,
+T011,yes,no,STATIC_OPTIONAL_SELECTABLE,QT4_INTERVAL_CHOICE,A2_COUNTING_AND_SET_SIZE,当前图像中可见的 `{object_category}` 数量属于哪个区间？,
+T012,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A2_COUNTING_AND_SET_SIZE,当前图像中 `{category_A}` 的可见实例数量是否多于 `{category_B}`？,
+T013,yes,yes,CORE_SELECTABLE,QT1_SINGLE_CHOICE,A2_COUNTING_AND_SET_SIZE,当前图像中哪类物体的可见实例数量最多？,
+T014,yes,yes,CORE_SELECTABLE,QT5_ORDERING,A2_COUNTING_AND_SET_SIZE,将候选物体类别按当前图像中的可见实例数量从多到少排序。,
+T015,yes,yes,CORE_SELECTABLE,QT4_INTERVAL_CHOICE,A2_COUNTING_AND_SET_SIZE,当前图像中可见物体实例总数属于哪个区间？,
+T020,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：不再输出每类裸数字计数；使用 T011/T015 区间题或 T002/T012 代替。,T011/T015
+T021,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图的图像平面坐标中，物体 A 是否位于物体 B 的左侧？,
+T022,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图的图像平面坐标中，物体 A 是否位于物体 B 的右侧？,
+T023,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图的图像平面坐标中，物体 A 是否位于物体 B 的上方？,
+T024,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图的图像平面坐标中，物体 A 是否位于物体 B 的下方？,
+T025,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,在候选标注物体中，哪个物体的中心点最靠近图像中心？,
+T026,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,在候选标注物体中，哪个物体的中心点位于图像最左侧？,
+T027,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,在候选标注物体中，哪个物体的中心点位于图像最右侧？,
+T028,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,在候选标注物体中，哪个物体的中心点位于图像最上方？,
+T029,yes,no,STATIC_OPTIONAL_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,在候选标注物体中，哪个物体的中心点位于图像最下方？,
+T030,yes,yes,CORE_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,标注图中的物体 A 位于图像九宫格的哪个区域？,
+T031,yes,yes,CORE_SELECTABLE,QT1_SINGLE_CHOICE,A3_IMAGE_PLANE_SPATIAL,从候选区域中选择包含标注物体 A 中心点的区域。,
+T032,yes,no,STATIC_OPTIONAL_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图中，物体 A 与物体 B 的可见外接框是否重叠？,
+T033,yes,no,STATIC_OPTIONAL_SELECTABLE,QT3_BINARY_OR_COMPARISON,A3_IMAGE_PLANE_SPATIAL,在标注图中，物体 A 与物体 B 的可见外接框是否相邻或接近？,
+T034,yes,no,STATIC_OPTIONAL_SELECTABLE,QT5_ORDERING,A3_IMAGE_PLANE_SPATIAL,将候选标注物体按图像中从左到右排序。,
+T035,yes,no,STATIC_OPTIONAL_SELECTABLE,QT5_ORDERING,A3_IMAGE_PLANE_SPATIAL,将候选标注物体按图像中从上到下排序。,
+T036,yes,no,DEPTH_SELECTABLE,QT3_BINARY_OR_COMPARISON,A4_DEPTH_DISTANCE_LAYER,观察标注图，物体 A 是否比物体 B 更靠近相机？,
+T037,yes,no,DEPTH_SELECTABLE,QT1_SINGLE_CHOICE,A4_DEPTH_DISTANCE_LAYER,在候选标注物体中，哪个物体离相机最近？,
+T038,yes,no,DEPTH_SELECTABLE,QT1_SINGLE_CHOICE,A4_DEPTH_DISTANCE_LAYER,在候选标注物体中，哪个物体离相机最远？,
+T039,yes,no,DEPTH_SELECTABLE,QT5_ORDERING,A4_DEPTH_DISTANCE_LAYER,将候选标注物体按从近到远排序。,
+T040,yes,no,DEPTH_SELECTABLE,QT4_INTERVAL_CHOICE,A4_DEPTH_DISTANCE_LAYER,观察标注图，标注物体 A 到相机的距离属于哪个区间？,
+T041,yes,no,DEPTH_SELECTABLE,QT3_BINARY_OR_COMPARISON,A4_DEPTH_DISTANCE_LAYER,当前图像中是否存在距离相机小于 `{threshold}` 的 `{object_category}`？,
+T042,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：多实例类别的“整体更靠近”口径不稳定；用 T036/T037/T040 替代。,T036/T037/T040
+T043,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：“前方”措辞歧义；用 T036 或 T091 的“更靠近相机”替代。,T036/T091
+T045,yes,yes,CORE_SELECTABLE,QT3_BINARY_OR_COMPARISON,A8_COMPLEX_CONSTRAINT_CONSISTENCY,当前图像中，距离相机最近的标注物体是否属于 `{object_category}`？,
+T056,yes,no,POSE_3D_EXTENDED_SELECTABLE,QT4_INTERVAL_CHOICE,A7_EGOCENTRIC_POSE_3D,在相机坐标系下，标注物体 A 与标注物体 B 的三维质心距离属于哪个区间？,
+T057,yes,no,POSE_3D_EXTENDED_SELECTABLE,QT3_BINARY_OR_COMPARISON,A7_EGOCENTRIC_POSE_3D,在相机坐标系下，标注物体 A 是否比标注物体 B 更靠近标注物体 C？,
+T060,yes,no,POSE_3D_EXTENDED_SELECTABLE,QT1_SINGLE_CHOICE,A5_VISIBLE_SCALE_3D_SIZE,在候选标注物体中，哪个物体的可见三维包围盒体积最大？,
+T061,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：3D bbox y 方向尺寸不是自然评测语义；用 T060/T063 替代。,T060/T063
+T063,yes,no,POSE_3D_EXTENDED_SELECTABLE,QT5_ORDERING,A5_VISIBLE_SCALE_3D_SIZE,将候选标注物体按可见三维包围盒体积从大到小排序。,
+T082,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：无法由图像支持类模板会引入不可答判断；用 T085 证据冲突单选替代。,T085
+T084,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：元问题，不作为图文 benchmark 题干；用 T001 负例替代。,T001
+T090,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：不可见目标距离是否可回答是不可答三选题，不进入模板库。,T001/T040
+T091,yes,no,DEPTH_SELECTABLE,QT3_BINARY_OR_COMPARISON,A4_DEPTH_DISTANCE_LAYER,观察标注图，物体 A 是否比物体 B 更靠近相机？,
+T095,yes,no,DEPTH_SELECTABLE,QT5_ORDERING,A4_DEPTH_DISTANCE_LAYER,将候选标注物体按深度层次由近到远排序。,
+T096,yes,no,DEPTH_SELECTABLE,QT1_SINGLE_CHOICE,A4_DEPTH_DISTANCE_LAYER,在候选标注物体中，选择“位于图像左半区且距离相机最近的 `{object_category}` 实例”。,
+T097,yes,no,DEPTH_SELECTABLE,QT1_SINGLE_CHOICE,A4_DEPTH_DISTANCE_LAYER,在候选标注物体中，选择“位于图像右半区且可见面积最大的物体”。,
+T099,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：多属性 JSON 匹配容易一物多属性和隐藏评分噪声；拆成 T021/T022/T036/T095。,T021/T022/T036/T095
+T100,locked,no,DEPRECATED_LOCKED,DEPRECATED_LOCKED,DEPRECATED,已废弃：输出 object_id/depth_median 属于隐藏元数据，不作为图文评测。,T096/T097

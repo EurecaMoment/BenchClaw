@@ -7,11 +7,12 @@
 ## 输入
 
 - `artifacts/data_20_template_metric_code_bundle/templates/<template_id>.json`
+- `artifacts/data_20_template_metric_code_bundle/selected_template_sources.jsonl`
 - `artifacts/data_20_template_metric_code_bundle/template_manifest.jsonl`
 - `data_11_template_metric_initial_draft/metrics.yaml`
 - `stage4_execution_plan.yaml`
 - 本 stage `templates/benchmark_item.schema.json`
-- 可选统一模板包中的 `template_system/05_metrics_and_scoring.md`
+- 统一模板包中的 `template_system/05_metrics_and_scoring.md`，以及已选模板的 `unified_template_id`、`canonical_question_type`、`answer_format` 来源记录
 
 ## 指标契约
 
@@ -93,22 +94,23 @@ def aggregate(item_scores):
 ## 处理
 
 1. 读取所有 enabled 模板，按 `answer_format` 和 `metric_id` 分组。
-2. 对照 Stage1 `metrics.yaml` 和可选统一模板包，保留同一 metric 的语义一致性；不要为同一题型重复发明多个同义指标。
-3. 为每个指标定义解析规则：
+2. 对照 Stage1 `metrics.yaml`、`selected_template_sources.jsonl` 和统一模板包评分说明，保留同一 metric 的语义一致性；不要为同一题型重复发明多个同义指标。
+3. 每个 metric 必须能追溯到使用它的 enabled 模板的 `unified_template_id` 和 `canonical_question_type`；若统一模板包对该题型有固定评分策略，必须采用或显式说明兼容映射，不能另造语义冲突的主指标。
+4. 为每个指标定义解析规则：
    - 字符串：大小写、空白、标点、yes/no、中英文别名归一化。
    - 集合：分隔符、去重、排序和空集处理。
    - 数值：单位、容差、无法解析数字的失败返回。
    - 排序：长度不一致、缺项、多项并列的处理。
    - 区域：候选 id、bbox、mask 路径和 IoU 阈值。
-4. 为每个指标定义聚合规则：
+5. 为每个指标定义聚合规则：
    - overall；
    - by template；
    - by capability；
    - by source_type；
    - by answer_format；
    - 需要时 by scene/dataset/simulator。
-5. 生成或更新 `metric_manifest.jsonl`，列出每个指标覆盖的模板、主/辅角色、实现文件和不适用条件。
-6. 确认每个 enabled 模板的 `metric_id` 在 manifest 中存在，且对应 `.py` 可被 `scripts/score_predictions.py` 导入。
+6. 生成或更新 `metric_manifest.jsonl`，列出每个指标覆盖的模板、主/辅角色、实现文件、不适用条件和统一模板来源覆盖。
+7. 确认每个 enabled 模板的 `metric_id` 在 manifest 中存在，且对应 `.py` 可被 `scripts/score_predictions.py` 导入。
 
 ## 质量要求
 

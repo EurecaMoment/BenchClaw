@@ -27,6 +27,7 @@
    - `self_test/`
 2. Manifest 完整性：
    - `template_manifest.jsonl`
+   - `selected_template_sources.jsonl`
    - `metric_manifest.jsonl`
    - `code_manifest.json`
    - `traceability.csv`
@@ -37,7 +38,9 @@
    - 每个 enabled 模板引用的 `metric_id` 存在。
    - 每个 enabled 模板有 `answer_programs/<template_id>.py`。
    - 每个 enabled metric 有 JSON 定义和 Python 实现，或有明确外部评估协议且不是主指标。
-   - `traceability.csv` 可从模板追溯到 Stage1 初稿、Stage4 模板参考和 Stage3 evidence。
+   - 每个 enabled 模板必须有非空 `unified_template_id`、`capability_dimension_refs`，并且该 `unified_template_id` 在 `selected_template_sources.jsonl` 中为 `selection_status=selected`。
+   - `selected_template_sources.jsonl` 必须覆盖每个 Stage1 能力维度，状态为 selected、disabled 或 blocked，且每个 selected 记录包含 `primary_capability`、`required_fields`、`template_set`、字段覆盖和证据样本统计。
+   - `traceability.csv` 可从模板追溯到 Stage1 能力维度、Stage1 初稿、统一模板包模板 id、Stage4 模板参考和 Stage3 evidence。
    - `synthesis_plan.yaml` 中的 enabled template 列表必须与 `template_manifest.jsonl` 一致。
    - `contracts/runtime_contract.json` 中声明的 entrypoint 文件必须真实存在。
 5. 输入路径安全：
@@ -78,6 +81,7 @@ python scripts/score_predictions.py --bundle . --gold self_test/dry_run_items.js
 - 完美预测评分整体满分，或所有非满分项都有模板声明的合理原因。
 - 负例评分低于完美预测；若负例也满分，必须阻塞并修复指标。
 - `dry_run_items.jsonl` 非空，且每条 item 都有 evidence_refs 和 metric_id。
+- `selected_template_sources.jsonl` 非空，且 enabled 模板没有脱离统一模板包来源。
 - `synthesis_plan.yaml` 可作为后续节点 handoff 文件使用，包含灰度配额、全量配额建议和过滤记录路径。
 
 ## 阻塞记录
@@ -135,7 +139,7 @@ WORKSPACE_ROOT/stage4/nodes/template-metric-code-generation/NODE_REPORT.md
 - 冻结路径；
 - 实际读取的输入；
 - 参考的本 stage 模板文件；
-- 可选统一模板包是否存在及使用了哪些文件；
+- 统一模板包校验结果、实际使用的文件和能力维度到统一模板的选择统计；
 - enabled/disabled/blocked 模板统计；
 - 指标覆盖统计；
 - 自测命令和结果；

@@ -21,6 +21,7 @@ tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf 
 4. 启动后立即检查一次 `tmux has-session`、`tmux capture-pane` 和 `tail -n 100 <log_path>`。
 5. 只要 tmux 会话仍存在，就必须每 15 秒检查一次状态；每次记录已生成 item 数、媒体文件数、GT 文件数、metric/config 文件数、checksum 进度和最近日志摘要。
 6. 会话结束后必须读取最终日志和 `EXIT_CODE`，校验 `dataset.jsonl`、`media/`、`ground_truth/`、`metrics/`、`cards/benchmark_card.md`、`checksums.json` 和 manifest；缺少 15 秒监控记录、最终日志、退出码或真实全量产物时，不得写 `DONE.json`。
+7. 写 `DONE.json` 前必须保证本节点产物能通过 stage gate 中的 full-synthesis 检查；至少要有 `nodes/full-synthesis/run_logs/*.monitoring.jsonl`、包含 `EXIT_CODE:0` 的最终日志、非空 `dataset.jsonl`、非空 `media/`、非空 `ground_truth/`、非空 `metrics/`、`manifest.json`、`cards/benchmark_card.md` 和 `checksums.json`。
 
 ## 处理
 
@@ -28,11 +29,13 @@ tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf 
 2. 按执行计划生成全量 benchmark item、媒体副本、GT、评分配置、数据集卡和校验和。
 3. 所有媒体引用必须指向 workspace 内稳定存在的文件。
 4. 每个 item 必须能追溯到数据源、证据记录、模板、答案程序与能力维度。
-5. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数和质量门结果。
+5. 禁止只输出旧版目录名 `sample_images/`、`gt_bundle/`；如果需要兼容旧调用，可额外写这些目录，但当前契约目录 `media/` 和 `ground_truth/` 必须存在且非空。
+6. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数和质量门结果。
 
 ## 输出
 
 - `artifacts/data_22_full_benchmark_dataset/dataset.jsonl`
+- `artifacts/data_22_full_benchmark_dataset/manifest.json`
 - `artifacts/data_22_full_benchmark_dataset/media/`
 - `artifacts/data_22_full_benchmark_dataset/ground_truth/`
 - `artifacts/data_22_full_benchmark_dataset/metrics/`

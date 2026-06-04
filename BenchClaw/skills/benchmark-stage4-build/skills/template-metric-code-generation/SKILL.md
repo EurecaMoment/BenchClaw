@@ -33,11 +33,32 @@ BENCHCLAW_ROOT/skills/benchmark-stage4-build/templates/_stage_report.md
 - `BLOCKED.schema.json`：约束阻塞记录；缺字段、缺媒体、缺 GT、代码不可运行或评分不可执行时使用。
 - `_stage_report.md`：本节点 `NODE_REPORT.md` 的章节结构参考，尤其要记录冻结路径、输入、输出、阻塞和质量门。
 
-若 `BENCHCLAW_ROOT/templates/` 统一模板包存在，可作为增强参考读取：优先使用其中的模板库、题型、指标、质量门和样例，但不得覆盖本 stage 的本地 schema 与目录契约。若该目录不存在，本节点仍必须仅凭 Stage1 初稿、Stage3 证据和本 stage `templates/` 完成编译。
+`BENCHCLAW_ROOT/templates/` 统一模板包是本节点选择题目模板的必需来源，不是可选参考。启动本节点后，还必须读取并登记以下统一模板包文件；缺失、不可读或校验失败时必须写 `BLOCKED`，不得退回到临时自造模板：
+
+```text
+BENCHCLAW_ROOT/templates/SKILL.md
+BENCHCLAW_ROOT/templates/manifest.json
+BENCHCLAW_ROOT/templates/template_library/benchclaw_fixed_template_registry.yaml
+BENCHCLAW_ROOT/templates/template_library/templates_100_unified.index.json
+BENCHCLAW_ROOT/templates/template_library/executable_template_coverage.json 或 executable_template_coverage.csv
+BENCHCLAW_ROOT/templates/template_system/01_capability_map.md
+BENCHCLAW_ROOT/templates/template_system/04_instantiation_rules.md
+BENCHCLAW_ROOT/templates/template_system/06_quality_gates.md
+BENCHCLAW_ROOT/templates/template_system/07_stage1_stage4_usage.md
+```
+
+使用方式：
+
+- 必须先运行或复核统一模板包声明的校验命令 `python tools/validate_strict_template_library.py`；校验未通过时不得选择其中任何模板。
+- 模板选择必须从 `benchclaw_fixed_template_registry.yaml` 的 `template_sets` 和 `templates_100_unified.index.json` 中产生；Stage1 模板初稿只能提供能力需求、字段需求和指标草案，不能绕过统一模板库创建新的运行时模板。
+- 默认只从 `strict_core` 中选；只有 Stage3 字段目录证明存在可靠 depth/depth-derived 字段时，才允许解锁 `strict_depth`；temporal、pose、3D 等扩展模板只有在 registry/index 要求字段全部可由真实 evidence 支撑时才可选。
+- 禁止选择 `deprecated_locked`、`agent_selectable: false`、`DEPRECATED`/locked 状态、硬约束不满足或需要隐藏 GT 字段直接出现在题面中的模板。
+- 本 stage 的本地 schema 与目录契约仍是最终输出契约；统一模板包决定“选哪些模板”，本 stage schema 决定“产物如何落盘和交接”。
 
 ## 输入
 
 - `data_11_template_metric_initial_draft`
+- `data_10_capability_dimension_doc`
 - `data_17_annotated_real_image_bundle`
 - `data_18_annotated_existing_benchmark_bundle`
 - `data_19_annotated_simulator_bundle`
@@ -47,11 +68,13 @@ BENCHCLAW_ROOT/skills/benchmark-stage4-build/templates/_stage_report.md
 
 1. 从冻结的 `WORKSPACE_ROOT/path_resolution.json` 校验 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT`。
 2. 从 `WORKSPACE_ROOT/stage4/nodes/stage4-plan-generation/stage4_execution_plan.yaml` 读取 Stage4 计划。
-3. 从上游 artifact 或配置映射中定位 `data_11`、`data_17`、`data_18`、`data_19`；不得使用聊天上下文替代文件读取。
-4. 动态枚举 Stage3 bundle 中的 manifest、jsonl、媒体和 GT 文件；不要硬编码数据集名、仿真器名或字段名。
-5. 生成字段目录和证据索引，记录每条可用 evidence 的来源、媒体路径、GT 字段、可见性/唯一性约束和可用于哪些模板。
+3. 从上游 artifact 或配置映射中定位 `data_10`、`data_11`、`data_17`、`data_18`、`data_19`；不得使用聊天上下文替代文件读取。
+4. 读取 `data_10_capability_dimension_doc/capability_dimensions.md`、`q_matrix_seed.csv` 或等价能力维度文件，提取 `capability_id`、能力名称、定义、GT/字段依赖、排除项和计划题型；无法解析能力维度时必须阻塞。
+5. 读取并校验统一模板包，建立 `primary_capability`、`canonical_question_type`、`required_fields`、`template_set`、`agent_selectable`、硬约束和覆盖矩阵索引。
+6. 动态枚举 Stage3 bundle 中的 manifest、jsonl、媒体和 GT 文件；不要硬编码数据集名、仿真器名或字段名。
+7. 生成字段目录和证据索引，记录每条可用 evidence 的来源、媒体路径、GT 字段、可见性/唯一性约束和可用于哪些统一模板。
 
-若任一必需输入目录不存在、关键 json/jsonl/yaml 不可读、媒体路径越界或 GT 字段无法追溯，必须阻塞。
+若任一必需输入目录不存在、关键 json/jsonl/yaml/csv 不可读、媒体路径越界、GT 字段无法追溯，或 Stage1 能力维度无法映射到统一模板库中的可选模板，必须阻塞或将对应能力维度写入 disabled 记录并说明原因。
 
 ## 处理流程
 
@@ -59,8 +82,10 @@ BENCHCLAW_ROOT/skills/benchmark-stage4-build/templates/_stage_report.md
 
 调用 `subskills/template-compilation/SKILL.md`：
 
-- 将 `data_11` 的模板初稿与本 stage `benchmark_item.schema.json`、Stage3 字段目录、可选统一模板包对齐。
-- 为每个候选模板生成机器可读模板定义，至少包含 `template_id`、`template_family`、`question_pattern`、`source_types`、`required_evidence_fields`、`required_media`、`answer_format`、`metric_id`、`capability_tags`、`instantiation_algorithm`、`quality_gates`、`failure_conditions`、`grey_quota` 和 `full_quota_hint`。
+- 以 `data_10` 的能力维度划分作为需求集合，逐个能力维度从 `BENCHCLAW_ROOT/templates/template_library/benchclaw_fixed_template_registry.yaml` 与 `templates_100_unified.index.json` 中选取需要的统一模板。
+- 将选中的统一模板与 `data_11` 的模板/指标初稿、本 stage `benchmark_item.schema.json`、Stage3 字段目录对齐；不得使用不在统一模板库选择结果中的模板作为 enabled 模板。
+- 为每个候选模板生成机器可读模板定义，至少包含 `template_id`、`unified_template_id`、`template_family`、`question_pattern`、`source_types`、`required_evidence_fields`、`required_media`、`answer_format`、`metric_id`、`capability_tags`、`capability_dimension_refs`、`instantiation_algorithm`、`quality_gates`、`failure_conditions`、`grey_quota` 和 `full_quota_hint`。
+- 生成 `selected_template_sources.jsonl`，逐条记录能力维度到统一模板的选择、禁用或阻塞原因，包括 `capability_id`、`capability_name`、`unified_template_id`、`template_set`、`primary_capability`、`required_fields`、`field_coverage_status`、`evidence_sample_count`、`selection_status` 和 `selection_reason`。
 - 禁用或阻塞无法由 Stage3 证据唯一回答的模板；不得为了覆盖率编造 GT、常识答案或虚构媒体。
 
 ### 2. 指标编译
@@ -108,6 +133,7 @@ WORKSPACE_ROOT/stage4/
     source_inventory.jsonl
     field_catalog.yaml
     evidence_index.jsonl
+    selected_template_sources.jsonl
     template_manifest.jsonl
     metric_manifest.jsonl
     code_manifest.json
@@ -153,6 +179,7 @@ WORKSPACE_ROOT/stage4/
 - `validate_command`：验证 bundle 与 item jsonl 的标准命令模板。
 - `enabled_templates`：可运行模板列表、灰度配额、全量配额建议和 source type 限制。
 - `disabled_templates`：禁用模板及原因，供报告解释覆盖缺口。
+- `selected_template_sources`：能力维度到统一模板 id 的映射文件路径、模板集来源和字段覆盖状态。
 - `seed_policy`：默认 seed、按模板派生 seed 的方式，以及需要固定顺序的字段。
 - `filter_log_policy`：过滤样本的 jsonl 路径、字段和原因枚举。
 - `prediction_contract`：预测文件必需字段、允许的 answer 格式和无效预测处理。
@@ -169,6 +196,7 @@ WORKSPACE_ROOT/stage4/
     "validate_bundle": "scripts/validate_bundle.py"
   },
   "required_manifests": [
+    "selected_template_sources.jsonl",
     "template_manifest.jsonl",
     "metric_manifest.jsonl",
     "code_manifest.json",
@@ -183,7 +211,10 @@ WORKSPACE_ROOT/stage4/
 写 `DONE.json` 前必须同时满足：
 
 - 已登记所有实际读取的输入和模板参考文件。
+- 已读取 `data_10_capability_dimension_doc`，且每个 Stage1 能力维度都有对应的 selected、disabled 或 blocked 模板选择记录。
+- `selected_template_sources.jsonl` 非空，且每个 enabled 模板都能追溯到统一模板包中的 `unified_template_id`、`primary_capability`、`required_fields` 和 `template_set`。
 - 至少有一个通过契约检查、可实例化、可评分的模板；若 stage4 计划要求的能力维度无法覆盖，必须在报告中说明缺口。
+- 每个 enabled 模板必须来自 `BENCHCLAW_ROOT/templates/` 中通过校验的可选模板；不得出现没有统一模板来源的自造 enabled 模板。
 - 每个 enabled 模板都有对应模板 JSON、答案程序、指标定义、traceability 记录和 smoke fixture。
 - 每个 enabled `metric_id` 都有可执行评分实现或明确的外部评估协议；主指标不得只有 LLM-as-judge。
 - `python -m py_compile` 对生成的 `.py` 文件通过。
@@ -199,5 +230,6 @@ WORKSPACE_ROOT/stage4/
 - `artifacts/data_20_template_metric_code_bundle/contracts/`
 - `artifacts/data_20_template_metric_code_bundle/tests/`
 - `artifacts/data_20_template_metric_code_bundle/self_test/`
+- `artifacts/data_20_template_metric_code_bundle/selected_template_sources.jsonl`
 - `artifacts/data_20_template_metric_code_bundle/traceability.csv`
 - 节点执行记录文件

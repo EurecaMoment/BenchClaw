@@ -67,6 +67,32 @@ DEFAULT_NEGATIVE_CATEGORIES = [
     "chair", "table", "sofa", "bed", "door", "window", "sink", "refrigerator",
 ]
 
+
+# Strict production policy for BenchClaw agent template selection.
+# Default generation uses only templates that are stable for static image-text benchmark construction.
+# Deprecated templates are hard-locked: they cannot be generated even if requested.
+STRICT_CORE_TEMPLATES = {
+    "T001", "T002", "T006", "T008",
+    "T012", "T013", "T014", "T015",
+    "T021", "T022", "T023", "T024",
+    "T030", "T031", "T045", "T085",
+}
+STRICT_DEPTH_TEMPLATES = STRICT_CORE_TEMPLATES | {
+    "T036", "T037", "T038", "T039", "T040", "T041", "T091", "T095", "T096", "T097",
+}
+STRICT_REWRITTEN_OPTIONAL_TEMPLATES = STRICT_DEPTH_TEMPLATES | {
+    "T003", "T004", "T011", "T025", "T026", "T027", "T028", "T029", "T032", "T033", "T034", "T035",
+    "T056", "T057", "T060", "T063",
+}
+DEPRECATED_LOCKED_TEMPLATES = {
+    "T020", "T042", "T043", "T058", "T061", "T064", "T069", "T081", "T082", "T083", "T084", "T090", "T093", "T099", "T100",
+}
+TEMPLATE_SETS = {
+    "strict_core": STRICT_CORE_TEMPLATES,
+    "strict_depth": STRICT_DEPTH_TEMPLATES,
+    "strict_all_supported": STRICT_REWRITTEN_OPTIONAL_TEMPLATES,
+}
+
 GRID_9_ZH = {
     (0, 0): "左上", (1, 0): "上中", (2, 0): "右上",
     (0, 1): "左中", (1, 1): "中心", (2, 1): "右中",
@@ -93,11 +119,11 @@ TEMPLATE_META: Dict[str, Dict[str, Any]] = {
     "T001": {"format": "F3 判断题", "capability": ["C1", "C11"], "scoring": "Exact Match"},
     "T002": {"format": "F2 多选题", "capability": ["C1"], "scoring": "Precision / Recall / F1"},
     "T003": {"format": "F1 单选题", "capability": ["C1"], "scoring": "Exact Match"},
-    "T004": {"format": "F7 填空题", "capability": ["C1", "C8"], "scoring": "Normalized Exact Match"},
+    "T004": {"format": "F1 单选题", "capability": ["C1", "C8"], "scoring": "Exact Match"},
     "T006": {"format": "F3 判断题", "capability": ["C1"], "scoring": "Exact Match"},
     "T007": {"format": "F12 图文匹配题", "capability": ["C1"], "scoring": "Exact Match"},
     "T008": {"format": "F9 区间选择题", "capability": ["C1", "C2"], "scoring": "Exact Match"},
-    "T011": {"format": "F8 数值题", "capability": ["C2"], "scoring": "Absolute Error = 0"},
+    "T011": {"format": "F9 区间选择题", "capability": ["C2"], "scoring": "Exact Match"},
     "T012": {"format": "F10 对比选择题", "capability": ["C2"], "scoring": "Exact Match"},
     "T013": {"format": "F1 单选题", "capability": ["C2"], "scoring": "Exact Match"},
     "T014": {"format": "F5 排序题", "capability": ["C2"], "scoring": "Kendall Tau / Pairwise Accuracy"},
@@ -134,6 +160,7 @@ TEMPLATE_META: Dict[str, Dict[str, Any]] = {
     "T063": {"format": "F5 排序题", "capability": ["C8"], "scoring": "Kendall Tau / Pairwise Accuracy"},
     "T082": {"format": "F20 错误检测题", "capability": ["C30"], "scoring": "Exact Match"},
     "T084": {"format": "F3 判断题", "capability": ["C11", "C30"], "scoring": "Exact Match"},
+    "T085": {"format": "F20 错误检测题", "capability": ["C1", "C11"], "scoring": "Exact Match"},
     "T090": {"format": "F4 三选判断题", "capability": ["C30"], "scoring": "Exact Match"},
     "T091": {"format": "F3 判断题", "capability": ["C6", "C12"], "scoring": "Exact Match"},
     "T095": {"format": "F5 排序题", "capability": ["C12", "C7"], "scoring": "Kendall Tau / Pairwise Accuracy"},
@@ -243,11 +270,12 @@ def relative_or_str(path: str) -> str:
 
 
 class ItemSink:
-    def __init__(self, sample: Sample, asset_dir: Path, max_per_template: int, rng: random.Random):
+    def __init__(self, sample: Sample, asset_dir: Path, max_per_template: int, rng: random.Random, allowed_template_ids: Optional[set[str]] = None):
         self.sample = sample
         self.asset_dir = asset_dir
         self.max_per_template = max_per_template
         self.rng = rng
+        self.allowed_template_ids = allowed_template_ids
         self.items: List[Dict[str, Any]] = []
         self.count_by_template: Counter[str] = Counter()
         self.used_signatures: set = set()
@@ -257,6 +285,10 @@ class ItemSink:
             self.base_image_path.write_bytes(sample.image_bytes)
 
     def can_add(self, template_id: str) -> bool:
+        if template_id in DEPRECATED_LOCKED_TEMPLATES:
+            return False
+        if self.allowed_template_ids is not None and template_id not in self.allowed_template_ids:
+            return False
         return self.count_by_template[template_id] < self.max_per_template
 
     def add(
@@ -533,9 +565,10 @@ def build_sample(sample_id: str, source_path: str, ent: Dict[str, Any], image_by
 
 
 def filter_objects(sample: Sample, min_conf: float, min_area: int, require_valid: bool,
-                   drop_categories: set[str]) -> List[Obj]:
+                   drop_categories: set[str], max_area_frac: float) -> List[Obj]:
     raw_valid = {str(o.get("object_id")): bool(o.get("valid_for_question_generation", True)) for o in sample.entity_json.get("objects", [])}
     out = []
+    img_area = max(1, sample.image_size[0] * sample.image_size[1])
     for o in sample.objects:
         if o.category in drop_categories:
             continue
@@ -544,6 +577,8 @@ def filter_objects(sample: Sample, min_conf: float, min_area: int, require_valid
         if o.confidence < min_conf:
             continue
         if o.area < min_area:
+            continue
+        if max_area_frac > 0 and (o.area / img_area) > max_area_frac:
             continue
         x1, y1, x2, y2 = o.bbox
         if x2 <= x1 or y2 <= y1:
@@ -673,9 +708,14 @@ def shuffle_options_with_answer(rng: random.Random, labels: List[str], answer_la
 def generate_items_for_sample(sample: Sample, args: argparse.Namespace) -> List[Dict[str, Any]]:
     rng = random.Random(args.seed + stable_hash(sample.sample_id))
     asset_dir = Path(args.asset_dir) / sample.sample_id
-    sink = ItemSink(sample, asset_dir, args.max_per_template, rng)
+    requested = {x.strip() for x in (args.template_ids or "").split(",") if x.strip()}
+    if requested:
+        allowed_template_ids = requested - DEPRECATED_LOCKED_TEMPLATES
+    else:
+        allowed_template_ids = set(TEMPLATE_SETS[args.template_set])
+    sink = ItemSink(sample, asset_dir, args.max_per_template, rng, allowed_template_ids)
     drop_categories = {x.strip() for x in args.drop_categories.split(",") if x.strip()}
-    objs = filter_objects(sample, args.min_conf, args.min_area, args.require_valid, drop_categories)
+    objs = filter_objects(sample, args.min_conf, args.min_area, args.require_valid, drop_categories, args.max_area_frac)
     objs_depth = [o for o in objs if o.depth is not None]
     objs_xyz = [o for o in objs if o.xyz is not None]
     objs_3d_size = [o for o in objs if o.volume is not None and o.volume > 0]
@@ -792,10 +832,14 @@ def gen_T001_T002_T003_T004_T006_T007_T008(sink: ItemSink, rng: random.Random, o
 
 def gen_T011_T012_T013_T014_T015_T020(sink: ItemSink, rng: random.Random, objs: List[Obj],
                                       present: List[str], absent: List[str], counts: Counter[str]) -> None:
-    # T011 count one category.
+    # T011 count one category, rewritten as interval selection.
+    count_bins = [(0, 1, "0 个"), (1, 2, "1 个"), (2, 3, "2 个"), (3, 5, "3–4 个"), (5, float("inf"), "5 个及以上")]
+    count_opts = as_options([b[2] for b in count_bins])
     for cat in rng.sample(present, min(len(present), sink.max_per_template)):
-        sink.add("T011", f"当前图像中可见的 {cat} 有几个？请输出整数。", counts[cat], "number",
-                 fields=["objects.category"], gt={"category": cat, "count": counts[cat]})
+        ans_label = interval_label(counts[cat], count_bins)
+        ans = answer_letter(count_opts, ans_label)
+        sink.add("T011", f"当前图像中可见的 {cat} 数量属于哪个区间？", ans, "single_choice", count_opts,
+                 fields=["objects.category"], gt={"category": cat, "count": counts[cat], "bin": ans_label})
 
     # T012 count comparison.
     cats = [c for c in present if counts[c] > 0]
@@ -969,9 +1013,9 @@ def gen_T036_to_T045(sink: ItemSink, rng: random.Random, objs_depth: List[Obj], 
         ans = "是" if a.depth < b.depth else "否"
         fields = ["objects.depth_median", "objects.bbox_2d.xyxy"]
         gt = {"A_depth_median": a.depth, "B_depth_median": b.depth, "definition": "smaller depth_median = closer to camera"}
-        sink.add("T036", "根据标注图与深度 GT，物体 A 是否比物体 B 更靠近相机？", ans, "yes_no", {"A": "是", "B": "否"},
+        sink.add("T036", "观察标注图，物体 A 是否比物体 B 更靠近相机？", ans, "yes_no", {"A": "是", "B": "否"},
                  [a, b], fields, gt, [a, b], ["A", "B"], {"depth_margin_m": round(abs(a.depth - b.depth), 3)})
-        sink.add("T043", "根据深度 GT，判断“物体 A 位于物体 B 前方”是否成立。", ans, "yes_no", {"A": "是", "B": "否"},
+        sink.add("T043", "观察标注图，物体 A 是否比物体 B 更靠近相机？", ans, "yes_no", {"A": "是", "B": "否"},
                  [a, b], fields, gt, [a, b], ["A", "B"], {"depth_margin_m": round(abs(a.depth - b.depth), 3)})
         if all(not sink.can_add(t) for t in ["T036", "T043"]):
             break
@@ -1013,7 +1057,7 @@ def gen_T036_to_T045(sink: ItemSink, rng: random.Random, objs_depth: List[Obj], 
     for o in rng.sample(objs_depth, min(len(objs_depth), sink.max_per_template * 2)):
         lab = interval_label(float(o.depth), DEPTH_BINS)
         opts, ans = shuffle_options_with_answer(rng, [x[2] for x in DEPTH_BINS], lab)
-        sink.add("T040", "根据深度 GT，标注物体 A 到相机的深度属于哪个区间？", ans, "single_choice", opts,
+        sink.add("T040", "观察标注图，标注物体 A 到相机的距离属于哪个区间？", ans, "single_choice", opts,
                  [o], ["objects.depth_median"], {"depth_median": o.depth}, [o], ["A"])
 
     # T041 category threshold existence.
@@ -1131,27 +1175,30 @@ def gen_T056_T057_T060_T061_T063(sink: ItemSink, rng: random.Random, objs_xyz: L
 
 
 def gen_T082_T084_T090(sink: ItemSink, rng: random.Random, present: List[str], absent: List[str]) -> None:
-    if present and absent:
-        for _ in range(sink.max_per_template):
-            p = rng.choice(present)
-            n = rng.choice(absent)
-            true_statement = f"当前图像中可以看到 {p}"
-            conflict_statement = f"当前图像中可以看到 {n}"
-            unsupported_statement = f"当前图像中的 {p} 正在向前运动"
-            labels = [true_statement, conflict_statement, unsupported_statement]
-            answer_label = unsupported_statement
-            opts, ans = shuffle_options_with_answer(rng, labels, answer_label)
-            sink.add("T082", "下列哪一项描述无法由当前单张图像和已有 GT 字段直接支持？", ans, "single_choice", opts,
-                     fields=["objects.category", "objects.bbox_2d", "objects.depth_median"],
-                     gt={"unsupported_reason": "static single image has no motion/action-state field"})
+    """Strict replacement for the old evidence-insufficient templates.
 
-    for cat in rng.sample(absent, min(len(absent), sink.max_per_template)):
-        sink.add("T084", f"不在可见物体列表中的 {cat} 是否应该作为当前图像的可见类别答案？", "否", "yes_no", {"A": "是", "B": "否"},
-                 fields=["objects.category"], gt={"category": cat, "present": False})
-        sink.add("T090", f"问题“当前图像中不可见的 {cat} 距离相机多远？”是否可回答？", "不可回答", "three_way",
-                 {"A": "可回答", "B": "不可回答", "C": "无法确定题意"},
-                 fields=["objects.category", "objects.depth_median"], gt={"category": cat, "present": False, "reason": "no visible object instance, therefore no object-level depth_median"})
-
+    T082/T084/T090 are hard-locked by DEPRECATED_LOCKED_TEMPLATES because they
+    introduce unanswerable/meta-question behavior. This function now only emits
+    T085 evidence-conflict items when T085 is enabled.
+    """
+    if not sink.can_add("T085") or not present:
+        return
+    options_text: List[str] = []
+    true_cats = rng.sample(present, min(2, len(present)))
+    for cat in true_cats:
+        options_text.append(f"当前图像中可见 {cat}")
+    if absent:
+        wrong_cat = rng.choice(absent)
+        conflict = f"当前图像中可见 {wrong_cat}"
+    else:
+        wrong_cat = rng.choice(present)
+        conflict = f"当前图像中没有可见的 {wrong_cat}"
+    labels = options_text + [conflict]
+    rng.shuffle(labels)
+    opts = as_options(labels)
+    ans = answer_letter(opts, conflict)
+    sink.add("T085", "下列哪一项与当前图像中的可见物体类别证据冲突？", ans, "single_choice", opts,
+             fields=["objects.category"], gt={"visible_categories": present, "conflict_description": conflict})
 
 def gen_T091_T095_T096_T097_T099_T100(sink: ItemSink, rng: random.Random, objs_depth: List[Obj], counts: Counter[str]) -> None:
     if len(objs_depth) < 2:
@@ -1161,7 +1208,7 @@ def gen_T091_T095_T096_T097_T099_T100(sink: ItemSink, rng: random.Random, objs_d
         if a.depth is None or b.depth is None or abs(a.depth - b.depth) < 0.35:
             continue
         ans = "是" if a.depth < b.depth else "否"
-        sink.add("T091", "在当前图像的深度层次中，标注物体 A 是否比标注物体 B 更靠前？", ans, "yes_no", {"A": "是", "B": "否"},
+        sink.add("T091", "观察标注图，物体 A 是否比物体 B 更靠近相机？", ans, "yes_no", {"A": "是", "B": "否"},
                  [a, b], ["objects.depth_median"], {"A_depth_median": a.depth, "B_depth_median": b.depth}, [a, b], ["A", "B"])
         if not sink.can_add("T091"):
             break
@@ -1284,14 +1331,17 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--report", default=None, help="Optional generation report JSON. Default: <output_stem>_report.json")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--max-per-template", type=int, default=8)
+    p.add_argument("--template-set", choices=sorted(TEMPLATE_SETS), default="strict_core", help="Agent-safe template set. Default strict_core avoids unanswerable, raw numeric, hidden-metadata, and GT-leakage templates.")
+    p.add_argument("--template-ids", default="", help="Optional comma-separated allowlist. Deprecated locked templates are still blocked.")
     p.add_argument("--min-conf", type=float, default=0.25)
     p.add_argument("--min-area", type=int, default=80)
+    p.add_argument("--max-area-frac", type=float, default=0.35, help="Drop objects whose visible mask occupies more than this image fraction; set <=0 to disable.")
     p.add_argument("--xy-margin-frac", type=float, default=0.06, help="Minimum centroid separation for 2D relation questions, as fraction of image width/height.")
     p.add_argument("--require-valid", action=argparse.BooleanOptionalAction, default=True, help="Use valid_for_question_generation flag when present.")
     p.add_argument("--include-depth", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--include-3d", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--negative-categories", default=",".join(DEFAULT_NEGATIVE_CATEGORIES), help="Comma-separated absent-category distractor pool.")
-    p.add_argument("--drop-categories", default="", help="Comma-separated categories to exclude from generation, e.g. sky,clouds,vegetation.")
+    p.add_argument("--drop-categories", default="sky,cloud,clouds,road,ground,terrain,floor,ceiling,wall", help="Comma-separated categories to exclude from generation, e.g. sky,clouds,vegetation.")
     return p.parse_args()
 
 

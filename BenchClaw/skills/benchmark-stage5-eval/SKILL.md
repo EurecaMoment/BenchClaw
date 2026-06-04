@@ -12,6 +12,17 @@
 - 每个节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
 - 继承总入口和 pipeline 的长任务 `tmux` 执行协议：任何下载、检索、外部工具调用、批处理、模型推理、训练、仿真、清洗、标注或全量评测等可能长时间运行的命令，必须在 `tmux` 会话中执行、写入 `nodes/<node-id>/run_logs/` 并定期监控；未使用 `tmux` 必须在 `NODE_REPORT.md` 说明短任务依据和实际耗时。
 - 每个编号数据必须写入：`artifacts/<data-id>/`。
+- Stage5 完成必须有真实预测或真实模型调用来源，且输出 `evaluation_report.md`、`metrics.json`、`prediction_audit.jsonl`、`error_taxonomy.jsonl` 均非空；不得只用 Stage4 原始 artifact、自然语言摘要或占位目录冒充评测。
+- 在写 `stage5/_STAGE_DONE.json` 或向 pipeline 返回 `PASS` 前，必须运行可执行质量门：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage stage5 \
+  --report "$WORKSPACE_ROOT/stage5/stage5_gate_report.json"
+```
+
+只有该命令退出码为 0 且报告 `status: PASS` 时，才允许写 `_STAGE_DONE.json`；报告路径和摘要必须写入 `_stage_report.md` 与 `_STAGE_DONE.json.quality_gate.validator`。若 validator 失败，必须写 `BLOCKED.json` 与 `BLOCKED.md`，不得写 pipeline 完成标记。
 - 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 
 ## 输入
@@ -31,7 +42,7 @@
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
 3. 对 ready 节点调用 `skills/<node-id>/SKILL.md`。
 4. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
-5. 本 stage 只在所有 terminal artifacts 完成且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
+5. 本 stage 只在所有 terminal artifacts 完成且 `validate_stage_gate.py --stage stage5` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据
 

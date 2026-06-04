@@ -42,6 +42,7 @@ BENCHCLAW_ROOT/simulatorCards
 3. 只要 tmux 会话仍存在，就必须每 15 秒检查一次采集状态；任一活跃会话两次检查间隔不得超过 15 秒。检查内容至少包括会话是否存活、最近 pane 输出、最近 100 行日志、场景/step/观测媒体/状态/动作/GT 已落盘计数。
 4. 每次检查必须追加写入 `monitoring_log_path`，记录 `timestamp`、`tmux_session_name`、`dag_node_id`、`status`、`log_tail_summary`、`artifact_counts`；直到 `tmux has-session` 显示会话结束为止。
 5. 会话结束后必须读取最终日志和 `EXIT_CODE`，校验 per-simulator 输出目录、观测媒体、state/action logs、privileged GT、manifest 和样本计数；缺少 15 秒监控记录、最终日志或真实运行产物时，不得写 `DONE.json`。
+6. 任何一次采集如果没有真实图像或渲染帧落盘，都只能算 transient failure，必须立即回到采集循环重新尝试；不得把零图像结果当作完成、阻塞终局或可接受空结果，也不得写 `DONE.json`、`BLOCKED.json` 作为这次零图像尝试的终局。
 
 ## 每仿真器并行 work unit
 
@@ -87,6 +88,8 @@ skills/simulator-collection-analysis/subskills/gt-materialization/SKILL.md
 
 每个待执行 work unit 必须真实运行对应仿真器采集数据，不能只读取仿真器卡、写占位文件、登记外部路径、复述计划或使用未执行产生的样例数据。
 
+如果某次执行后观测图像、渲染帧或可解码媒体计数为 0，这不是成功结果，也不是可以退出的阻塞结果；必须继续保持 work unit 身份，更新 retry 计数、时间戳和 run 记录，再次启动采集，直到至少一个真实图像写入 `observations/` 和 `media_manifest.jsonl`。在出现真实图像之前，不得进入完成态。
+
 每个 work unit 必须记录并物化：
 
 - 实际执行命令或 API 调用入口
@@ -94,8 +97,9 @@ skills/simulator-collection-analysis/subskills/gt-materialization/SKILL.md
 - 运行日志、退出状态和失败堆栈，如有
 - 本次运行生成的观测媒体、状态日志、动作记录和 privileged GT
 - 从运行产物到 workspace 文件的映射
+- 零图像重试历史、每次尝试的媒体计数、最终成功运行号和累计重试次数
 
-若仿真器无法启动、任务无法执行、GT 无法从 privileged state 或可验证计算中导出，必须阻塞；不可改用未授权数据、历史缓存、手写 GT 或模拟输出替代。只有当 `stage2_execution_plan.yaml` 和仿真器卡都明确允许使用某个既有 replay/recording 作为执行输入时，才可读取 replay，但仍必须实际运行 replay 采集流程并记录命令与日志。
+若仿真器卡缺失、计划无效或没有可调用入口，必须阻塞；但只要已经进入运行采集流程，启动失败、任务失败或本轮无图像都不得作为零图像终局退出，必须记录失败并继续重试采集。不可改用未授权数据、历史缓存、手写 GT 或模拟输出替代。只有当 `stage2_execution_plan.yaml` 和仿真器卡都明确允许使用某个既有 replay/recording 作为执行输入时，才可读取 replay，但仍必须实际运行 replay 采集流程并记录命令与日志。
 
 ## Per-simulator 输出目录
 
@@ -129,7 +133,7 @@ artifacts/data_16_simulator_collection_bundle/simulators/<simulator_id>/<task_fa
 2. 根据 `stage2_execution_plan.yaml` 确定需要真实执行的仿真器和任务族。
 3. 对每个待执行仿真器和任务族真实运行仿真器，采集观测、状态、动作、场景配置和 privileged GT。
 4. 在各自 per-simulator 目录中物化观测媒体、媒体 manifest、状态日志、GT、随机种子、环境版本、执行命令和运行日志。
-5. 采集失败必须记录失败原因与复现命令，不可改用未授权数据、历史缓存或占位产物替代。
+5. 如果采集结果中没有真实图像或渲染帧，不能结束当前 work unit；必须记录本次失败尝试并立刻重试。采集失败必须记录失败原因与复现命令，不可改用未授权数据、历史缓存或占位产物替代。
 6. 所有 work unit 完成后，串行汇总 per-simulator 结果到 bundle 根目录。
 
 ## 汇总输出

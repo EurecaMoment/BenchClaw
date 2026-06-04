@@ -23,7 +23,30 @@
       "type": "array"
     },
     "quality_gate": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "validator": {
+          "type": "object",
+          "required": [
+            "command",
+            "report_path",
+            "status"
+          ],
+          "properties": {
+            "command": {
+              "type": "string"
+            },
+            "report_path": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "PASS"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -345,6 +345,9 @@ branches:
         simulator_id: <simulator_id>
         task_family: <task_family>
         card_skill: BENCHCLAW_ROOT/simulatorCards/<simulator_id>/SKILL.md
+        requires_real_images: true
+        zero_image_retry_policy: retry_until_at_least_one_image
+        zero_image_may_complete: false
         dag_nodes:
           - simulator::<simulator_id>::<task_family>::data-acquisition
           - simulator::<simulator_id>::<task_family>::gt-materialization
@@ -377,7 +380,7 @@ status: planned
 
 每个 `work_units[]` 条目还必须包含 `dag_nodes`，且 `dag_nodes` 必须能在 `parallel_dag.nodes[]` 中逐一找到同名节点。每个可执行 `parallel_dag.nodes[]` 条目必须包含 `dag_node_id`、`category`、`work_unit_id`、`parent_category_node`、`skill_path`、`subskill_path`、`card_skill`、`parents`、`output_dir`、`tmux_required: true`、`monitor_interval_seconds: 15`、`monitor_until: session_finished`、`tmux_session_name`、`log_path`、`monitoring_log_path`；summary barrier 节点必须包含 `barrier: serial_summary` 且不得声明 `subskill_path`。
 
-仿真器 work unit 还必须包含 `simulator_id`、`task_family`、`requires_real_run: true`、`run_outputs_required: [observations, state_logs, actions, privileged_gt, run_logs]`。
+仿真器 work unit 还必须包含 `simulator_id`、`task_family`、`requires_real_run: true`、`requires_real_images: true`、`zero_image_retry_policy: retry_until_at_least_one_image`、`zero_image_may_complete: false`、`run_outputs_required: [observations, state_logs, actions, privileged_gt, run_logs]`。计划不得允许仿真器以 0 张图像完成；若一轮采集没有图像，执行者必须继续重试该 work unit。
 
 ## 显式并行 DAG 调度规则
 
@@ -388,6 +391,7 @@ status: planned
 5. 若执行者无法按 `parallel_dag` 并行调度，必须在 `NODE_REPORT.md` 中记录无法并行的具体资源或依赖原因；不得把“未写出显式 DAG”作为串行执行理由。
 6. 每个可执行采集节点启动时必须使用计划中的 `tmux_session_name` 和 `log_path` 后台执行；启动后必须每 15 秒检查一次该 tmux 会话的采集状态，循环直到 `tmux has-session -t <session>` 显示会话结束。每次检查都要记录时间戳、会话是否仍在运行、`tmux capture-pane -pt <session>` 最近输出摘要、`tail -n 100 <log_path>` 摘要到 `monitoring_log_path`。
 7. 采集节点结束后必须读取最后日志、确认退出码或 `EXIT_CODE` 标记、检查输出 manifest 与样本计数；缺少 15 秒监控记录、日志、退出状态或真实输出时，不得释放后续 DAG 节点。
+8. 对仿真器 data-acquisition 节点，若检查到图像/渲染帧计数为 0，不得释放 `gt-materialization`，不得释放 `simulator::summary`，必须重新启动该 work unit 的采集尝试并继续监控，直到至少一个真实图像落盘。
 
 ## 阻塞条件
 

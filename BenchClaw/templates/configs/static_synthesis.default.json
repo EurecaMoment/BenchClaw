@@ -1,18 +1,30 @@
 {
   "tool": "tools/synthesize_static_vlm_benchmark.py",
   "default_args": {
+    "template_set": "strict_core",
     "max_per_template": 8,
     "min_conf": 0.25,
     "min_area": 80,
     "xy_margin_frac": 0.06,
     "require_valid": true,
     "include_depth": true,
-    "include_3d": true
+    "include_3d": false,
+    "max_area_frac": 0.35,
+    "drop_categories": "sky,cloud,clouds,road,ground,terrain,floor,ceiling,wall"
   },
+  "hard_constraints": [
+    "no_three_way_unanswerable",
+    "numeric_answers_as_intervals_only",
+    "deprecated_locked_templates_never_generated",
+    "no_gt_leakage_in_question",
+    "overlay_required_for_instance_questions",
+    "drop_background_or_overlarge_regions_by_default"
+  ],
+  "template_registry": "template_library/benchclaw_fixed_template_registry.yaml",
   "recommended_quality_checks": [
+    "python tools/validate_strict_template_library.py",
     "schema validation against schemas/eval_item.schema.json",
-    "manual spot-check of generated overlay images",
-    "capability/template distribution inspection from generated_report.json",
-    "drop or flag items with missing evidence_ref or empty evidence_fields"
+    "inspect generated_report.json for deprecated template ids = 0",
+    "manual spot-check overlay images for A/B/C/D visibility"
   ]
 }

@@ -61,6 +61,23 @@
       "output_artifacts": [
         "data_16_simulator_collection_bundle"
       ],
+      "required_output_files": [
+        "artifacts/data_16_simulator_collection_bundle/media_manifest.jsonl",
+        "artifacts/data_16_simulator_collection_bundle/state_logs.jsonl",
+        "artifacts/data_16_simulator_collection_bundle/actions.jsonl",
+        "artifacts/data_16_simulator_collection_bundle/privileged_gt.jsonl",
+        "artifacts/data_16_simulator_collection_bundle/scenario_manifest.json"
+      ],
+      "required_output_directories": [
+        "artifacts/data_16_simulator_collection_bundle/observations",
+        "artifacts/data_16_simulator_collection_bundle/simulators"
+      ],
+      "quality_gate": [
+        "At least one real simulator image or render frame is present, non-empty, and decodable before DONE.json may be written.",
+        "If any simulator acquisition attempt yields zero images, the work unit retries acquisition and does not enter DONE or terminal BLOCKED state.",
+        "media_manifest.jsonl records the workspace path, sha256, dimensions, decode_status, simulator_id, task_family, scenario_id, seed, and run_id for every collected image.",
+        "No placeholder media, historical cache, hand-written media manifest, or unexecuted sample output may satisfy data_16."
+      ],
       "required_node_files": [
         "USED_INPUTS.json",
         "DONE.json",

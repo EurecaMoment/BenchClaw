@@ -15,6 +15,7 @@
 - `real-image-collection-analysis` 必须运行时动态枚举 `BENCHCLAW_ROOT/realDataCards` 下的直接子文件夹，并按每个文件夹内的 `SKILL.md` 作为独立真实图片数据卡处理；不得硬编码数据集名称或修改数据卡目录。
 - `existing-benchmark-collection-analysis` 必须运行时动态枚举 `BENCHCLAW_ROOT/benchmarkDatasetCards` 下的直接子文件夹，并按每个文件夹内的 `SKILL.md` 作为独立 benchmark 数据集卡处理；不得硬编码数据集名称或修改数据集卡目录。
 - `simulator-collection-analysis` 必须运行时动态枚举 `BENCHCLAW_ROOT/simulatorCards` 下的直接子文件夹，并按每个文件夹内的 `SKILL.md` 作为独立仿真器卡处理；计划要求执行的仿真器必须真实运行并采集本次运行产生的观测、状态、动作和 GT，不得硬编码仿真器名称或修改仿真器卡目录。
+- 对仿真器 work unit，任何一次采集如果没有真实图像/渲染帧落盘，不能被视为完成、失败退出或可阻塞终止；必须立即回到采集循环重新尝试，直到至少有一个真实图像被写入 `observations/` 和 `media_manifest.jsonl`。零图像结果只能算一次无效尝试，不能写 `DONE.json`、不能写 `BLOCKED.json` 作为终局，也不能改用占位图、历史缓存、手写媒体或模型幻觉替代。
 - `stage2-plan-generation` 必须在 `stage2_execution_plan.yaml` 中固化三类数据源的唯一 card 根目录、唯一消费节点、唯一输出 bundle 和同一并行 ready group：真实图片只能来自 `BENCHCLAW_ROOT/realDataCards` 并进入 `data_14_real_image_collection_bundle`，已有 benchmark 只能来自 `BENCHCLAW_ROOT/benchmarkDatasetCards` 并进入 `data_15_existing_benchmark_collection_bundle`，仿真器只能来自 `BENCHCLAW_ROOT/simulatorCards` 并进入 `data_16_simulator_collection_bundle`；任何跨类别读取、错分输出或未进入并行 ready group 的计划都必须 BLOCKED。
 - `stage2-plan-generation` 必须在 `stage2_execution_plan.yaml` 中写出 `parallel_dag.nodes[]` 与 `parallel_dag.edges[]`，把每个实际发现的数据源展开成精确 subskill 调用节点；执行者必须按该显式 DAG 的 ready set 并行运行，不得把各数据源隐式串行化。
 - 三类数据源的规整与物化都必须遵守 `templates/collection_bundle_contract.md`：媒体真实落盘，图片必须可解码并记录尺寸/sha256，样本必须保留来源、原始字段、关键标签或 GT，不得写 placeholder、空数据或虚假数据。

@@ -16,6 +16,7 @@
 4. 每条样本记录必须能追溯到数据卡/仿真器卡、原始样本 ID、原始路径或原始记录；若来源不可追溯，不能进入有效样本。
 5. 允许字段宽松扩展，但不得丢失关键内容。无法归入标准字段的来源字段必须进入 `raw_record`、`source_fields` 或 `extra_metadata`。
 6. 每个 per-dataset 或 per-simulator 目录必须先独立产出完整文件；根目录汇总只能在所有 work unit 完成后串行生成。
+7. 对 `data_16_simulator_collection_bundle`，零图像/零渲染帧不是合法空结果；任何仿真器 work unit 在没有真实图像落盘时必须继续重试采集，不能写完成态，不能用 placeholder、历史缓存或手写媒体替代。
 
 ## 统一目录
 
@@ -113,5 +114,6 @@ DATASET_REPORT.md or SIMULATOR_REPORT.md
 - 每个样本引用的 `media_id` 都存在于 `media_manifest.jsonl`。
 - 每个 `workspace_path` 指向真实存在且非空的文件。
 - 图片文件可以解码，尺寸与 manifest 一致。
+- 对仿真器 bundle，`observations/` 与 `media_manifest.jsonl` 至少包含一个真实、非空、可解码的图像或渲染帧；若计数为 0，必须继续重试采集，不得写 `DONE.json`。
 - source manifest 覆盖动态发现的所有 work unit、处理状态、输入卡片路径、输出目录、阻塞原因和汇总计数。
 - 关键字段覆盖情况已记录：原始 ID、媒体、文本/问题、标签/GT、任务类型、split、许可或使用边界、来源路径。

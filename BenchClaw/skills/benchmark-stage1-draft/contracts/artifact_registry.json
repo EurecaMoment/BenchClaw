@@ -38,6 +38,21 @@
       "consumers": [
         "literature-review",
         "benchmark-draft-generation"
+      ],
+      "required_files": [
+        "literature_index.jsonl",
+        "download_manifest.jsonl",
+        "paper_checksums.json",
+        "reading_notes.md"
+      ],
+      "required_nonempty_directories": [
+        "papers",
+        "extracted_text"
+      ],
+      "hard_rules": [
+        "Every paper used downstream must have a non-empty local PDF/HTML or official full-text HTML file under papers/.",
+        "Every used paper must have extracted readable text under extracted_text/ and sha256/size/path recorded in paper_checksums.json.",
+        "Search results, abstracts, metadata pages, second-hand blogs, model memory, fake titles, fake DOI/arXiv IDs, and uncited snippets cannot satisfy this artifact."
       ]
     },
     {
@@ -73,6 +88,16 @@
       "consumers": [
         "capability-dimension-planning",
         "benchmark-draft-generation"
+      ],
+      "required_files": [
+        "review.md",
+        "citation_audit.jsonl",
+        "used_papers.jsonl"
+      ],
+      "hard_rules": [
+        "Every factual literature claim in review.md must be traceable through citation_audit.jsonl to a downloaded and read local paper from data_04.",
+        "Unavailable, failed-download, unread, abstract-only, or metadata-only records cannot be used as literature evidence.",
+        "If downloaded/read evidence is insufficient, literature-review must write BLOCKED.json and BLOCKED.md instead of fabricating citations."
       ]
     },
     {

@@ -1,8 +1,30 @@
 {
   "stage": "stage5",
+  "executable_gate": {
+    "command": "python3 BENCHCLAW_ROOT/skills/validate_stage_gate.py --workspace-root WORKSPACE_ROOT --stage stage5 --report WORKSPACE_ROOT/stage5/stage5_gate_report.json",
+    "required_before": [
+      "stage5/_STAGE_DONE.json",
+      "pipeline Stage5 PASS",
+      "PIPELINE_DONE.json"
+    ]
+  },
   "artifacts": [
     {
-      "id": "data_23_evaluation_report"
+      "id": "data_23_evaluation_report",
+      "required_files": [
+        "evaluation_report.md",
+        "metrics.json",
+        "prediction_audit.jsonl",
+        "error_taxonomy.jsonl"
+      ],
+      "nonempty_jsonl": [
+        "prediction_audit.jsonl",
+        "error_taxonomy.jsonl"
+      ],
+      "provenance_required_in": [
+        "stage5/nodes/full-evaluation/USED_INPUTS.json",
+        "stage5/nodes/full-evaluation/NODE_REPORT.md"
+      ]
     }
   ]
 }

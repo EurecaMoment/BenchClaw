@@ -1,0 +1,1154 @@
+version: strict_fixed_v1
+purpose: BenchClaw agent-safe template registry; deprecated templates are locked and never selected.
+hard_constraints:
+  no_three_way_unanswerable: true
+  numeric_answers_must_be_interval_choices: true
+  no_hidden_metadata_outputs: true
+  no_gt_field_names_in_question: true
+  candidate_options_must_be_unique: true
+  all_instance_questions_require_overlay_labels: true
+  all_answers_must_be_unique_or_set_defined: true
+template_sets:
+  strict_core:
+    - T001
+    - T002
+    - T006
+    - T008
+    - T012
+    - T013
+    - T014
+    - T015
+    - T021
+    - T022
+    - T023
+    - T024
+    - T030
+    - T031
+    - T045
+    - T085
+  strict_depth:
+    - T001
+    - T002
+    - T006
+    - T008
+    - T012
+    - T013
+    - T014
+    - T015
+    - T021
+    - T022
+    - T023
+    - T024
+    - T030
+    - T031
+    - T036
+    - T037
+    - T038
+    - T039
+    - T040
+    - T041
+    - T044
+    - T045
+    - T085
+    - T091
+    - T092
+    - T094
+    - T095
+    - T096
+    - T097
+  strict_all_supported:
+    - T001
+    - T002
+    - T003
+    - T004
+    - T005
+    - T006
+    - T007
+    - T008
+    - T009
+    - T010
+    - T011
+    - T012
+    - T013
+    - T014
+    - T015
+    - T016
+    - T017
+    - T018
+    - T019
+    - T021
+    - T022
+    - T023
+    - T024
+    - T025
+    - T026
+    - T027
+    - T028
+    - T029
+    - T030
+    - T031
+    - T032
+    - T033
+    - T034
+    - T035
+    - T036
+    - T037
+    - T038
+    - T039
+    - T040
+    - T041
+    - T044
+    - T045
+    - T046
+    - T047
+    - T048
+    - T049
+    - T050
+    - T051
+    - T052
+    - T053
+    - T054
+    - T055
+    - T056
+    - T057
+    - T059
+    - T060
+    - T062
+    - T063
+    - T065
+    - T066
+    - T067
+    - T068
+    - T070
+    - T071
+    - T072
+    - T073
+    - T074
+    - T075
+    - T076
+    - T077
+    - T078
+    - T079
+    - T080
+    - T085
+    - T086
+    - T087
+    - T088
+    - T089
+    - T091
+    - T092
+    - T094
+    - T095
+    - T096
+    - T097
+    - T098
+deprecated_locked:
+  - T020
+  - T042
+  - T043
+  - T058
+  - T061
+  - T064
+  - T069
+  - T081
+  - T082
+  - T083
+  - T084
+  - T090
+  - T093
+  - T099
+  - T100
+templates:
+  - template_id: T001
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "当前图像中是否可见 `{object_category}`？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T002
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT2_MULTI_SELECT
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "从候选项中选择当前图像中可见的所有物体类别。"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T003
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "按可见 mask 面积合计，当前图像中主要可见的物体类别是哪一个？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T004
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "按可见 mask 面积合计，当前图像中面积最大的可见物体类别是哪一个？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T005
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "在标注图中，选择与给定 `{object_category}` 实例对应的标注区域。"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T006
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "当前图像中是否同时可见 `{category_A}` 和 `{category_B}`？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T007
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "下列哪一项描述与当前图像中可见的物体类别证据一致？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T008
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT4_INTERVAL_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "当前图像中可见物体类别数量属于哪个区间？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T009
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在给定多帧图像中，`{object_category}` 是否至少可见过一次？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T010
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选帧中，哪一帧是 `{object_category}` 首次可见的帧？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T011
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT4_INTERVAL_CHOICE
+    primary_capability: A2_COUNTING_AND_SET_SIZE
+    fixed_question_template: "当前图像中可见的 `{object_category}` 数量属于哪个区间？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T012
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A2_COUNTING_AND_SET_SIZE
+    fixed_question_template: "当前图像中 `{category_A}` 的可见实例数量是否多于 `{category_B}`？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T013
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A2_COUNTING_AND_SET_SIZE
+    fixed_question_template: "当前图像中哪类物体的可见实例数量最多？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T014
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A2_COUNTING_AND_SET_SIZE
+    fixed_question_template: "将候选物体类别按当前图像中的可见实例数量从多到少排序。"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T015
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT4_INTERVAL_CHOICE
+    primary_capability: A2_COUNTING_AND_SET_SIZE
+    fixed_question_template: "当前图像中可见物体实例总数属于哪个区间？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T016
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选帧中，哪一帧的可见物体实例总数最多？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T017
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在给定多帧图像中，`{object_category}` 的可见实例数量是否发生变化？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T018
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择 `{object_category}` 可见实例数量最多的图像。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T019
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "判断描述“第 `{i}` 帧中的 `{object_category}` 可见实例数量多于第 `{j}` 帧”是否正确。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T020
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：不再输出每类裸数字计数；使用 T011/T015 区间题或 T002/T012 代替。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T011/T015"
+  - template_id: T021
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图的图像平面坐标中，物体 A 是否位于物体 B 的左侧？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T022
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图的图像平面坐标中，物体 A 是否位于物体 B 的右侧？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T023
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图的图像平面坐标中，物体 A 是否位于物体 B 的上方？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T024
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图的图像平面坐标中，物体 A 是否位于物体 B 的下方？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T025
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在候选标注物体中，哪个物体的中心点最靠近图像中心？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T026
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在候选标注物体中，哪个物体的中心点位于图像最左侧？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T027
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在候选标注物体中，哪个物体的中心点位于图像最右侧？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T028
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在候选标注物体中，哪个物体的中心点位于图像最上方？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T029
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在候选标注物体中，哪个物体的中心点位于图像最下方？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T030
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "标注图中的物体 A 位于图像九宫格的哪个区域？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T031
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "从候选区域中选择包含标注物体 A 中心点的区域。"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T032
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图中，物体 A 与物体 B 的可见外接框是否重叠？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T033
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "在标注图中，物体 A 与物体 B 的可见外接框是否相邻或接近？"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T034
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "将候选标注物体按图像中从左到右排序。"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T035
+    status: STATIC_OPTIONAL_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A3_IMAGE_PLANE_SPATIAL
+    fixed_question_template: "将候选标注物体按图像中从上到下排序。"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T036
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "观察标注图，物体 A 是否比物体 B 更靠近相机？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T037
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注物体中，哪个物体离相机最近？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T038
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注物体中，哪个物体离相机最远？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T039
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "将候选标注物体按从近到远排序。"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T040
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT4_INTERVAL_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "观察标注图，标注物体 A 到相机的距离属于哪个区间？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T041
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "当前图像中是否存在距离相机小于 `{threshold}` 的 `{object_category}`？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T042
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：多实例类别的“整体更靠近”口径不稳定；用 T036/T037/T040 替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T036/T037/T040"
+  - template_id: T043
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：“前方”措辞歧义；用 T036 或 T091 的“更靠近相机”替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T036/T091"
+  - template_id: T044
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注区域中，选择与“距离相机最近的 `{object_category}` 实例”对应的区域。"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T045
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A8_COMPLEX_CONSTRAINT_CONSISTENCY
+    fixed_question_template: "当前图像中，距离相机最近的标注物体是否属于 `{object_category}`？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T046
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选帧中，哪一帧中相机/机器人/自车距离指定 `{object_category}` 实例最近？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T047
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "从第 `{i}` 帧到第 `{j}` 帧，机器人/自车是否在接近指定 `{object_category}` 实例？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T048
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "从第 `{i}` 帧到第 `{j}` 帧，指定 `{object_category}` 与相机的距离变化趋势是什么？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T049
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "判断第 `{i}` 帧中，指定物体 A 是否比指定物体 B 更接近机器人/自车。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T050
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "将候选帧按机器人/自车到指定目标物体的距离从近到远排序。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T051
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在第 `{frame_id}` 帧，指定物体 A 位于机器人/自车身体坐标系的哪个相对方位？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T052
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在第 `{frame_id}` 帧，指定物体 A 是否位于机器人/自车身体坐标系前方？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T053
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在第 `{frame_id}` 帧，指定物体 A 是否位于机器人/自车身体坐标系左侧？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T054
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在候选物体中，哪个物体在机器人/自车身体坐标系中最靠前？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T055
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在候选物体中，哪个物体在机器人/自车身体坐标系中最靠左？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T056
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT4_INTERVAL_CHOICE
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在相机坐标系下，标注物体 A 与标注物体 B 的三维质心距离属于哪个区间？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T057
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在相机坐标系下，标注物体 A 是否比标注物体 B 更靠近标注物体 C？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T058
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：指定目标点来源容易虚构；用目标物体实例作为参照。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T057"
+  - template_id: T059
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在三维坐标中，标注物体 A 的垂直位置是否高于标注物体 B？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T060
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A5_VISIBLE_SCALE_3D_SIZE
+    fixed_question_template: "在候选标注物体中，哪个物体的可见三维包围盒体积最大？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T061
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：3D bbox y 方向尺寸不是自然评测语义；用 T060/T063 替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T060/T063"
+  - template_id: T062
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A5_VISIBLE_SCALE_3D_SIZE
+    fixed_question_template: "标注物体 A 的可见三维包围盒体积是否大于标注物体 B？"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T063
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A5_VISIBLE_SCALE_3D_SIZE
+    fixed_question_template: "将候选标注物体按可见三维包围盒体积从大到小排序。"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T064
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：世界坐标左侧不适合普通图文评测；用图像平面左右或身体坐标左右模板替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T021/T022/T053"
+  - template_id: T065
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT6_STRUCTURED_MATCH
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "选择标注物体 A 相对机器人/自车的方位类别，并选择其距离区间。"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T066
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "机器人/自车从第一帧到最后一帧整体向哪个坐标方向移动？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T067
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "机器人/自车在序列中是否发生超过阈值的位移？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T068
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选相邻帧段中，哪一段机器人/自车位移最大？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T069
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：按帧序号排序容易泄漏时间元数据，不能作为视觉评测模板。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T075/T076/T080"
+  - template_id: T070
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在序列中，`{category_A}` 首次可见是否早于 `{category_B}`？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T071
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选物体类别中，哪个类别在序列中最早首次可见？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T072
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选物体类别中，哪个类别在序列中最晚首次可见？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T073
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "`{object_category}` 是否在整个序列的每一帧中都可见？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T074
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "`{object_category}` 是否在序列中出现过由可见到不可见的变化？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T075
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择 `{object_category}` 首次可见的图像。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T076
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择 `{object_category}` 最后一次可见的图像。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T077
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "从第 `{i}` 帧到第 `{j}` 帧，目标物体与机器人/自车的距离是变近、变远还是基本不变？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T078
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在候选物体中，哪个物体在序列中与机器人/自车的距离变化最大？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T079
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "判断描述“机器人/自车先接近物体 A，再接近物体 B”是否成立。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T080
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择与机器人/自车运动轨迹最匹配的文字描述。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T081
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：不可答/能否判断类三选题，不进入模板库。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T001"
+  - template_id: T082
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：无法由图像支持类模板会引入不可答判断；用 T085 证据冲突单选替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T085"
+  - template_id: T083
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：能否仅凭图像判断类三选题，不进入模板库。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T036/T040"
+  - template_id: T084
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：元问题，不作为图文 benchmark 题干；用 T001 负例替代。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T001"
+  - template_id: T085
+    status: CORE_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A1_VISIBLE_OBJECT_CATEGORY
+    fixed_question_template: "下列哪一项与当前图像中的可见物体类别或空间证据冲突？"
+    required_fields:
+      - image
+      - objects.category
+  - template_id: T086
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在多帧序列中，`{object_category}` 是否从不可见变为可见？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T087
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "在多帧序列中，`{object_category}` 是否从可见变为不可见？"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T088
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择 `{object_category}` 从不可见变为可见的第一帧。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T089
+    status: TEMPORAL_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A6_TEMPORAL_TRAJECTORY
+    fixed_question_template: "选择 `{object_category}` 从可见变为不可见之前的最后一帧。"
+    required_fields:
+      - image_sequence
+      - frame_index
+      - objects.category_by_frame
+  - template_id: T090
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：不可见目标距离是否可回答是不可答三选题，不进入模板库。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T001/T040"
+  - template_id: T091
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT3_BINARY_OR_COMPARISON
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "观察标注图，物体 A 是否比物体 B 更靠近相机？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T092
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "当两个候选物体的可见区域邻近或重叠时，哪个物体更靠近相机？"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T093
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：“可能遮挡”是弱因果推断，自动评测不稳定。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T092/T094"
+  - template_id: T094
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注区域中，选择最靠近相机的前景物体。"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T095
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT5_ORDERING
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "将候选标注物体按深度层次由近到远排序。"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T096
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注物体中，选择“位于图像左半区且距离相机最近的 `{object_category}` 实例”。"
+    required_fields:
+      - image
+      - objects.bbox_2d
+      - objects.depth_median
+  - template_id: T097
+    status: DEPTH_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A4_DEPTH_DISTANCE_LAYER
+    fixed_question_template: "在候选标注物体中，选择“位于图像右半区且可见面积最大的物体”。"
+    required_fields:
+      - image
+      - objects.category
+      - objects.bbox_2d
+      - objects.mask.area_px
+  - template_id: T098
+    status: POSE_3D_EXTENDED_SELECTABLE
+    agent_selectable: true
+    canonical_question_type: QT1_SINGLE_CHOICE
+    primary_capability: A7_EGOCENTRIC_POSE_3D
+    fixed_question_template: "在候选物体中，选择“位于机器人/自车身体坐标系前方且距离最近”的物体。"
+    required_fields:
+      - image_or_sequence
+      - objects.centroid_3d_or_pose
+      - agent_or_camera_pose_if_egocentric
+  - template_id: T099
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：多属性 JSON 匹配容易一物多属性和隐藏评分噪声；拆成 T021/T022/T036/T095。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T021/T022/T036/T095"
+  - template_id: T100
+    status: DEPRECATED_LOCKED
+    agent_selectable: false
+    canonical_question_type: DEPRECATED_LOCKED
+    primary_capability: DEPRECATED
+    fixed_question_template: "已废弃：输出 object_id/depth_median 属于隐藏元数据，不作为图文评测。"
+    required_fields:
+      - not_selectable
+    replacement_template_id: "T096/T097"

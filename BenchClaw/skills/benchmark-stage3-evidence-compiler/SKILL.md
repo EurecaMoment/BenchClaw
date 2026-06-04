@@ -19,9 +19,20 @@
 - 启动本 stage 时，必须接收并复述冻结的 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT` 实际值，并与 `WORKSPACE_ROOT/path_resolution.json` 对齐。
 - 本 stage 只能写入 `WORKSPACE_ROOT/stage3/`。
 - 每个外显节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
+- 写任何数据源节点 `DONE.json` 前，节点自身必须确认其终端 artifact 中已经有真实清洗/标注/GT 文件和执行证明；不得把 `ready_for_stage4`、`deferred`、`pending_stage4_verification`、`pipeline ready`、`ready_for_annotation` 等准备态或占位态写成完成态。
 - 继承总入口和 pipeline 的长任务 `tmux` 执行协议：任何下载、检索、外部工具调用、批处理、模型推理、训练、仿真、清洗、标注或全量评测等可能长时间运行的命令，必须在 `tmux` 会话中执行、写入 `nodes/<node-id>/run_logs/` 并定期监控；未使用 `tmux` 必须在 `NODE_REPORT.md` 说明短任务依据和实际耗时。
 - 每个编号终端数据必须写入：`artifacts/<data-id>/`。
 - 写 `DONE.json` 前必须检查：清洗后的 JSONL 非空，除非 stage plan 显式允许该类别为空；每条记录引用的 workspace 媒体存在且非空；图片可解码并记录尺寸/sha256；文本字段完整；GT 或标注候选来源明确；`evidence_manifest.json` 覆盖全部 work unit、执行命令、日志、输入输出路径、样本计数和阻塞/复核原因。
+- 在写 `stage3/_STAGE_DONE.json` 或向 pipeline 返回 `PASS` 前，必须运行可执行质量门：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage stage3 \
+  --report "$WORKSPACE_ROOT/stage3/stage3_gate_report.json"
+```
+
+只有该命令退出码为 0 且报告 `status: PASS` 时，才允许写 `_STAGE_DONE.json`；报告路径和摘要必须写入 `_stage_report.md` 与 `_STAGE_DONE.json.quality_gate.validator`。若 validator 失败，必须写 `BLOCKED.json` 与 `BLOCKED.md`，不得继续 Stage4。
 - 缺少必需输入、真实数据、真实清洗执行、真实标注执行、GT、落盘媒体、落盘文字、落盘标注记录或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止相关节点或本 stage。
 
 ## 输入
@@ -48,7 +59,7 @@
 4. 每个 work unit 的 annotation 节点只依赖同一 `work_unit_id` 的 cleaning 节点；不同数据源之间不得互相等待，除非 `parallel_dag.edges[]` 明确声明且原因写入计划。
 5. 三个类别 summary barrier 只等待本类别 work unit 的 annotation 节点；Stage3 最终完成门才等待三个 terminal artifacts。
 6. 每个数据源节点内部只在本节点工作目录中按 `parallel_dag` 运行 `subskills/cleaning` 再运行 `subskills/annotation`；同一数据源下的不同 dataset/work unit 可以并行，但只能写各自隔离目录。
-7. 本 stage 只在三个 terminal artifacts 完成、图像/文字/GT 均完整落盘、执行证明齐全且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
+7. 本 stage 只在三个 terminal artifacts 完成、图像/文字/GT 均完整落盘、执行证明齐全且 `validate_stage_gate.py --stage stage3` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据
 

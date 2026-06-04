@@ -8,7 +8,24 @@
       "id": "data_15_existing_benchmark_collection_bundle"
     },
     {
-      "id": "data_16_simulator_collection_bundle"
+      "id": "data_16_simulator_collection_bundle",
+      "required_files": [
+        "media_manifest.jsonl",
+        "state_logs.jsonl",
+        "actions.jsonl",
+        "privileged_gt.jsonl",
+        "scenario_manifest.json"
+      ],
+      "required_nonempty_directories": [
+        "observations",
+        "simulators"
+      ],
+      "hard_rules": [
+        "Simulator work units must run the simulator and collect real images or render frames into observations/.",
+        "A zero-image or zero-render-frame acquisition attempt is not a terminal state and cannot produce DONE.json or BLOCKED.json; it must retry until at least one real image is present.",
+        "media_manifest.jsonl must contain at least one simulator image/video-frame record with a workspace path to a non-empty decodable file.",
+        "Placeholder media, historical cache, hand-written media manifests, model hallucinations, and unexecuted sample outputs cannot satisfy data_16."
+      ]
     }
   ]
 }

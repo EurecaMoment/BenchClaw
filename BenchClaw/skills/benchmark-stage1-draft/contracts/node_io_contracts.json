@@ -76,6 +76,21 @@
       "output_artifacts": [
         "data_04_retrieved_literature"
       ],
+      "required_output_files": [
+        "artifacts/data_04_retrieved_literature/literature_index.jsonl",
+        "artifacts/data_04_retrieved_literature/download_manifest.jsonl",
+        "artifacts/data_04_retrieved_literature/paper_checksums.json",
+        "artifacts/data_04_retrieved_literature/reading_notes.md"
+      ],
+      "required_output_directories": [
+        "artifacts/data_04_retrieved_literature/papers",
+        "artifacts/data_04_retrieved_literature/extracted_text"
+      ],
+      "quality_gate": [
+        "At least the papers used downstream are actually downloaded as non-empty local PDF/HTML or official full-text HTML files.",
+        "Every downloaded/read paper has local extracted text, sha256, file size, source URL, download command or tool output, and reading evidence.",
+        "No paper title, author, DOI, arXiv ID, venue, URL, page number, metric, or result may be fabricated."
+      ],
       "required_node_files": [
         "USED_INPUTS.json",
         "DONE.json",
@@ -95,6 +110,16 @@
       ],
       "output_artifacts": [
         "data_07_literature_review"
+      ],
+      "required_output_files": [
+        "artifacts/data_07_literature_review/review.md",
+        "artifacts/data_07_literature_review/citation_audit.jsonl",
+        "artifacts/data_07_literature_review/used_papers.jsonl"
+      ],
+      "quality_gate": [
+        "Every factual literature claim in review.md is traceable through citation_audit.jsonl to a downloaded, extracted, and read local paper from data_04.",
+        "Unavailable, failed-download, unread, abstract-only, metadata-only, and model-memory citations are excluded from the evidence pool.",
+        "If sufficient real downloaded papers are unavailable, the node writes BLOCKED.json and BLOCKED.md instead of completing."
       ],
       "required_node_files": [
         "USED_INPUTS.json",

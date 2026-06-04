@@ -1,66 +1,12 @@
+# 严格模板实例化规则
 
-# 模板实例化规则
-
-## 1. 输入要求
-
-每次实例化至少需要：
-
-- 图像或帧序列路径；
-- 与图像对齐的 GT/tracker；
-- 可见物体、bbox/mask、depth、3D 坐标、receptacle、state、timestep 中至少一种可用字段；
-- 明确的 template_id、capability_id、answer_format 和 scoring_metric。
-
-## 2. 实例化流程
-
-```text
-选择模板 T
-→ 检查 GT 字段是否满足 required_gt_fields
-→ 从样本中筛选可唯一作答的实体/关系
-→ 生成 question/options/gold_answer
-→ 绑定 evidence_ref 和 derivation 说明
-→ 运行质量门
-→ 写入 eval_item.jsonl
-```
-
-## 3. 候选项构造
-
-- 单选题：必须只有一个正确选项，干扰项来自同场景、同类别层级或相近数值，不要使用明显无关项。
-- 多选题：必须允许多个正确答案，gold answer 用集合表示，预测解析也按集合处理。
-- 判断题：建议成对构造正负题，或使用 Accuracy+ 降低 yes/no 语言先验。
-- 数值题：必须指定单位和容差；计数题一般用精确匹配。
-- 帧选择题：候选帧必须来自同一 episode，正确帧唯一，若并列则过滤。
-
-## 4. 证据绑定
-
-每道题必须包含：
-
-```json
-{
-  "evidence_ref": ["image path", "tracker path", "field path or computation note"],
-  "evidence_fields": ["objects[*].objectType", "receptacleObjectIds", "timestep"],
-  "answer_derivation": "用一句话说明答案如何由证据得到"
-}
-```
-
-## 5. 过滤规则
-
-过滤以下样本：
-
-- GT 缺少模板要求字段；
-- 候选答案并列或不唯一；
-- 目标物体不可见但题目要求视觉判断；
-- 物体太小、遮挡严重、同类实例无法区分；
-- 需要 navmesh、动作标签、affordance 或语义地图，但当前数据没有这些字段；
-- 题面依赖常识，而非给定证据。
-
-## 7. 可运行合成引擎接入规则
-
-当样本满足 `schemas/entity_annotations.schema.json` 的输入契约时，Stage4 应优先使用 `tools/synthesize_static_vlm_benchmark.py` 生成候选 eval items，而不是只让大模型手写题目。该引擎已经把模板实例化中的关键约束固化为代码：对象置信度过滤、面积过滤、中心点 margin、深度差阈值、排序唯一性、bbox overlay 证据图、不可答边界和结构化答案 schema。
-
-使用顺序为：
-
-```text
-entity_annotations.json → synthesize_static_vlm_benchmark.py → generated_eval_dataset.jsonl → schema/quality gate → score_eval_dataset.py
-```
-
-若某条模板需要时序、容器、agent pose、动作状态或 navmesh，而输入 GT 不包含这些字段，不允许通过常识补题；应记录为“当前数据条件不可执行模板”。
+1. 先读取 `template_library/benchclaw_fixed_template_registry.yaml`。
+2. 默认只选择 `template_sets.strict_core`。
+3. 只有 manifest 中存在可靠 depth 字段时，才可选择 `strict_depth`。
+4. 多帧、姿态、3D 扩展模板必须由 required_fields 解锁。
+5. `deprecated_locked` 中的模板永远不可实例化。
+6. 所有实例级候选题必须生成 overlay 图，并在题干中使用 A/B/C/D 标注物体。
+7. 候选项显示文本重复时，必须改用标注字母作为答案空间，不能只输出类别名。
+8. 数量、距离、深度、面积等数值必须先映射到互斥区间。
+9. 真实值落在区间边界、排序并列、深度差/面积差/位置差不足阈值时，直接丢弃样本。
+10. 题干不得出现 GT、depth_median、object_id、可见物体列表等元数据词。

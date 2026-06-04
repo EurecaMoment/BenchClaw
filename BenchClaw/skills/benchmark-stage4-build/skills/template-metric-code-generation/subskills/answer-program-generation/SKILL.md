@@ -8,11 +8,14 @@
 
 - `templates/<template_id>.json`
 - `metrics/<metric_id>.json`
+- `selected_template_sources.jsonl`
 - `metric_manifest.jsonl`
 - `source_inventory.jsonl`
 - `field_catalog.yaml`
 - `evidence_index.jsonl`
 - 本 stage `templates/benchmark_item.schema.json`
+
+每个 enabled 模板必须先在 `selected_template_sources.jsonl` 中有 `selection_status=selected` 的统一模板来源记录；答案程序不得为没有 `unified_template_id` 来源的模板生成可运行入口。
 
 ## 代码产物
 
@@ -94,6 +97,7 @@ python scripts/generate_items.py \
 要求：
 
 - 按 template manifest、evidence index 和配额批量生成 item。
+- 生成前校验 template manifest 与 `selected_template_sources.jsonl` 一致；没有统一模板来源、被 disabled/blocked 或 required fields 不满足的模板必须跳过并记录过滤原因。
 - 支持按 `template_id` 单模板运行，方便灰度定位。
 - 记录过滤原因到同目录 `filtered_items.jsonl` 或命令行指定路径。
 - 对每个 enabled 模板至少尝试 `grey_quota` 条 evidence；不足时写入过滤/缺口记录。

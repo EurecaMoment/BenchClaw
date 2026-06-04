@@ -101,9 +101,9 @@ tmux new-session -d -s <session_name> "<command> > <log_path> 2>&1"
 |---|---|---|---|
 | S1 | `BENCHCLAW_ROOT/skills/benchmark-stage1-draft/SKILL.md` | 根输入 `data_01`、`data_05`、`data_06`、`data_09`，以及离线节点 `scope-preprocess-analysis` 物化的 `data_08` | `stage1/artifacts/data_13_execution_plan/stage2_handoff.yaml` 与 `stage1/nodes/execution-plan-generation/DONE.json` |
 | S2 | `BENCHCLAW_ROOT/skills/benchmark-stage2-data-collect/SKILL.md` | `data_13_execution_plan` | `stage2/artifacts/data_14_real_image_collection_bundle/`、`data_15_existing_benchmark_collection_bundle/`、`data_16_simulator_collection_bundle/` 与对应节点 `DONE.json` |
-| S3 | `BENCHCLAW_ROOT/skills/benchmark-stage3-evidence-compiler/SKILL.md` | `data_14`、`data_15`、`data_16` | `stage3/artifacts/data_17_annotated_real_image_bundle/`、`data_18_annotated_existing_benchmark_bundle/`、`data_19_annotated_simulator_bundle/` 与对应节点 `DONE.json` |
-| S4 | `BENCHCLAW_ROOT/skills/benchmark-stage4-build/SKILL.md` | `data_11_template_metric_initial_draft`、`data_13_execution_plan`、`data_17`、`data_18`、`data_19` | `stage4/artifacts/data_22_full_benchmark_dataset/` 与 `stage4/nodes/full-synthesis/DONE.json` |
-| S5 | `BENCHCLAW_ROOT/skills/benchmark-stage5-eval/SKILL.md` | `data_13_execution_plan`、`data_22_full_benchmark_dataset` | `stage5/artifacts/data_23_evaluation_report/` 与 `stage5/nodes/full-evaluation/DONE.json` |
+| S3 | `BENCHCLAW_ROOT/skills/benchmark-stage3-evidence-compiler/SKILL.md` | `data_14`、`data_15`、`data_16` | `validate_stage_gate.py --stage stage3` 返回 `PASS`，且三类 annotated bundle 与对应节点 `DONE.json` 均存在 |
+| S4 | `BENCHCLAW_ROOT/skills/benchmark-stage4-build/SKILL.md` | `data_11_template_metric_initial_draft`、`data_13_execution_plan`、`data_17`、`data_18`、`data_19` | `validate_stage_gate.py --stage stage4` 返回 `PASS`，且 `data_22_full_benchmark_dataset/` 与 `stage4/nodes/full-synthesis/DONE.json` 均存在 |
+| S5 | `BENCHCLAW_ROOT/skills/benchmark-stage5-eval/SKILL.md` | `data_13_execution_plan`、`data_22_full_benchmark_dataset` | `validate_stage_gate.py --stage stage5` 返回 `PASS`，且 `data_23_evaluation_report/` 与 `stage5/nodes/full-evaluation/DONE.json` 均存在 |
 
 ## 执行协议
 
@@ -111,13 +111,50 @@ tmux new-session -d -s <session_name> "<command> > <log_path> 2>&1"
 2. 在任何 stage 启动前，必须先执行路径合法性检查并把结果写入 `WORKSPACE_ROOT/path_resolution.json`。
 3. 每次调用 Stage1/Stage2/Stage3/Stage4/Stage5 主 skill 或任何子 skill 时，必须在调用上下文中再次显式传递已经冻结的 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT` 实际值，以及本文件的长任务 `tmux` 执行协议；任何 subskill 直接执行长任务时也必须写 `run_logs/`、监控记录和 `NODE_REPORT.md` 证据。
 4. 每个 stage 启动时，必须先对照 `WORKSPACE_ROOT/path_resolution.json` 重新确认路径与冻结值完全一致；若不一致，立即阻塞并记录错误。
-5. 执行 Stage1。Stage1 内部按自己的 ready-set/DAG 运行；用户和外部资源不是节点；`data_05` 与 `data_06` 是根输入能力数据，`data_09` 是根输入 benchmark 数据，`scope-preprocess-analysis` 是 offline 节点并只负责从 `data_09` 物化 `data_08`。正常在线 pipeline 不调度 offline 节点，只校验 `data_08` 已存在；pipeline 只等待 Stage1 终端节点完成。
-6. Stage1 完成后，检查 Stage2 所需输入路径。若 Stage2 skill 的默认路径与 Stage1 实际输出目录不同，写入 `WORKSPACE_ROOT/config/stage2_input_paths.json`，不得复制或改写 Stage1 产物。
-7. 执行 Stage2。Stage2 完成后必须看到真实图片、已有 benchmark、仿真器三个终端输出；缺一则 pipeline 停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`。
-8. 执行 Stage3。Stage3 必须从 Stage2 三个终端输出读取，并生成真实图半监督 GT、已有 benchmark 半监督 GT、仿真器 clean GT 三个终端输出。
-9. 执行 Stage4。Stage4 必须同时读取 Stage1 的 `data_11`、`data_13` 和 Stage3 的 `data_17`、`data_18`、`data_19`。
-10. 执行 Stage5。Stage5 读取 `data_13_execution_plan`、`data_22_full_benchmark_dataset`、真实模型调用结果或用户提供的已物化预测文件。
-11. Stage5 完成后写 `WORKSPACE_ROOT/PIPELINE_DONE.json` 和 `WORKSPACE_ROOT/PIPELINE_REPORT.md`，汇总每个 stage 的输入、输出、检查结果和阻塞记录。
+5. 每个 stage gate 通过后，必须立即更新 `WORKSPACE_ROOT/pipeline_state.json` 的 `current_stage`、`stages_completed`、stage gate 报告路径和时间戳；不得在下游 stage 或最终 `PIPELINE_DONE.json` 才回填上游完成状态。
+6. 执行 Stage1。Stage1 内部按自己的 ready-set/DAG 运行；用户和外部资源不是节点；`data_05` 与 `data_06` 是根输入能力数据，`data_09` 是根输入 benchmark 数据，`scope-preprocess-analysis` 是 offline 节点并只负责从 `data_09` 物化 `data_08`。正常在线 pipeline 不调度 offline 节点，只校验 `data_08` 已存在；pipeline 只等待 Stage1 终端节点完成。通过后把 `stage1` 写入 `pipeline_state.json.stages_completed`。
+7. Stage1 完成后，检查 Stage2 所需输入路径。若 Stage2 skill 的默认路径与 Stage1 实际输出目录不同，写入 `WORKSPACE_ROOT/config/stage2_input_paths.json`，不得复制或改写 Stage1 产物。
+8. 执行 Stage2。Stage2 完成后必须看到真实图片、已有 benchmark、仿真器三个终端输出；缺一则 pipeline 停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`；通过后把 `stage2` 写入 `pipeline_state.json.stages_completed`。
+9. 执行 Stage3。Stage3 必须从 Stage2 三个终端输出读取，并生成真实图半监督 GT、已有 benchmark 半监督 GT、仿真器 clean GT 三个终端输出。Stage3 返回后必须运行：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage stage3 \
+  --report "$WORKSPACE_ROOT/stage3/stage3_gate_report.json"
+```
+
+失败时立即停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`，不得启动 Stage4；通过后把 `stage3` 和 gate report 路径写入 `pipeline_state.json.stages_completed`。
+10. 执行 Stage4。Stage4 必须同时读取 Stage1 的 `data_11`、`data_13` 和 Stage3 的 `data_17`、`data_18`、`data_19`。Stage4 返回后必须运行：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage stage4 \
+  --report "$WORKSPACE_ROOT/stage4/stage4_gate_report.json"
+```
+
+失败时立即停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`，不得启动 Stage5；通过后把 `stage4` 和 gate report 路径写入 `pipeline_state.json.stages_completed`。
+11. 执行 Stage5。Stage5 读取 `data_13_execution_plan`、`data_22_full_benchmark_dataset`、真实模型调用结果或用户提供的已物化预测文件。Stage5 返回后必须运行：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage stage5 \
+  --report "$WORKSPACE_ROOT/stage5/stage5_gate_report.json"
+```
+
+失败时立即停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`，不得写 pipeline 完成标记；通过后把 `stage5` 和 gate report 路径写入 `pipeline_state.json.stages_completed`。
+12. Stage5 gate 通过并更新 `pipeline_state.json` 后，先运行最终 pipeline 门禁：
+
+```bash
+python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
+  --workspace-root "$WORKSPACE_ROOT" \
+  --stage pipeline \
+  --report "$WORKSPACE_ROOT/pipeline_gate_report.json"
+```
+
+只有最终门禁通过，才允许写 `WORKSPACE_ROOT/PIPELINE_DONE.json` 和 `WORKSPACE_ROOT/PIPELINE_REPORT.md`，并在报告中汇总每个 stage gate 的输入、输出、检查结果和阻塞记录。
 
 ## Handoff 规则
 
@@ -137,6 +174,7 @@ tmux new-session -d -s <session_name> "<command> > <log_path> 2>&1"
 - 编号数据目录是否与椭圆节点目录分离；
 - 长任务是否存在 `nodes/<node-id>/run_logs/<task>.log`、`NODE_REPORT.md` tmux session 记录、监控时间点、退出状态和可追溯产物；
 - 是否存在当前 stage 明确禁止的 GT 覆盖、路径越界、空壳产物或编造评测结果。
+- 对 Stage3/Stage4/Stage5，必须以 `BENCHCLAW_ROOT/skills/validate_stage_gate.py` 的退出码和 JSON 报告作为最终完成裁决；自然语言报告、`DONE.json` 或空目录不能替代该结果。
 
 `FAIL` 或缺失关键终端产物时必须停止；`NEEDS_REVIEW` 只能在用户明确确认后继续。
 

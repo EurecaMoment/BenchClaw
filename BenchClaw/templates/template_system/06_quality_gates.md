@@ -1,42 +1,19 @@
+# 严格质量门
 
-# 统一质量门
+| Gate | 通过条件 | 失败处理 |
+|---|---|---|
+| Template Lock Gate | 模板不在 deprecated_locked | reject |
+| Question Type Gate | 题型属于 QT1–QT6 且不是不可答三选 | reject |
+| Numeric Interval Gate | 数值答案已区间化 | rewrite/reject |
+| GT Leakage Gate | 题干无 GT/depth_median/object_id/可见物体列表 | reject |
+| Visual Evidence Gate | 问题可由图像/overlay 支撑 | reject/flag |
+| Candidate Uniqueness Gate | 候选项不歧义；同类实例有 A/B/C/D | reject |
+| Answer Uniqueness Gate | 单选/二选唯一，排序无并列，区间远离边界 | reject |
+| Area Filter Gate | sky/road/ground/floor/wall/ceiling 和过大区域默认过滤 | reject object |
+| Distribution Gate | 答案分布不过度集中 | rebalance |
 
-## Q1：能力-模板一致性
+运行前执行：
 
-- 每道题必须绑定能力维度。
-- 题目考点必须与能力定义一致，不能把题型当能力。
-- 一个题目可覆盖多个能力，但必须标明 primary capability。
-
-## Q2：GT 可得性
-
-- 每条模板必须声明 required_gt_fields。
-- 数据缺字段时不能实例化该模板。
-- 如果答案来自计算，必须记录 computation rule。
-
-## Q3：答案唯一性
-
-- 单选题、判断题、帧选择题必须唯一。
-- 排序题若出现并列，必须过滤或显式支持 tie。
-- 容器/区域题必须确保目标容器或区域名称无歧义。
-
-## Q4：视觉可辨性
-
-- 用于视觉评测的实体必须在图像中可见或题面明确是历史/GT 问题。
-- 遮挡、截断、小目标、同类近邻会导致歧义，必须进入过滤记录。
-
-## Q5：候选项质量
-
-- 干扰项不能明显无关。
-- 干扰项应来自同一语义层级、同一场景或相近数值。
-- 正负样本比例要可控，防止语言先验。
-
-## Q6：评分可执行性
-
-- 每个 answer_format 必须有解析函数。
-- 每个 scoring_metric 必须能由脚本、公式或明确 rubric 执行。
-- 开放题需要固定 rubric、judge prompt、模型版本和温度记录。
-
-## Q7：可追溯性
-
-- eval item 必须保留 template_id、source_sample_id、evidence_ref、answer_derivation。
-- 评分报告必须能回溯到具体题目与证据。
+```bash
+python tools/validate_strict_template_library.py
+```

@@ -810,14 +810,15 @@ def capture_map(client, world, map_name, args, rng):
                     cam_name: {
                         "mount": info["mount"],
                         "world": serialize_transform(info["actor"].get_transform()),
-                        "visible_objects": collect_visible_actor_metadata(
-                            info,
-                            instance_images[cam_name],
-                            world,
-                        )
-                        if info["collect_metadata"]
-                        and instance_images.get(cam_name) is not None
-                        else None,
+                        "visible_objects": (
+                            collect_visible_actor_metadata(
+                                info,
+                                instance_images[cam_name],
+                                world,
+                            )
+                            if info["collect_metadata"] and instance_images.get(cam_name) is not None
+                            else None
+                        ),
                     }
                     for cam_name, info in camera_sensors.items()
                 },

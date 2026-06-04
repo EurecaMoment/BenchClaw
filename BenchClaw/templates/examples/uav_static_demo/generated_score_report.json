@@ -1,20 +1,16 @@
 {
   "overall": {
-    "n": 90,
+    "n": 72,
     "mean_score": 1.0,
     "missing_predictions": []
   },
   "by_capability": {
     "C1": {
-      "n": 15,
+      "n": 28,
       "mean_score": 1.0
     },
     "C11": {
-      "n": 4,
-      "mean_score": 1.0
-    },
-    "C8": {
-      "n": 7,
+      "n": 9,
       "mean_score": 1.0
     },
     "C2": {
@@ -22,65 +18,33 @@
       "mean_score": 1.0
     },
     "C5": {
-      "n": 31,
-      "mean_score": 1.0
-    },
-    "C12": {
-      "n": 6,
-      "mean_score": 1.0
-    },
-    "C6": {
-      "n": 6,
+      "n": 36,
       "mean_score": 1.0
     },
     "C7": {
-      "n": 26,
-      "mean_score": 1.0
-    },
-    "C28": {
       "n": 2,
-      "mean_score": 1.0
-    },
-    "C30": {
-      "n": 6,
       "mean_score": 1.0
     }
   },
   "by_template_family": {
     "T001": {
-      "n": 2,
+      "n": 8,
       "mean_score": 1.0
     },
     "T002": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T003": {
-      "n": 1,
-      "mean_score": 1.0
-    },
-    "T004": {
-      "n": 1,
+      "n": 8,
       "mean_score": 1.0
     },
     "T006": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T007": {
-      "n": 2,
+      "n": 8,
       "mean_score": 1.0
     },
     "T008": {
       "n": 1,
       "mean_score": 1.0
     },
-    "T011": {
-      "n": 2,
-      "mean_score": 1.0
-    },
     "T012": {
-      "n": 2,
+      "n": 6,
       "mean_score": 1.0
     },
     "T013": {
@@ -91,210 +55,66 @@
       "n": 1,
       "mean_score": 1.0
     },
-    "T020": {
-      "n": 2,
-      "mean_score": 1.0
-    },
     "T021": {
-      "n": 2,
+      "n": 8,
       "mean_score": 1.0
     },
     "T022": {
-      "n": 2,
+      "n": 8,
       "mean_score": 1.0
     },
     "T023": {
-      "n": 2,
+      "n": 5,
       "mean_score": 1.0
     },
     "T024": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T025": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T026": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T027": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T028": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T029": {
-      "n": 2,
+      "n": 5,
       "mean_score": 1.0
     },
     "T030": {
-      "n": 2,
+      "n": 5,
       "mean_score": 1.0
     },
     "T031": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T032": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T033": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T034": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T035": {
-      "n": 1,
-      "mean_score": 1.0
-    },
-    "T036": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T043": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T037": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T038": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T039": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T040": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T041": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T042": {
-      "n": 2,
+      "n": 5,
       "mean_score": 1.0
     },
     "T045": {
       "n": 2,
       "mean_score": 1.0
     },
-    "T091": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T095": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T099": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T100": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T056": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T057": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T060": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T061": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T063": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T082": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T084": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "T090": {
-      "n": 2,
+    "T085": {
+      "n": 1,
       "mean_score": 1.0
     }
   },
   "by_answer_format": {
     "F3 判断题": {
-      "n": 26,
+      "n": 44,
       "mean_score": 1.0
     },
     "F2 多选题": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "F1 单选题": {
-      "n": 20,
-      "mean_score": 1.0
-    },
-    "F7 填空题": {
-      "n": 1,
-      "mean_score": 1.0
-    },
-    "F12 图文匹配题": {
-      "n": 2,
+      "n": 8,
       "mean_score": 1.0
     },
     "F9 区间选择题": {
-      "n": 6,
-      "mean_score": 1.0
-    },
-    "F8 数值题": {
       "n": 2,
       "mean_score": 1.0
     },
     "F10 对比选择题": {
-      "n": 8,
+      "n": 6,
       "mean_score": 1.0
     },
-    "F24 JSON 结构化输出题": {
-      "n": 4,
+    "F1 单选题": {
+      "n": 1,
       "mean_score": 1.0
     },
     "F13 区域选择题": {
-      "n": 4,
-      "mean_score": 1.0
-    },
-    "F5 排序题": {
-      "n": 9,
-      "mean_score": 1.0
-    },
-    "F6 匹配题": {
-      "n": 2,
+      "n": 10,
       "mean_score": 1.0
     },
     "F20 错误检测题": {
-      "n": 2,
-      "mean_score": 1.0
-    },
-    "F4 三选判断题": {
-      "n": 2,
+      "n": 1,
       "mean_score": 1.0
     }
   },
@@ -318,6 +138,60 @@
       }
     },
     {
+      "item_id": "sample_0001_T001_0003",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T001_0004",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T001_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T001_0006",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T001_0007",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T001_0008",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
       "item_id": "sample_0001_T002_0001",
       "score": 1.0,
       "metric": "set_exact_match + macro_f1",
@@ -325,12 +199,12 @@
         "set_exact": 1.0,
         "f1": 1.0,
         "gold_set": [
-          "A",
+          "B",
           "C",
           "E"
         ],
         "pred_set": [
-          "A",
+          "B",
           "C",
           "E"
         ]
@@ -344,33 +218,129 @@
         "set_exact": 1.0,
         "f1": 1.0,
         "gold_set": [
-          "B",
+          "A",
           "C",
+          "D"
+        ],
+        "pred_set": [
+          "A",
+          "C",
+          "D"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_0001_T002_0003",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "C",
+          "D",
           "E"
         ],
         "pred_set": [
-          "B",
           "C",
+          "D",
           "E"
         ]
       }
     },
     {
-      "item_id": "sample_0001_T003_0001",
+      "item_id": "sample_0001_T002_0004",
       "score": 1.0,
-      "metric": "exact_match",
+      "metric": "set_exact_match + macro_f1",
       "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "A",
+          "B",
+          "C"
+        ],
+        "pred_set": [
+          "A",
+          "B",
+          "C"
+        ]
       }
     },
     {
-      "item_id": "sample_0001_T004_0001",
+      "item_id": "sample_0001_T002_0005",
       "score": 1.0,
-      "metric": "exact_match",
+      "metric": "set_exact_match + macro_f1",
       "detail": {
-        "gold_norm": "ROAD",
-        "pred_norm": "ROAD"
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "A",
+          "B",
+          "D"
+        ],
+        "pred_set": [
+          "A",
+          "B",
+          "D"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_0001_T002_0006",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "A",
+          "B",
+          "C"
+        ],
+        "pred_set": [
+          "A",
+          "B",
+          "C"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_0001_T002_0007",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "B",
+          "C",
+          "D"
+        ],
+        "pred_set": [
+          "B",
+          "C",
+          "D"
+        ]
+      }
+    },
+    {
+      "item_id": "sample_0001_T002_0008",
+      "score": 1.0,
+      "metric": "set_exact_match + macro_f1",
+      "detail": {
+        "set_exact": 1.0,
+        "f1": 1.0,
+        "gold_set": [
+          "A",
+          "C",
+          "D"
+        ],
+        "pred_set": [
+          "A",
+          "C",
+          "D"
+        ]
       }
     },
     {
@@ -392,21 +362,57 @@
       }
     },
     {
-      "item_id": "sample_0001_T007_0001",
+      "item_id": "sample_0001_T006_0003",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "A",
-        "pred_norm": "A"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T007_0002",
+      "item_id": "sample_0001_T006_0004",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T006_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T006_0006",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T006_0007",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T006_0008",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
@@ -414,26 +420,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
-      }
-    },
-    {
-      "item_id": "sample_0001_T011_0001",
-      "score": 1.0,
-      "metric": "numeric_exact",
-      "detail": {
-        "absolute_error": 0.0,
-        "tolerance": null
-      }
-    },
-    {
-      "item_id": "sample_0001_T011_0002",
-      "score": 1.0,
-      "metric": "numeric_exact",
-      "detail": {
-        "absolute_error": 0.0,
-        "tolerance": null
+        "gold_norm": "C",
+        "pred_norm": "C"
       }
     },
     {
@@ -455,6 +443,42 @@
       }
     },
     {
+      "item_id": "sample_0001_T012_0003",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T012_0004",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T012_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T012_0006",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
       "item_id": "sample_0001_T013_0001",
       "score": 1.0,
       "metric": "exact_match",
@@ -468,30 +492,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "A",
-        "pred_norm": "A"
-      }
-    },
-    {
-      "item_id": "sample_0001_T020_0001",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "object_fields",
-        "correct": 5,
-        "num_fields": 5,
-        "missing_fields": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T020_0002",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "object_fields",
-        "correct": 5,
-        "num_fields": 5,
-        "missing_fields": []
+        "gold_norm": "C",
+        "pred_norm": "C"
       }
     },
     {
@@ -513,6 +515,42 @@
       }
     },
     {
+      "item_id": "sample_0001_T021_0002",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T022_0002",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T021_0003",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T022_0003",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
       "item_id": "sample_0001_T023_0001",
       "score": 1.0,
       "metric": "exact_match",
@@ -531,21 +569,21 @@
       }
     },
     {
-      "item_id": "sample_0001_T021_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T022_0002",
+      "item_id": "sample_0001_T021_0004",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
         "gold_norm": "是",
         "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T022_0004",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
@@ -553,8 +591,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
@@ -562,98 +600,134 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T021_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
         "gold_norm": "是",
         "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T025_0001",
+      "item_id": "sample_0001_T022_0005",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
-      "item_id": "sample_0001_T025_0002",
+      "item_id": "sample_0001_T023_0003",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
-      "item_id": "sample_0001_T026_0001",
+      "item_id": "sample_0001_T024_0003",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T026_0002",
+      "item_id": "sample_0001_T021_0006",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
-      "item_id": "sample_0001_T027_0001",
+      "item_id": "sample_0001_T022_0006",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T027_0002",
+      "item_id": "sample_0001_T021_0007",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
-      "item_id": "sample_0001_T028_0001",
+      "item_id": "sample_0001_T022_0007",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T028_0002",
+      "item_id": "sample_0001_T023_0004",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
+        "gold_norm": "是",
+        "pred_norm": "是"
       }
     },
     {
-      "item_id": "sample_0001_T029_0001",
+      "item_id": "sample_0001_T024_0004",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
-      "item_id": "sample_0001_T029_0002",
+      "item_id": "sample_0001_T021_0008",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
+        "gold_norm": "否",
+        "pred_norm": "否"
+      }
+    },
+    {
+      "item_id": "sample_0001_T022_0008",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T023_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "是",
+        "pred_norm": "是"
+      }
+    },
+    {
+      "item_id": "sample_0001_T024_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "否",
+        "pred_norm": "否"
       }
     },
     {
@@ -661,8 +735,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "G",
+        "pred_norm": "G"
       }
     },
     {
@@ -670,8 +744,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
+        "gold_norm": "G",
+        "pred_norm": "G"
       }
     },
     {
@@ -679,8 +753,8 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "H",
-        "pred_norm": "H"
+        "gold_norm": "E",
+        "pred_norm": "E"
       }
     },
     {
@@ -688,177 +762,12 @@
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
-        "gold_norm": "H",
-        "pred_norm": "H"
+        "gold_norm": "E",
+        "pred_norm": "E"
       }
     },
     {
-      "item_id": "sample_0001_T032_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T032_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T033_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "是",
-        "pred_norm": "是"
-      }
-    },
-    {
-      "item_id": "sample_0001_T033_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T034_0001",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "B",
-          "A",
-          "C",
-          "D"
-        ],
-        "pred_order": [
-          "B",
-          "A",
-          "C",
-          "D"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T034_0002",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "D",
-          "A",
-          "C",
-          "B"
-        ],
-        "pred_order": [
-          "D",
-          "A",
-          "C",
-          "B"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T035_0001",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "D",
-          "B",
-          "A",
-          "C"
-        ],
-        "pred_order": [
-          "D",
-          "B",
-          "A",
-          "C"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T036_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T043_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T036_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "是",
-        "pred_norm": "是"
-      }
-    },
-    {
-      "item_id": "sample_0001_T043_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "是",
-        "pred_norm": "是"
-      }
-    },
-    {
-      "item_id": "sample_0001_T037_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
-      }
-    },
-    {
-      "item_id": "sample_0001_T037_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
-      }
-    },
-    {
-      "item_id": "sample_0001_T038_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
-      }
-    },
-    {
-      "item_id": "sample_0001_T038_0002",
+      "item_id": "sample_0001_T030_0003",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
@@ -867,87 +776,7 @@
       }
     },
     {
-      "item_id": "sample_0001_T039_0001",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "B",
-          "C",
-          "A",
-          "D"
-        ],
-        "pred_order": [
-          "B",
-          "C",
-          "A",
-          "D"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T039_0002",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "B",
-          "D",
-          "C",
-          "A"
-        ],
-        "pred_order": [
-          "B",
-          "D",
-          "C",
-          "A"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T040_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
-      }
-    },
-    {
-      "item_id": "sample_0001_T040_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
-      }
-    },
-    {
-      "item_id": "sample_0001_T041_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T041_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T042_0001",
+      "item_id": "sample_0001_T031_0003",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
@@ -956,12 +785,39 @@
       }
     },
     {
-      "item_id": "sample_0001_T042_0002",
+      "item_id": "sample_0001_T030_0004",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
         "gold_norm": "B",
         "pred_norm": "B"
+      }
+    },
+    {
+      "item_id": "sample_0001_T031_0004",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "B",
+        "pred_norm": "B"
+      }
+    },
+    {
+      "item_id": "sample_0001_T030_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "I",
+        "pred_norm": "I"
+      }
+    },
+    {
+      "item_id": "sample_0001_T031_0005",
+      "score": 1.0,
+      "metric": "exact_match",
+      "detail": {
+        "gold_norm": "I",
+        "pred_norm": "I"
       }
     },
     {
@@ -983,277 +839,12 @@
       }
     },
     {
-      "item_id": "sample_0001_T091_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T091_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T095_0001",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "C",
-          "B",
-          "A",
-          "D"
-        ],
-        "pred_order": [
-          "C",
-          "B",
-          "A",
-          "D"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T095_0002",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "B",
-          "C",
-          "A",
-          "D"
-        ],
-        "pred_order": [
-          "B",
-          "C",
-          "A",
-          "D"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T099_0001",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "object_fields",
-        "correct": 4,
-        "num_fields": 4,
-        "missing_fields": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T099_0002",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "object_fields",
-        "correct": 4,
-        "num_fields": 4,
-        "missing_fields": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T100_0001",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "array_set",
-        "gold_set": [],
-        "pred_set": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T100_0002",
-      "score": 1.0,
-      "metric": "json_field_accuracy",
-      "detail": {
-        "mode": "array_set",
-        "gold_set": [],
-        "pred_set": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T056_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "E",
-        "pred_norm": "E"
-      }
-    },
-    {
-      "item_id": "sample_0001_T056_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "E",
-        "pred_norm": "E"
-      }
-    },
-    {
-      "item_id": "sample_0001_T057_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "是",
-        "pred_norm": "是"
-      }
-    },
-    {
-      "item_id": "sample_0001_T057_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T060_0001",
+      "item_id": "sample_0001_T085_0001",
       "score": 1.0,
       "metric": "exact_match",
       "detail": {
         "gold_norm": "A",
         "pred_norm": "A"
-      }
-    },
-    {
-      "item_id": "sample_0001_T060_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
-      }
-    },
-    {
-      "item_id": "sample_0001_T061_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
-      }
-    },
-    {
-      "item_id": "sample_0001_T061_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "D",
-        "pred_norm": "D"
-      }
-    },
-    {
-      "item_id": "sample_0001_T063_0001",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "C",
-          "A",
-          "B",
-          "D"
-        ],
-        "pred_order": [
-          "C",
-          "A",
-          "B",
-          "D"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T063_0002",
-      "score": 1.0,
-      "metric": "ordered_list_pairwise_accuracy",
-      "detail": {
-        "gold_order": [
-          "B",
-          "C",
-          "D",
-          "A"
-        ],
-        "pred_order": [
-          "B",
-          "C",
-          "D",
-          "A"
-        ],
-        "correct_pairs": 6,
-        "num_pairs": 6,
-        "missing": []
-      }
-    },
-    {
-      "item_id": "sample_0001_T082_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "C",
-        "pred_norm": "C"
-      }
-    },
-    {
-      "item_id": "sample_0001_T082_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "B",
-        "pred_norm": "B"
-      }
-    },
-    {
-      "item_id": "sample_0001_T084_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T090_0001",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "不可回答",
-        "pred_norm": "不可回答"
-      }
-    },
-    {
-      "item_id": "sample_0001_T084_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "否",
-        "pred_norm": "否"
-      }
-    },
-    {
-      "item_id": "sample_0001_T090_0002",
-      "score": 1.0,
-      "metric": "exact_match",
-      "detail": {
-        "gold_norm": "不可回答",
-        "pred_norm": "不可回答"
       }
     }
   ]

@@ -1,14 +1,75 @@
 {
   "stage": "stage4",
+  "executable_gate": {
+    "command": "python3 BENCHCLAW_ROOT/skills/validate_stage_gate.py --workspace-root WORKSPACE_ROOT --stage stage4 --report WORKSPACE_ROOT/stage4/stage4_gate_report.json",
+    "required_before": [
+      "stage4/_STAGE_DONE.json",
+      "pipeline Stage4 PASS"
+    ]
+  },
   "artifacts": [
     {
-      "id": "data_20_template_metric_code_bundle"
+      "id": "data_20_template_metric_code_bundle",
+      "required_files": [
+        "README.md",
+        "source_inventory.jsonl",
+        "field_catalog.yaml",
+        "evidence_index.jsonl",
+        "template_manifest.jsonl",
+        "metric_manifest.jsonl",
+        "code_manifest.json",
+        "synthesis_plan.yaml",
+        "traceability.csv",
+        "scripts/generate_items.py",
+        "scripts/score_predictions.py",
+        "scripts/validate_bundle.py",
+        "contracts/benchmark_item.schema.json",
+        "tests/smoke_test.py",
+        "self_test/dry_run_items.jsonl",
+        "self_test/perfect_score_report.json",
+        "self_test/negative_score_report.json",
+        "self_test/py_compile.log",
+        "self_test/self_test_report.md"
+      ],
+      "nonempty_jsonl": [
+        "source_inventory.jsonl",
+        "evidence_index.jsonl",
+        "template_manifest.jsonl",
+        "metric_manifest.jsonl",
+        "self_test/dry_run_items.jsonl"
+      ]
     },
     {
-      "id": "data_21_grey_validation_report"
+      "id": "data_21_grey_validation_report",
+      "required_files": [
+        "report.md",
+        "template_status.csv",
+        "item_level_findings.jsonl"
+      ],
+      "nonempty_jsonl": [
+        "item_level_findings.jsonl"
+      ]
     },
     {
-      "id": "data_22_full_benchmark_dataset"
+      "id": "data_22_full_benchmark_dataset",
+      "required_files": [
+        "dataset.jsonl",
+        "manifest.json",
+        "cards/benchmark_card.md",
+        "checksums.json"
+      ],
+      "required_nonempty_directories": [
+        "media",
+        "ground_truth",
+        "metrics"
+      ],
+      "nonempty_jsonl": [
+        "dataset.jsonl"
+      ],
+      "forbidden_as_only_output_directories": [
+        "sample_images",
+        "gt_bundle"
+      ]
     }
   ]
 }

@@ -1,6 +1,21 @@
 {
   "stage": "stage3",
   "artifact_semantics": "编号数据和 stage3_execution_plan 是 artifacts；每个数据源节点内部的 cleaning/annotation 中间结果不是外显 DAG artifacts。",
+  "executable_gate": {
+    "command": "python3 BENCHCLAW_ROOT/skills/validate_stage_gate.py --workspace-root WORKSPACE_ROOT --stage stage3 --report WORKSPACE_ROOT/stage3/stage3_gate_report.json",
+    "required_before": [
+      "stage3/_STAGE_DONE.json",
+      "pipeline Stage3 PASS",
+      "Stage4 start"
+    ],
+    "forbidden_completion_status_text": [
+      "ready_for_stage4",
+      "deferred",
+      "pending_stage4_verification",
+      "pipeline ready",
+      "ready_for_annotation"
+    ]
+  },
   "artifacts": [
     {
       "id": "data_13_execution_plan",
@@ -47,6 +62,19 @@
       "producer": "real-image-evidence-compilation",
       "consumers": [
         "stage4"
+      ],
+      "required_files": [
+        "real_image_manifest.jsonl",
+        "evidence_manifest.json"
+      ],
+      "required_nonempty_directories": [
+        "media"
+      ],
+      "required_annotation_evidence": [
+        "**/annotation_or_gt/run_manifest.json",
+        "**/annotation_records.jsonl",
+        "**/default_annotation_manifest.jsonl",
+        "**/default_annotation_output/**/result.json"
       ]
     },
     {
@@ -54,13 +82,29 @@
       "producer": "existing-benchmark-evidence-compilation",
       "consumers": [
         "stage4"
-      ]
+      ],
+      "required_files": [
+        "evidence_manifest.json"
+      ],
+      "required_gt_or_annotation_records_any_of": [
+        "**/official_labels.jsonl",
+        "**/added_annotation_records.jsonl",
+        "**/annotation_records.jsonl"
+      ],
+      "new_annotation_targets_rule": "If any **/new_annotation_targets.jsonl has records, the bundle must contain default_annotation_output result.json records or review_queue.jsonl coverage."
     },
     {
       "id": "data_19_annotated_simulator_bundle",
       "producer": "simulator-evidence-compilation",
       "consumers": [
         "stage4"
+      ],
+      "required_files": [
+        "evidence_manifest.json"
+      ],
+      "required_nonempty_jsonl_any_of": [
+        "privileged_gt.jsonl",
+        "SIMULATOR_DATA.jsonl"
       ]
     }
   ]

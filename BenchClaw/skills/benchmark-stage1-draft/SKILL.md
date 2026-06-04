@@ -13,6 +13,7 @@
 - 每个节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
 - 继承总入口和 pipeline 的长任务 `tmux` 执行协议：任何下载、检索、外部工具调用、批处理、模型推理、训练、仿真、清洗、标注或全量评测等可能长时间运行的命令，必须在 `tmux` 会话中执行、写入 `nodes/<node-id>/run_logs/` 并定期监控；未使用 `tmux` 必须在 `NODE_REPORT.md` 说明短任务依据和实际耗时。
 - 每个编号数据必须写入：`artifacts/<data-id>/`。
+- `literature-search` 与 `literature-review` 必须基于真实下载到 workspace 的论文原文和提取文本工作；没有本地 PDF/官方 HTML 全文、sha256、下载记录、提取文本和阅读证据的论文不得作为文献证据。严禁编造论文、DOI、arXiv ID、作者、年份、页码、指标或实验结论；证据不足时必须 `BLOCKED`。
 - 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 - `data_05_source_capability_descriptions` 的数据源能力只能来自 `BENCHCLAW_ROOT/benchmarkDatasetCards/`、`BENCHCLAW_ROOT/realDataCards/`、`BENCHCLAW_ROOT/simulatorCards/` 三类数据源卡目录。
 - `data_06_semisupervised_capability_signals` 的标注工具能力只能来自 `BENCHCLAW_ROOT/annotation-tool/` 标注工具卡目录。
