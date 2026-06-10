@@ -1,5 +1,9 @@
 # BenchClaw
 
+## Awesome Benchmark Index
+
+For a year-organized list of existing embodied AI, robotics, navigation, simulation, and multimodal-agent benchmarks tracked from `benchmarks.xlsx`, see [Awesome BenchClaw Benchmarks](AWESOME.md).
+
 BenchClaw is a Skill-first benchmark manufacturing repository for Agent environments such as OpenCode. It is not a single executable app or a traditional Python package. Instead, it provides staged `SKILL.md` contracts, DAG and ready-set execution rules, capability cards, validation scripts, and fixed workspace artifact layouts for data collection, evidence compilation, benchmark packaging, and evaluation.
 
 The repository is designed to turn a rough benchmark idea into a reproducible Stage1 to Stage5 pipeline with explicit artifacts, path isolation, and auditability.
