@@ -367,7 +367,7 @@ def build_parser():
     submit_parser.add_argument("--image-path", action="append", required=True)
     submit_parser.add_argument("--export-dir", required=True)
     submit_parser.add_argument("--export-format", default="glb")
-    submit_parser.add_argument("--process-res", type=int, default=504)
+    submit_parser.add_argument("--process-res", type=int, default=1024)
     submit_parser.add_argument("--process-res-method", default="upper_bound_resize")
     submit_parser.add_argument("--export-feat", default="")
     submit_parser.add_argument(
@@ -398,7 +398,7 @@ def build_parser():
     auto_parser.add_argument("--input-path", required=True)
     auto_parser.add_argument("--export-dir", required=True)
     auto_parser.add_argument("--export-format", default="glb")
-    auto_parser.add_argument("--process-res", type=int, default=504)
+    auto_parser.add_argument("--process-res", type=int, default=1024)
     auto_parser.add_argument("--process-res-method", default="upper_bound_resize")
     auto_parser.add_argument("--export-feat", default="")
     auto_parser.add_argument("--auto-cleanup", action="store_true")

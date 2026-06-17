@@ -7,8 +7,8 @@
       "options": {
         "baseURL": "http://127.0.0.1:9000/v1",
         "apiKey": "EMPTY",
-        "timeout": 600000,
-        "chunkTimeout": 60000
+        "timeout": 3000000,
+        "chunkTimeout": 3000000
       },
       "models": {
         "Qwen3.6-35B-A3B": {

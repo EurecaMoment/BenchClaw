@@ -55,6 +55,25 @@ BENCHCLAW_ROOT/templates/template_system/07_stage1_stage4_usage.md
 - 禁止选择 `deprecated_locked`、`agent_selectable: false`、`DEPRECATED`/locked 状态、硬约束不满足或需要隐藏 GT 字段直接出现在题面中的模板。
 - 本 stage 的本地 schema 与目录契约仍是最终输出契约；统一模板包决定“选哪些模板”，本 stage schema 决定“产物如何落盘和交接”。
 
+## 外挂参考库：BenchClaw 图像/视频模板-指标适配层
+
+本 skill 随包提供 `reference_library/` 作为外挂参考库，用于把统一模板包中的候选模板适配到 BenchClaw 当前的数据制造边界：图像/视频观测 + 仿真器或半监督标注 GT + 结构化答案 + 确定性自动评分。启动本节点后，必须读取并在 `USED_INPUTS.json` 中登记：
+
+```text
+reference_library/README.md
+reference_library/BENCHCLAW_IMAGE_VIDEO_TEMPLATE_METRIC_LIBRARY.md
+reference_library/template_family_registry.yaml
+reference_library/answer_type_metric_registry.json
+reference_library/schema_patch_notes.md
+```
+
+使用方式：
+
+- 该参考库不是 `BENCHCLAW_ROOT/templates/` 统一模板包的替代品；统一模板包仍决定候选模板来源和硬约束。
+- 该参考库是本节点的适配过滤层：enabled 模板必须能映射到参考库保留的 10 类图像/视频模板族之一，并满足保留 answer type、保留 deterministic metric、可审计 `gt_source/gt_evidence` 与自动评分要求。
+- 若统一模板包中某候选模板无法映射到参考库保留模板族，或需要非图像/视频输入、自由文本主答案、captioning、主观 rating、LLM-as-judge 主指标、不可追溯 GT，则只能写为 disabled/blocked，不得编译为 enabled runtime template。
+- 与本 stage schema 或统一模板包硬契约冲突时，不得用外挂参考库绕过硬契约；应按原有 BLOCKED/disabled 机制记录原因。
+
 ## 输入
 
 - `data_11_template_metric_initial_draft`
@@ -71,8 +90,9 @@ BENCHCLAW_ROOT/templates/template_system/07_stage1_stage4_usage.md
 3. 从上游 artifact 或配置映射中定位 `data_10`、`data_11`、`data_17`、`data_18`、`data_19`；不得使用聊天上下文替代文件读取。
 4. 读取 `data_10_capability_dimension_doc/capability_dimensions.md`、`q_matrix_seed.csv` 或等价能力维度文件，提取 `capability_id`、能力名称、定义、GT/字段依赖、排除项和计划题型；无法解析能力维度时必须阻塞。
 5. 读取并校验统一模板包，建立 `primary_capability`、`canonical_question_type`、`required_fields`、`template_set`、`agent_selectable`、硬约束和覆盖矩阵索引。
-6. 动态枚举 Stage3 bundle 中的 manifest、jsonl、媒体和 GT 文件；不要硬编码数据集名、仿真器名或字段名。
-7. 生成字段目录和证据索引，记录每条可用 evidence 的来源、媒体路径、GT 字段、可见性/唯一性约束和可用于哪些统一模板。
+6. 读取 `reference_library/` 外挂参考库，建立保留模板族、保留 answer type、保留 metric、允许 GT 来源和适配过滤规则；参考库缺失或不可读时必须阻塞。
+7. 动态枚举 Stage3 bundle 中的 manifest、jsonl、媒体和 GT 文件；不要硬编码数据集名、仿真器名或字段名。
+8. 生成字段目录和证据索引，记录每条可用 evidence 的来源、媒体路径、GT 字段、可见性/唯一性约束和可用于哪些统一模板。
 
 若任一必需输入目录不存在、关键 json/jsonl/yaml/csv 不可读、媒体路径越界、GT 字段无法追溯，或 Stage1 能力维度无法映射到统一模板库中的可选模板，必须阻塞或将对应能力维度写入 disabled 记录并说明原因。
 
@@ -83,7 +103,7 @@ BENCHCLAW_ROOT/templates/template_system/07_stage1_stage4_usage.md
 调用 `subskills/template-compilation/SKILL.md`：
 
 - 以 `data_10` 的能力维度划分作为需求集合，逐个能力维度从 `BENCHCLAW_ROOT/templates/template_library/benchclaw_fixed_template_registry.yaml` 与 `templates_100_unified.index.json` 中选取需要的统一模板。
-- 将选中的统一模板与 `data_11` 的模板/指标初稿、本 stage `benchmark_item.schema.json`、Stage3 字段目录对齐；不得使用不在统一模板库选择结果中的模板作为 enabled 模板。
+- 将选中的统一模板与 `data_11` 的模板/指标初稿、本 stage `benchmark_item.schema.json`、Stage3 字段目录和 `reference_library/` 图像/视频适配规则对齐；不得使用不在统一模板库选择结果中、或无法映射到外挂参考库保留模板族的模板作为 enabled 模板。
 - 为每个候选模板生成机器可读模板定义，至少包含 `template_id`、`unified_template_id`、`template_family`、`question_pattern`、`source_types`、`required_evidence_fields`、`required_media`、`answer_format`、`metric_id`、`capability_tags`、`capability_dimension_refs`、`instantiation_algorithm`、`quality_gates`、`failure_conditions`、`grey_quota` 和 `full_quota_hint`。
 - 生成 `selected_template_sources.jsonl`，逐条记录能力维度到统一模板的选择、禁用或阻塞原因，包括 `capability_id`、`capability_name`、`unified_template_id`、`template_set`、`primary_capability`、`required_fields`、`field_coverage_status`、`evidence_sample_count`、`selection_status` 和 `selection_reason`。
 - 禁用或阻塞无法由 Stage3 证据唯一回答的模板；不得为了覆盖率编造 GT、常识答案或虚构媒体。
@@ -94,7 +114,7 @@ BENCHCLAW_ROOT/templates/template_system/07_stage1_stage4_usage.md
 
 - 为每个 `answer_format` 和 `metric_id` 生成指标定义与可执行评分入口。
 - 指标必须声明输入解析、归一化、容差、聚合维度、不适用条件和失败返回。
-- 优先使用可自动评分指标：exact/accuracy、set exact、F1、数值误差/容差、排序、IoU、成对 Accuracy+。开放问答或 LLM-as-judge 只能作为辅助指标，且必须有固定 rubric、judge 配置和人工抽查说明。
+- 主指标必须映射到 `reference_library/answer_type_metric_registry.json` 中保留的 deterministic metric；开放问答、captioning、主观 rating 或 LLM-as-judge 不得作为 BenchClaw 图像/视频适配模式的主指标。
 
 ### 3. 答案程序与批量合成代码生成
 
@@ -155,6 +175,11 @@ WORKSPACE_ROOT/stage4/
       template_contract.schema.json
       metric_contract.schema.json
       runtime_contract.json
+    references/
+      BENCHCLAW_IMAGE_VIDEO_TEMPLATE_METRIC_LIBRARY.md
+      template_family_registry.yaml
+      answer_type_metric_registry.json
+      schema_patch_notes.md
     tests/
       fixtures/
       smoke_test.py
@@ -184,6 +209,7 @@ WORKSPACE_ROOT/stage4/
 - `filter_log_policy`：过滤样本的 jsonl 路径、字段和原因枚举。
 - `prediction_contract`：预测文件必需字段、允许的 answer 格式和无效预测处理。
 - `score_report_contract`：评分报告必需字段和聚合维度。
+- `reference_policy`：本 bundle 使用的外挂参考库文件、版本、保留模板族和保留指标列表；后续节点只消费已编译产物，不重新扩展到未保留模板。
 
 `runtime_contract.json` 至少包含：
 
@@ -202,7 +228,12 @@ WORKSPACE_ROOT/stage4/
     "code_manifest.json",
     "traceability.csv"
   ],
-  "item_schema": "contracts/benchmark_item.schema.json"
+  "item_schema": "contracts/benchmark_item.schema.json",
+  "references": {
+    "template_metric_library": "references/BENCHCLAW_IMAGE_VIDEO_TEMPLATE_METRIC_LIBRARY.md",
+    "template_family_registry": "references/template_family_registry.yaml",
+    "answer_type_metric_registry": "references/answer_type_metric_registry.json"
+  }
 }
 ```
 
@@ -212,14 +243,14 @@ WORKSPACE_ROOT/stage4/
 
 - 已登记所有实际读取的输入和模板参考文件。
 - 已读取 `data_10_capability_dimension_doc`，且每个 Stage1 能力维度都有对应的 selected、disabled 或 blocked 模板选择记录。
-- `selected_template_sources.jsonl` 非空，且每个 enabled 模板都能追溯到统一模板包中的 `unified_template_id`、`primary_capability`、`required_fields` 和 `template_set`。
+- `selected_template_sources.jsonl` 非空，且每个 enabled 模板都能追溯到统一模板包中的 `unified_template_id`、`primary_capability`、`required_fields` 和 `template_set`，并能映射到外挂参考库保留模板族。
 - 至少有一个通过契约检查、可实例化、可评分的模板；若 stage4 计划要求的能力维度无法覆盖，必须在报告中说明缺口。
 - 每个 enabled 模板必须来自 `BENCHCLAW_ROOT/templates/` 中通过校验的可选模板；不得出现没有统一模板来源的自造 enabled 模板。
 - 每个 enabled 模板都有对应模板 JSON、答案程序、指标定义、traceability 记录和 smoke fixture。
-- 每个 enabled `metric_id` 都有可执行评分实现或明确的外部评估协议；主指标不得只有 LLM-as-judge。
+- 每个 enabled `metric_id` 都有可执行评分实现，且主指标属于外挂参考库保留 deterministic metric；不得以 LLM-as-judge、captioning metric 或主观 rating 作为主指标。
 - `python -m py_compile` 对生成的 `.py` 文件通过。
 - `scripts/validate_bundle.py`、`tests/smoke_test.py`、完美预测评分和负例评分均已运行并记录结果。
-- `self_test/dry_run_items.jsonl` 中每条 item 均符合本 stage `benchmark_item.schema.json`，且 `media` 路径存在或被明确标记为不需要媒体的可验证文本/状态题。
+- `self_test/dry_run_items.jsonl` 中每条 item 均符合本 stage `benchmark_item.schema.json`，且 `media` 路径存在；若为 image_pair、multi_image 或 video_clip，所有声明路径/帧引用均可追溯。
 
 ## 输出
 
@@ -232,4 +263,5 @@ WORKSPACE_ROOT/stage4/
 - `artifacts/data_20_template_metric_code_bundle/self_test/`
 - `artifacts/data_20_template_metric_code_bundle/selected_template_sources.jsonl`
 - `artifacts/data_20_template_metric_code_bundle/traceability.csv`
+- `artifacts/data_20_template_metric_code_bundle/references/`
 - 节点执行记录文件

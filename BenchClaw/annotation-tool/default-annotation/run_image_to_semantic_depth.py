@@ -1231,15 +1231,18 @@ def run_sam3_for_verified_label(
 def _np_from_export_dir(export_dir: Path) -> Tuple[Optional[np.ndarray], List[Path]]:
     candidates: List[Path] = []
     for pattern in (
+        "absolute_depth.npy",
+        "absolute_depth.npz",
+        "absolute_depth.tif*",
+        "absolute_depth/frame_*.npy",
+        "absolute_depth/frame_*.tif*",
         "**/*.npy",
         "**/*.npz",
-        "**/depth_vis/*.jpg",
-        "**/depth_vis/*.png",
-        "**/depth/*.png",
-        "**/depth*.png",
         "**/*depth*.tif*",
     ):
-        candidates.extend(sorted(export_dir.glob(pattern)))
+        for path in sorted(export_dir.glob(pattern)):
+            if "_vis" not in path.stem:
+                candidates.append(path)
 
     for path in candidates:
         try:
@@ -1262,7 +1265,7 @@ def _np_from_export_dir(export_dir: Path) -> Tuple[Optional[np.ndarray], List[Pa
             continue
 
     for path in candidates:
-        if path.suffix.lower() in (".png", ".jpg", ".jpeg", ".tif", ".tiff"):
+        if path.suffix.lower() in (".tif", ".tiff"):
             try:
                 img = Image.open(path)
                 arr = np.array(img)
@@ -1285,13 +1288,7 @@ def run_da3(
     export_dir = work_dir / "da3_export"
     export_dir.mkdir(parents=True, exist_ok=True)
 
-    native_res = max(h, w)
-    da3_process_res = int(process_res) if process_res is not None else native_res
-    if da3_process_res < native_res:
-        raise ValueError(
-            f"DA3 process_res={da3_process_res} is smaller than native max side "
-            f"{native_res}; refusing to reduce resolution."
-        )
+    da3_process_res = int(process_res) if process_res is not None else 1024
 
     method = "upper_bound_resize"
     submit_cmd = [
@@ -1324,15 +1321,14 @@ def run_da3(
     ) or bool(err_text)
     if is_failed:
         raise RuntimeError(
-            "DA3 failed at native resolution. Refusing to retry at a smaller "
-            f"resolution because --no-resolution-drop is enforced. Response: {wait_text}"
+            f"DA3 failed at process_res={da3_process_res}. Response: {wait_text}"
         )
 
     depth_arr, candidate_files = _np_from_export_dir(export_dir)
     if depth_arr is not None and depth_arr.shape != (h, w):
         raise RuntimeError(
             f"DA3 depth shape {depth_arr.shape} != native image shape {(h, w)}. "
-            "Refusing to resize/interpolate because resolution must not be reduced."
+            "Expected DA3 to restore float32 depth to original resolution."
         )
 
     info = {
@@ -1341,7 +1337,9 @@ def run_da3(
         "export_dir": str(export_dir),
         "process_res": da3_process_res,
         "process_res_method": method,
-        "native_resolution_enforced": True,
+        "restored_to_original_resolution": bool(
+            depth_arr is not None and depth_arr.shape == (h, w)
+        ),
         "depth_candidate_files": [str(p) for p in candidate_files],
     }
     return depth_arr, export_dir, info
@@ -1833,7 +1831,10 @@ def main() -> int:
         "--da3-process-res",
         type=int,
         default=None,
-        help="DA3 处理分辨率。默认使用原图最大边；小于原图最大边会直接报错，防止降分辨率。",
+        help=(
+            "DA3 处理分辨率。默认 1024：最长边等比例缩放到该值推理，"
+            "再将 float32 深度还原到原图分辨率。"
+        ),
     )
     ap.add_argument(
         "--fx", type=float, default=None, help="相机内参 fx；不提供则用 max(W,H) 近似。"
@@ -2158,7 +2159,9 @@ def main() -> int:
             "export_dir": str(da3_export_dir),
             "depth_available": depth_arr is not None,
             "depth_shape": list(depth_arr.shape) if depth_arr is not None else None,
-            "native_resolution_enforced": da3_info.get("native_resolution_enforced"),
+            "restored_to_original_resolution": da3_info.get(
+                "restored_to_original_resolution"
+            ),
             "process_res": da3_info.get("process_res"),
             "process_res_method": da3_info.get("process_res_method"),
             "depth_unit_hint": "absolute_depth (DA3 backend default)",

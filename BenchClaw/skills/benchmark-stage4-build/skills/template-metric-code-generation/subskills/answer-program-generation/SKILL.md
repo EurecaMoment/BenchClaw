@@ -14,8 +14,9 @@
 - `field_catalog.yaml`
 - `evidence_index.jsonl`
 - 本 stage `templates/benchmark_item.schema.json`
+- 本 skill `reference_library/answer_type_metric_registry.json`、`reference_library/template_family_registry.yaml` 和 `schema_patch_notes.md`
 
-每个 enabled 模板必须先在 `selected_template_sources.jsonl` 中有 `selection_status=selected` 的统一模板来源记录；答案程序不得为没有 `unified_template_id` 来源的模板生成可运行入口。
+每个 enabled 模板必须先在 `selected_template_sources.jsonl` 中有 `selection_status=selected` 的统一模板来源记录，并且通过 `reference_library/` 的图像/视频适配过滤；答案程序不得为没有 `unified_template_id` 或没有 `reference_template_family` 来源的模板生成可运行入口。
 
 ## 代码产物
 
@@ -30,6 +31,7 @@ artifacts/data_20_template_metric_code_bundle/tests/smoke_test.py
 artifacts/data_20_template_metric_code_bundle/code_manifest.json
 artifacts/data_20_template_metric_code_bundle/synthesis_plan.yaml
 artifacts/data_20_template_metric_code_bundle/contracts/runtime_contract.json
+artifacts/data_20_template_metric_code_bundle/references/<reference_file>
 ```
 
 代码优先使用 Python 标准库。确需第三方库时，必须写入 `code_manifest.json` 的 `runtime_dependencies` 并在 `validate_bundle.py` 中给出清晰缺依赖错误；不得静默降级或联网安装。
@@ -67,11 +69,11 @@ evidence_refs
 metric_id
 ```
 
-允许额外写入 `source_sample_id`、`options`、`answer_format`、`answer_derivation`、`quality_gate`、`metadata` 等字段，但不能缺少本 stage schema 必需字段。
+允许额外写入 `source_sample_id`、`options`、`answer_format`、`answer_derivation`、`quality_gate`、`metadata` 等字段，但不能缺少本 stage schema 必需字段。BenchClaw 图像/视频适配模板还必须保留 `provenance.gt_source`、`provenance.gt_evidence` 或等价 `evidence_refs`，以便后续审计答案来源。
 
 ## 答案生成规则
 
-- 答案只能来自 record 中的官方 label、人工标注、仿真器 privileged GT、Stage3 明确授权 GT 或可复现计算。
+- 答案只能来自 record 中的官方 label、人工标注、仿真器 privileged GT、Stage3 明确授权 GT 或可复现计算，并必须映射到外挂参考库保留 answer type：choice、bool、number、point2d、bbox2d、mask、ordered_list、action_sequence 或 relation_tuple。
 - `compute_answer` 必须是确定性的；同一 record、同一模板、同一 seed 下输出一致。
 - 单选题必须构造且只构造一个正确选项；干扰项要来自同场景、同数据源、同语义层级或相近数值范围。
 - 判断题应尽量支持正负成对构造，并记录 pair/group id，便于 Accuracy+。
@@ -79,6 +81,7 @@ metric_id
 - 数值题必须写明单位和容差来源；没有单位或容差无法解释时禁用该模板。
 - 需要媒体的题必须验证 `media` 中每个路径存在、在 `WORKSPACE_ROOT` 内或是已登记的稳定 workspace 相对路径。
 - 视觉题若目标不可见、过小、遮挡、同类实例不可区分或字段无法确认可见性，必须由 `supports` 返回失败，不得生成 item。
+- 题面不得暴露 object_id、depth_median、privileged_gt、simulator hidden state 字段名；仿真器 3D 状态只能用于生成可观察图像/视频题的 GT，不得要求模型直接输出 3D bbox 或 point-cloud instance id。
 
 ## 批量合成入口
 
@@ -97,7 +100,7 @@ python scripts/generate_items.py \
 要求：
 
 - 按 template manifest、evidence index 和配额批量生成 item。
-- 生成前校验 template manifest 与 `selected_template_sources.jsonl` 一致；没有统一模板来源、被 disabled/blocked 或 required fields 不满足的模板必须跳过并记录过滤原因。
+- 生成前校验 template manifest 与 `selected_template_sources.jsonl` 以及 `references/template_family_registry.yaml` 一致；没有统一模板来源、没有外挂参考库映射、被 disabled/blocked 或 required fields 不满足的模板必须跳过并记录过滤原因。
 - 支持按 `template_id` 单模板运行，方便灰度定位。
 - 记录过滤原因到同目录 `filtered_items.jsonl` 或命令行指定路径。
 - 对每个 enabled 模板至少尝试 `grey_quota` 条 evidence；不足时写入过滤/缺口记录。
@@ -118,6 +121,10 @@ grey_batch:
   per_template_quota_field: grey_quota
 full_synthesis:
   per_template_quota_field: full_quota_hint
+references:
+  template_metric_library: references/BENCHCLAW_IMAGE_VIDEO_TEMPLATE_METRIC_LIBRARY.md
+  template_family_registry: references/template_family_registry.yaml
+  answer_type_metric_registry: references/answer_type_metric_registry.json
 templates:
   - template_id: example
     status: enabled
@@ -166,8 +173,9 @@ python scripts/score_predictions.py \
 - enabled 模板是否有可导入答案程序和可执行指标。
 - `contracts/benchmark_item.schema.json` 是否与本 stage schema 兼容。
 - smoke fixture 或 dry-run item 是否符合 schema。
-- 媒体路径是否存在或被明确声明为无需媒体。
+- 媒体路径是否存在；image_pair、multi_image、video_clip 的所有子路径或帧引用必须可追溯。
 - `synthesis_plan.yaml` 和 `contracts/runtime_contract.json` 是否提供后续节点所需的公开入口。
+- `references/` 中是否复制了本 skill 外挂参考库，并与 enabled 模板的 `reference_template_family`、`reference_answer_type`、`reference_metric_id` 一致。
 
 ## Smoke fixture
 
@@ -198,6 +206,7 @@ self_test/negative_predictions.jsonl
 
 - enabled 模板无法生成答案程序。
 - 答案程序不能从真实 evidence 计算答案。
+- 答案程序生成的 answer type、metric 或 template family 不在外挂参考库保留集合中。
 - 批量合成入口无法在无网络、只读输入条件下运行。
 - 评分入口无法导入指标实现。
 - 所有模板都无法生成 smoke fixture。
