@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-existing-benchmark-data-materialization
+description: Use for the specific BenchClaw subskill `stage2-existing-benchmark-data-materialization` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 已有 benchmark 数据物化
 
 ## 作用域

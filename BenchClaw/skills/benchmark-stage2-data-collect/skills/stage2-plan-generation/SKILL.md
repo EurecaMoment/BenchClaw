@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-plan-generation
+description: Use for the specific BenchClaw node skill `stage2-plan-generation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 本阶段执行计划生成
 
 ## 输入
@@ -25,7 +30,7 @@
 7. 所有路径判断必须使用冻结的 `BENCHCLAW_ROOT` 解析后的实际路径；不得用字符串包含关系代替目录归属校验。若解析后的 card 路径不在所属类别根目录内，必须阻塞。
 8. 空分支只有在 `data_13_execution_plan` 明确说明该类别不需要，并且 `stage2_execution_plan.yaml` 中把该类别标为 `enabled: false` 且写明原因时才允许；否则发现不到合法 card 或 work unit 必须阻塞。
 9. `stage2_execution_plan.yaml` 必须显式写出各个数据源 work unit 的并行 DAG；不得只写“可以并行”、不得只写类别级 ready group、不得保留空的 `discovered_cards: []` 或 `work_units: []` 作为实际计划。除非某分支被显式禁用，每个发现到的数据源都必须有自己的 DAG 节点、边、并行组和隔离输出目录。
-10. 每个并行 DAG 节点必须精确写明要调用的类别节点 skill 与本类别 subskill 路径。真实图片只能调用 `skills/real-image-collection-analysis/subskills/content-analysis/SKILL.md` 与 `skills/real-image-collection-analysis/subskills/data-structure-normalization/SKILL.md`；已有 benchmark 只能调用 `skills/existing-benchmark-collection-analysis/subskills/content-label-analysis/SKILL.md` 与 `skills/existing-benchmark-collection-analysis/subskills/data-materialization/SKILL.md`；仿真器只能调用 `skills/simulator-collection-analysis/subskills/data-acquisition/SKILL.md` 与 `skills/simulator-collection-analysis/subskills/gt-materialization/SKILL.md`。
+10. 每个并行 DAG 节点必须精确写明要调用的类别节点 skill 名与本类别 subskill skill 名；源码路径只作为可追溯目录说明。真实图片只能调用 `benchclaw-stage2-real-image-content-analysis` 与 `benchclaw-stage2-real-image-data-structure-normalization`；已有 benchmark 只能调用 `benchclaw-stage2-existing-benchmark-content-label-analysis` 与 `benchclaw-stage2-existing-benchmark-data-materialization`；仿真器只能调用 `benchclaw-stage2-simulator-data-acquisition` 与 `benchclaw-stage2-simulator-gt-materialization`。
 11. 不同数据源的第一步 subskill 节点必须放入同一个跨类别 `parallel_group`，使真实图片、已有 benchmark 和仿真器数据源能实质并行启动；同一数据源内部的第二步 subskill 只能依赖自己的第一步，不得依赖其他数据源完成。
 12. 根 bundle 汇总节点必须是每个类别内部的串行 barrier，只依赖本类别所有 work unit 的末端 subskill；不得让某一类别的汇总等待其他类别的 work unit，Stage2 的最终完成门才等待三类 terminal bundle。
 13. 所有执行真实数据采集、扫描、下载、解压、复制、物化、仿真 replay/运行或 GT 导出的 DAG 节点都必须写入 `tmux_required: true`、`monitor_interval_seconds: 15`、`monitor_until: session_finished`、`tmux_session_name`、`log_path` 和 `monitoring_log_path`；计划不得把采集命令设计成前台长期运行。
@@ -59,7 +64,7 @@ BENCHCLAW_ROOT/simulatorCards/<simulator_id>/SKILL.md
 - 仿真器：按 `simulatorCards` 的直接子文件夹和计划要求的 `task_family` 并行，每个 work unit 写入 `artifacts/data_16_simulator_collection_bundle/simulators/<simulator_id>/<task_family>/`。
 
 8. 明确并行时共享输入只读、共享输出隔离：任何 work unit 不得同时追加写 bundle 根目录汇总文件；所有 per-dataset 或 per-simulator 输出完成后，所属分支再串行汇总。
-9. 写入本阶段执行计划，供三条分支按类别并行消费，并确保大模型可以只读取 `parallel_dag` 就知道每个数据源该调用哪个 subskill、哪些节点可并行、哪些节点必须等待。
+9. 写入本阶段执行计划，供三条分支按类别并行消费，并确保大模型可以只读取 `parallel_dag` 就知道每个数据源该调用哪个已注册 skill、哪些节点可并行、哪些节点必须等待。
 
 ## `stage2_execution_plan.yaml` 必填结构
 
@@ -138,6 +143,8 @@ parallel_dag:
       category: real_image
       work_unit_id: real_image::<dataset_id>
       parent_category_node: real-image-collection-analysis
+      parent_skill_name: benchclaw-stage2-real-image-collection-analysis
+      skill_name: benchclaw-stage2-real-image-content-analysis
       skill_path: skills/real-image-collection-analysis/SKILL.md
       subskill_path: skills/real-image-collection-analysis/subskills/content-analysis/SKILL.md
       card_skill: BENCHCLAW_ROOT/realDataCards/<dataset_id>/SKILL.md
@@ -154,6 +161,8 @@ parallel_dag:
       category: real_image
       work_unit_id: real_image::<dataset_id>
       parent_category_node: real-image-collection-analysis
+      parent_skill_name: benchclaw-stage2-real-image-collection-analysis
+      skill_name: benchclaw-stage2-real-image-data-structure-normalization
       skill_path: skills/real-image-collection-analysis/SKILL.md
       subskill_path: skills/real-image-collection-analysis/subskills/data-structure-normalization/SKILL.md
       card_skill: BENCHCLAW_ROOT/realDataCards/<dataset_id>/SKILL.md
@@ -170,6 +179,8 @@ parallel_dag:
       category: existing_benchmark
       work_unit_id: existing_benchmark::<dataset_id>
       parent_category_node: existing-benchmark-collection-analysis
+      parent_skill_name: benchclaw-stage2-existing-benchmark-collection-analysis
+      skill_name: benchclaw-stage2-existing-benchmark-content-label-analysis
       skill_path: skills/existing-benchmark-collection-analysis/SKILL.md
       subskill_path: skills/existing-benchmark-collection-analysis/subskills/content-label-analysis/SKILL.md
       card_skill: BENCHCLAW_ROOT/benchmarkDatasetCards/<dataset_id>/SKILL.md
@@ -186,6 +197,8 @@ parallel_dag:
       category: existing_benchmark
       work_unit_id: existing_benchmark::<dataset_id>
       parent_category_node: existing-benchmark-collection-analysis
+      parent_skill_name: benchclaw-stage2-existing-benchmark-collection-analysis
+      skill_name: benchclaw-stage2-existing-benchmark-data-materialization
       skill_path: skills/existing-benchmark-collection-analysis/SKILL.md
       subskill_path: skills/existing-benchmark-collection-analysis/subskills/data-materialization/SKILL.md
       card_skill: BENCHCLAW_ROOT/benchmarkDatasetCards/<dataset_id>/SKILL.md
@@ -202,6 +215,8 @@ parallel_dag:
       category: simulator
       work_unit_id: simulator::<simulator_id>::<task_family>
       parent_category_node: simulator-collection-analysis
+      parent_skill_name: benchclaw-stage2-simulator-collection-analysis
+      skill_name: benchclaw-stage2-simulator-data-acquisition
       skill_path: skills/simulator-collection-analysis/SKILL.md
       subskill_path: skills/simulator-collection-analysis/subskills/data-acquisition/SKILL.md
       card_skill: BENCHCLAW_ROOT/simulatorCards/<simulator_id>/SKILL.md
@@ -218,6 +233,8 @@ parallel_dag:
       category: simulator
       work_unit_id: simulator::<simulator_id>::<task_family>
       parent_category_node: simulator-collection-analysis
+      parent_skill_name: benchclaw-stage2-simulator-collection-analysis
+      skill_name: benchclaw-stage2-simulator-gt-materialization
       skill_path: skills/simulator-collection-analysis/SKILL.md
       subskill_path: skills/simulator-collection-analysis/subskills/gt-materialization/SKILL.md
       card_skill: BENCHCLAW_ROOT/simulatorCards/<simulator_id>/SKILL.md
@@ -384,7 +401,7 @@ status: planned
 
 ## 显式并行 DAG 调度规则
 
-1. 读取 `parallel_dag.nodes[]`，选择 `parents: []` 的所有节点组成第一轮 ready set；这些节点必须跨类别并行执行，且必须精确调用各自 `subskill_path`。
+1. 读取 `parallel_dag.nodes[]`，选择 `parents: []` 的所有节点组成第一轮 ready set；这些节点必须跨类别并行执行，并且执行器必须优先调用各自 `skill_name`，`subskill_path` 只作源码定位和审计。
 2. 某个 work unit 的第一步 subskill 完成后，只释放同一 `work_unit_id` 的第二步 subskill；不得因为其他数据源未完成而等待。
 3. 某一类别的所有第二步 subskill 完成后，只释放该类别自己的 summary barrier；真实图片、已有 benchmark、仿真器三个 summary barrier 互不依赖。
 4. Stage2 终止门只等待 `real_image::summary`、`existing_benchmark::summary`、`simulator::summary` 三个 barrier 全部完成并通过质量门。

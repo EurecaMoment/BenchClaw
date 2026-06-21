@@ -1397,5 +1397,10 @@
       "subtask": true,
       "template": "Explore this BenchClaw skill contract. Return frontmatter, phase chain, required inputs, outputs, gates, delegation rules, parallelizable branches, and downstream handoff contract.\n\n$ARGUMENTS"
     }
+  },
+  "skills": {
+    "paths": [
+      "skills"
+    ]
   }
 }

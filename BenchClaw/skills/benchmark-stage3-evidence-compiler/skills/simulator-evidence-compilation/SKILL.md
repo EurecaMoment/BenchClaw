@@ -1,13 +1,29 @@
+---
+name: benchclaw-stage3-simulator-evidence-compilation
+description: Use for the specific BenchClaw node skill `stage3-simulator-evidence-compilation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 仿真器清洗与标注
 
 ## 内部层级
 
-本节点包含两个内部 subskill，按仿真器、任务族或场景 work unit 独立运行：
+本节点包含两个内部 subskill，按仿真器、任务族或场景 work unit 独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/cleaning/SKILL.md
 subskills/annotation/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+
+- `cleaning` -> `benchclaw-stage3-simulator-cleaning`
+- `annotation` -> `benchclaw-stage3-simulator-annotation`
+
+## Work Unit Context Return Protocol
+
+每个仿真器 work unit 只返回：`work_unit_id`、`status`、per-work-unit 输出目录、observation/text/gt 计数、阻塞原因和一句摘要。不要回灌长状态日志、privileged GT 全文或长默认标注原始输出。
 
 ## 输入
 
@@ -35,19 +51,19 @@ simulator::<work_unit_id>::cleaning
 simulator::<work_unit_id>::annotation
 ```
 
-这两个节点必须分别精确调用：
+这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
-skills/simulator-evidence-compilation/subskills/cleaning/SKILL.md
-skills/simulator-evidence-compilation/subskills/annotation/SKILL.md
+benchclaw-stage3-simulator-cleaning
+benchclaw-stage3-simulator-annotation
 ```
 
 如果 `stage3_execution_plan` 没有显式列出某个仿真器 work unit 的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同仿真器 work unit 之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
 每个 work unit 必须依次运行：
 
-1. `subskills/cleaning/SKILL.md`
-2. `subskills/annotation/SKILL.md`
+1. `benchclaw-stage3-simulator-cleaning`
+2. `benchclaw-stage3-simulator-annotation`
 
 ## Per-work-unit 输出目录
 
@@ -68,7 +84,7 @@ artifacts/data_19_annotated_simulator_bundle/work_units/<work_unit_id>/
 ## 处理
 
 1. 动态发现仿真器观测、状态日志、privileged GT、场景配置和 seed。
-2. 对每个 work unit 先调用 `subskills/cleaning/SKILL.md`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
+2. 对每个 work unit 先调用 `benchclaw-stage3-simulator-cleaning`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
 3. 从仿真器 privileged state 或可验证计算中整理 GT；不得用模型生成内容或默认标注替代仿真器 GT。
 4. 只有当 `stage3_execution_plan` 明确要求额外视觉伪标注时，annotation subskill 才可调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md`，并且输出必须标记为辅助候选，不得覆盖 privileged GT。
 5. 将每个 step/episode 的观测媒体、文本描述、清洗后状态、动作/场景字段和 privileged GT 完整写入 workspace：观测必须复制或链接到本 bundle 的 `observations/`，`text_items.jsonl` 必须包含任务描述、状态摘要、事件描述或可供 Stage4 合成的问题上下文。

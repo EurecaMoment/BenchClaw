@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-real-image-annotation
+description: Use for the specific BenchClaw subskill `stage3-real-image-annotation` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 真实图片标注
 
 ## 作用域

@@ -1,3 +1,8 @@
+---
+name: benchclaw-pipeline
+description: Use for top-level BenchClaw orchestration across Stage1-Stage5, workspace freezing, stage gates, and pipeline state handoff.
+---
+
 # BenchClaw Pipeline Skill — Stage1 到 Stage5 总控
 
 ## 角色
@@ -13,6 +18,34 @@ Stage1 草稿与执行计划
 ```
 
 Stage1 到 Stage5 必须按上述顺序执行。每个 stage 内部仍遵守自己的 `dag.json`、`contracts/node_io_contracts.json` 和 ready-set 调度规则；pipeline 不得把 stage 内部节点强行改成串行链。
+
+## Registered Stage Skill Names
+
+当 pipeline 需要调度 stage skill 时，必须通过 opencode `skill` 工具按下面的显式名字调用，而不是依赖相对路径字符串碰运气：
+
+- `benchclaw-stage1-draft`
+- `benchclaw-stage2-data-collect`
+- `benchclaw-stage3-evidence-compiler`
+- `benchclaw-stage4-build`
+- `benchclaw-stage5-eval`
+
+## Stage Context Return Protocol
+
+每个 stage skill 返回给 pipeline 时，只允许回传结构化摘要，不允许把 stage 内部长日志、完整 tool response、整段 SKILL.md 正文或大量中间产物全文继续塞回主流程。推荐返回：
+
+```json
+{
+  "stage": "stage1 | stage2 | stage3 | stage4 | stage5",
+  "status": "DONE | BLOCKED",
+  "artifact_root": "...",
+  "artifacts": {},
+  "gate_verdict": "PASS | FAIL | BLOCKED",
+  "blocking_issues": [],
+  "summary": "..."
+}
+```
+
+如果需要继续下游 stage，只把路径、manifest、gate verdict 和简短摘要带入后续上下文。
 
 ## DAG 解释规则
 

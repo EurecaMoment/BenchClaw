@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-invalid-item-screening
+description: Use for the specific BenchClaw subskill `stage4-invalid-item-screening` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 无效题目筛除
 
 ## 目标

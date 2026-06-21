@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-real-image-data-structure-normalization
+description: Use for the specific BenchClaw subskill `stage2-real-image-data-structure-normalization` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 真实图片数据结构整理
 
 ## 作用域

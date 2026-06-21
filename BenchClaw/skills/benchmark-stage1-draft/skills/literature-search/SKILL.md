@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-literature-search
+description: Use for the specific BenchClaw node skill `stage1-literature-search` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 文献搜索
 
 ## 输入

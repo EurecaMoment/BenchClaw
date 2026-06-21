@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-plan-generation
+description: Use for the specific BenchClaw node skill `stage3-plan-generation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 本阶段执行计划生成
 
 ## 输入
@@ -17,7 +22,7 @@
 6. 写明每条分支和每个 work unit 的真实执行证明要求：Data-Juicer 配置、输入 manifest、执行命令、stdout/stderr 或日志、退出码、输出 manifest、默认标注命令或 GT 整理调用记录、工具版本、执行时间、输入/输出样本计数和失败样本计数。
 7. 写明每个终端 bundle 的落盘要求：图像或观测媒体、文本字段、清洗样本、官方 label、默认标注候选、privileged GT、review queue 和 evidence manifest 都必须写入 `WORKSPACE_ROOT/stage3/artifacts/<data-id>/...`，并使用 workspace 相对路径供 Stage4 读取。
 8. 将 Stage2 bundle 中发现到的每个数据源展开成显式并行 DAG work unit：每个 work unit 至少包含 `cleaning -> annotation` 两个内部 subskill 节点，仿真器的 `annotation` 节点负责 privileged GT 整理与可选额外视觉伪标注；不同 work unit 之间不得建立互相等待边。
-9. 在 `stage3_execution_plan.yaml` 中写出 `parallel_dag.nodes[]` 与 `parallel_dag.edges[]`，精确声明每个 DAG 节点要调用的父节点 skill、类别 subskill、输入 bundle、输出目录、依赖和 ready group；不得只写“可以并行”。
+9. 在 `stage3_execution_plan.yaml` 中写出 `parallel_dag.nodes[]` 与 `parallel_dag.edges[]`，精确声明每个 DAG 节点要调用的父节点 skill 名、类别 subskill skill 名、输入 bundle、输出目录、依赖和 ready group；源码路径只作为可追溯定位；不得只写“可以并行”。
 10. 不创建任何 stage-level 清洗中间 artifact；清洗中间结果属于各数据源节点内部工作目录。
 11. 所有 `substage: annotation` 节点必须写入半监督标注 tmux 监控字段：`tmux_required: true`、`monitor_interval_seconds: 15`、`monitor_until: session_finished`、`tmux_session_name`、`log_path`、`monitoring_log_path`。真实图片和已有 benchmark 的默认标注命令必须后台运行；仿真器若执行 GT 导出或额外视觉伪标注，也必须按同一策略后台运行和轮询。
 
@@ -93,6 +98,8 @@ parallel_dag:
       substage: cleaning
       work_unit_id: real_image::<dataset_id>
       parent_category_node: real-image-evidence-compilation
+      parent_skill_name: benchclaw-stage3-real-image-evidence-compilation
+      skill_name: benchclaw-stage3-real-image-cleaning
       skill_path: skills/real-image-evidence-compilation/SKILL.md
       subskill_path: skills/real-image-evidence-compilation/subskills/cleaning/SKILL.md
       input_bundle: data_14_real_image_collection_bundle
@@ -105,6 +112,8 @@ parallel_dag:
       substage: annotation
       work_unit_id: real_image::<dataset_id>
       parent_category_node: real-image-evidence-compilation
+      parent_skill_name: benchclaw-stage3-real-image-evidence-compilation
+      skill_name: benchclaw-stage3-real-image-annotation
       skill_path: skills/real-image-evidence-compilation/SKILL.md
       subskill_path: skills/real-image-evidence-compilation/subskills/annotation/SKILL.md
       input_bundle: data_14_real_image_collection_bundle
@@ -122,6 +131,8 @@ parallel_dag:
       substage: cleaning
       work_unit_id: existing_benchmark::<dataset_id>
       parent_category_node: existing-benchmark-evidence-compilation
+      parent_skill_name: benchclaw-stage3-existing-benchmark-evidence-compilation
+      skill_name: benchclaw-stage3-existing-benchmark-cleaning
       skill_path: skills/existing-benchmark-evidence-compilation/SKILL.md
       subskill_path: skills/existing-benchmark-evidence-compilation/subskills/cleaning/SKILL.md
       input_bundle: data_15_existing_benchmark_collection_bundle
@@ -134,6 +145,8 @@ parallel_dag:
       substage: annotation
       work_unit_id: existing_benchmark::<dataset_id>
       parent_category_node: existing-benchmark-evidence-compilation
+      parent_skill_name: benchclaw-stage3-existing-benchmark-evidence-compilation
+      skill_name: benchclaw-stage3-existing-benchmark-annotation
       skill_path: skills/existing-benchmark-evidence-compilation/SKILL.md
       subskill_path: skills/existing-benchmark-evidence-compilation/subskills/annotation/SKILL.md
       input_bundle: data_15_existing_benchmark_collection_bundle
@@ -151,6 +164,8 @@ parallel_dag:
       substage: cleaning
       work_unit_id: simulator::<work_unit_id>
       parent_category_node: simulator-evidence-compilation
+      parent_skill_name: benchclaw-stage3-simulator-evidence-compilation
+      skill_name: benchclaw-stage3-simulator-cleaning
       skill_path: skills/simulator-evidence-compilation/SKILL.md
       subskill_path: skills/simulator-evidence-compilation/subskills/cleaning/SKILL.md
       input_bundle: data_16_simulator_collection_bundle
@@ -163,6 +178,8 @@ parallel_dag:
       substage: annotation
       work_unit_id: simulator::<work_unit_id>
       parent_category_node: simulator-evidence-compilation
+      parent_skill_name: benchclaw-stage3-simulator-evidence-compilation
+      skill_name: benchclaw-stage3-simulator-annotation
       skill_path: skills/simulator-evidence-compilation/SKILL.md
       subskill_path: skills/simulator-evidence-compilation/subskills/annotation/SKILL.md
       input_bundle: data_16_simulator_collection_bundle
@@ -313,7 +330,7 @@ quality_gates:
 
 ## 显式并行 DAG 调度规则
 
-1. 读取 `parallel_dag.nodes[]`，选择 `substage: cleaning` 且 `parents: []` 的所有节点组成第一轮 ready set；这些节点必须跨类别并行执行，且必须精确调用各自 `subskill_path`。
+1. 读取 `parallel_dag.nodes[]`，选择 `substage: cleaning` 且 `parents: []` 的所有节点组成第一轮 ready set；这些节点必须跨类别并行执行，并且执行器必须优先调用各自 `skill_name`，`subskill_path` 只作源码定位和审计。
 2. 某个 work unit 的 cleaning 完成后，只释放同一 `work_unit_id` 的 annotation 节点；不得因为其他数据源未完成而等待。
 3. 某一类别的所有 annotation 节点完成后，只释放该类别自己的 summary barrier；真实图片、已有 benchmark、仿真器三个 summary barrier 互不依赖。
 4. Stage3 终止门只等待 `real_image::summary`、`existing_benchmark::summary`、`simulator::summary` 三个 barrier 全部完成并通过质量门。

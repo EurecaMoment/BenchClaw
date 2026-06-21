@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-cdm-irt-analysis
+description: Use for the specific BenchClaw subskill `stage4-cdm-irt-analysis` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — CDM/IRT 分析
 
 ## 目标

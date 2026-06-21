@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-full-synthesis
+description: Use for the specific BenchClaw node skill `stage4-full-synthesis` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 全量合成
 
 ## 输入

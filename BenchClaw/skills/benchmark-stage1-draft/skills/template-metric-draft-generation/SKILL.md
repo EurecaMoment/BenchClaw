@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-template-metric-draft-generation
+description: Use for the specific BenchClaw node skill `stage1-template-metric-draft-generation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 模板/指标初稿生成
 
 ## 输入

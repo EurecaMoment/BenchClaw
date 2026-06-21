@@ -1,3 +1,8 @@
+---
+name: benchclaw-root
+description: Use as the single BenchClaw entry skill. It should immediately delegate to the pipeline skill and never inline Stage1-Stage5 logic itself.
+---
+
 # BenchClaw Skill Bundle — 总入口
 
 本文件是大模型启动 BenchClaw benchmark 构建流程时首先读取的总入口。进入流程后，必须立即加载并执行：
@@ -16,9 +21,36 @@ benchmark-stage4-build/SKILL.md
 benchmark-stage5-eval/SKILL.md
 ```
 
+## Opencode Skill Dispatch Contract
+
+在 opencode 中，本入口 skill 只负责做一件事：显式调用 `benchclaw-pipeline`。执行时必须通过 `skill(name="benchclaw-pipeline")` 进入 pipeline，不要把 Stage1 到 Stage5 的内容直接内联到当前对话里。
+
+### Required child skill
+
+- `benchclaw-pipeline`
+
+### Context return protocol
+
+子 skill 返回给本入口时，只保留以下结构化摘要：
+
+```json
+{
+  "skill_name": "benchclaw-pipeline",
+  "status": "READY | DONE | BLOCKED",
+  "workspace_root": "...",
+  "current_stage": "stage1 | stage2 | stage3 | stage4 | stage5 | pipeline",
+  "artifacts": {},
+  "quality_gates": {},
+  "blocking_issues": [],
+  "summary": "..."
+}
+```
+
+不要把子 skill 的长日志、完整 tool history、长文件正文或中间推理轨迹继续回灌到当前上下文。
+
 ## 启动规则
 
-1. 先读取 `benchmark-pipeline/SKILL.md`。
+1. 先通过 opencode `skill` 工具调用 `benchclaw-pipeline`，不要只把 `benchmark-pipeline/SKILL.md` 当作普通文本路径。
 2. 按 pipeline skill 冻结 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT`。
 3. 只把五个 stage 当作大阶段顺序调用；stage 内部节点必须由各自的 `dag.json` 和 ready-set 规则调度。
 4. 手绘图中的椭圆才是 DAG 节点；带编号的内容是中间流动数据，不是节点。用户输入与结束状态也不是节点。

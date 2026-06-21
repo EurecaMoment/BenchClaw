@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-intent-understanding
+description: Use for the specific BenchClaw node skill `stage1-intent-understanding` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 意图理解
 
 ## 输入

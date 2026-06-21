@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-scope-preprocess-analysis
+description: Use for the specific BenchClaw node skill `stage1-scope-preprocess-analysis` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 模型 scope 预处理分析
 
 ## 运行策略

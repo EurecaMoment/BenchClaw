@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-literature-review
+description: Use for the specific BenchClaw node skill `stage1-literature-review` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 文献调研
 
 ## 输入

@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage5-full-evaluation
+description: Use for the specific BenchClaw node skill `stage5-full-evaluation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 全量评测
 
 ## 输入

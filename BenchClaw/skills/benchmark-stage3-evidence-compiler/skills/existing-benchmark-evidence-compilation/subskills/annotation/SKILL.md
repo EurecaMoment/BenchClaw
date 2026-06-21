@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-existing-benchmark-annotation
+description: Use for the specific BenchClaw subskill `stage3-existing-benchmark-annotation` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 已有 benchmark 新增标注
 
 ## 作用域

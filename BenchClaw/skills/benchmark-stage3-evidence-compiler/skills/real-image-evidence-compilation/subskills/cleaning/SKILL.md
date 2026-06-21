@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-real-image-cleaning
+description: Use for the specific BenchClaw subskill `stage3-real-image-cleaning` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 真实图片清洗
 
 ## 作用域

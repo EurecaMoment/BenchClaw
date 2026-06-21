@@ -1,13 +1,29 @@
+---
+name: benchclaw-stage2-simulator-collection-analysis
+description: Use for the specific BenchClaw node skill `stage2-simulator-collection-analysis` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 仿真器采集与分析
 
 ## 内部层级
 
-本节点包含两个 subskill，按每个仿真器和任务族独立运行：
+本节点包含两个 subskill，按每个仿真器和任务族独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/data-acquisition/SKILL.md
 subskills/gt-materialization/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+
+- `data-acquisition` -> `benchclaw-stage2-simulator-data-acquisition`
+- `gt-materialization` -> `benchclaw-stage2-simulator-gt-materialization`
+
+## Work Unit Context Return Protocol
+
+每个仿真器 work unit 只返回：`simulator_id`、`task_family`、`status`、per-work-unit 输出目录、观测/状态/GT 计数、重试次数、阻塞原因和一句摘要。不要回灌长运行日志、长状态序列或大批 privileged GT 正文。
 
 ## 动态仿真器发现
 
@@ -58,8 +74,8 @@ task_family = stage2_execution_plan.yaml 中对该仿真器要求执行的任务
 
 每个 work unit 必须先读取自己的 `simulator_card_skill`，再在该仿真器卡的指导下依次运行：
 
-1. `subskills/data-acquisition/SKILL.md`
-2. `subskills/gt-materialization/SKILL.md`
+1. `benchclaw-stage2-simulator-data-acquisition`
+2. `benchclaw-stage2-simulator-gt-materialization`
 
 执行时必须优先读取 `stage2_execution_plan.yaml` 的 `parallel_dag.nodes[]`，只选择 `category: simulator` 且 `parent_category_node: simulator-collection-analysis` 的节点作为本节点内部 DAG。每个仿真器与任务族 work unit 必须在计划中存在以下两个具体 DAG 节点：
 
@@ -68,11 +84,11 @@ simulator::<simulator_id>::<task_family>::data-acquisition
 simulator::<simulator_id>::<task_family>::gt-materialization
 ```
 
-这两个节点必须分别精确调用：
+这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
-skills/simulator-collection-analysis/subskills/data-acquisition/SKILL.md
-skills/simulator-collection-analysis/subskills/gt-materialization/SKILL.md
+benchclaw-stage2-simulator-data-acquisition
+benchclaw-stage2-simulator-gt-materialization
 ```
 
 如果 `stage2_execution_plan.yaml` 没有显式列出某个仿真器任务族的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同仿真器/任务族之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。

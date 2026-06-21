@@ -1,8 +1,30 @@
+---
+name: benchclaw-stage1-draft
+description: Use for the BenchClaw skill `stage1-draft` when the workflow is explicitly entering this stage or manager.
+---
+
 # Benchmark Stage1 Draft Skill — 草稿与执行计划
 
 ## 角色
 
 从用户 benchmark idea 出发，完成意图理解、文献调研、能力维度划分、模板/指标初稿、benchmark 草稿和执行计划。
+
+## Registered Node Skill Names
+
+本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名，而不是只在上下文里保留 `skills/<node-id>/SKILL.md` 这种路径提示：
+
+- `intent-understanding` -> `benchclaw-stage1-intent-understanding`
+- `scope-preprocess-analysis` -> `benchclaw-stage1-scope-preprocess-analysis`
+- `literature-search` -> `benchclaw-stage1-literature-search`
+- `literature-review` -> `benchclaw-stage1-literature-review`
+- `capability-dimension-planning` -> `benchclaw-stage1-capability-dimension-planning`
+- `template-metric-draft-generation` -> `benchclaw-stage1-template-metric-draft-generation`
+- `benchmark-draft-generation` -> `benchclaw-stage1-benchmark-draft-generation`
+- `execution-plan-generation` -> `benchclaw-stage1-execution-plan-generation`
+
+## Node Context Return Protocol
+
+每个节点 skill 返回时，只保留 `node_id`、`status`、`artifacts`、`blocking_issues`、`summary`。不要把论文全文、搜索长列表、长日志或整个节点内部轨迹完整回灌到 stage 上下文。
 
 ## 关键规则
 

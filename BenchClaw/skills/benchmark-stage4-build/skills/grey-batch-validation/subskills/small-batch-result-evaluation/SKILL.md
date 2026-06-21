@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-small-batch-result-evaluation
+description: Use for the specific BenchClaw subskill `stage4-small-batch-result-evaluation` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill - 小批量合成数据集评测结果获取
 
 对灰度小批量合成数据集进行抽样、外部模型推理、预测打分和结果汇总。该 subskill 参考 `/home/maqiang/uav_grey_eval.py` 的流程，但将通用评测逻辑沉淀到本目录，并把 API、API key、评测模型、模型难度层级放到独立用户配置文件。

@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-existing-benchmark-content-label-analysis
+description: Use for the specific BenchClaw subskill `stage2-existing-benchmark-content-label-analysis` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 已有 benchmark 内容与标注分析
 
 ## 作用域

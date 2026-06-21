@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-existing-benchmark-cleaning
+description: Use for the specific BenchClaw subskill `stage3-existing-benchmark-cleaning` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 已有 benchmark 数据清洗
 
 ## 作用域

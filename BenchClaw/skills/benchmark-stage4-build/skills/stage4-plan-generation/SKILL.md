@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-plan-generation
+description: Use for the specific BenchClaw node skill `stage4-plan-generation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 本阶段执行计划生成
 
 ## 输入

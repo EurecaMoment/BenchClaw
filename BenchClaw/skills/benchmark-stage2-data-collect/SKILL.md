@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-data-collect
+description: Use for the BenchClaw skill `stage2-data-collect` when the workflow is explicitly entering this stage or manager.
+---
+
 # Benchmark Stage2 Data Collect Skill — 原始数据采集
 
 ## 角色
@@ -21,6 +26,19 @@
 - 三类数据源的规整与物化都必须遵守 `templates/collection_bundle_contract.md`：媒体真实落盘，图片必须可解码并记录尺寸/sha256，样本必须保留来源、原始字段、关键标签或 GT，不得写 placeholder、空数据或虚假数据。
 - 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 
+## Registered Node Skill Names
+
+本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+
+- `stage2-plan-generation` -> `benchclaw-stage2-plan-generation`
+- `real-image-collection-analysis` -> `benchclaw-stage2-real-image-collection-analysis`
+- `existing-benchmark-collection-analysis` -> `benchclaw-stage2-existing-benchmark-collection-analysis`
+- `simulator-collection-analysis` -> `benchclaw-stage2-simulator-collection-analysis`
+
+## Node Context Return Protocol
+
+每个节点只向 stage 返回：节点状态、per-dataset 或 per-simulator artifact 路径、关键计数、阻塞原因和简短摘要。不要把数据卡全文、采集长日志、枚举结果全文或中间大 JSONL 正文继续回灌。
+
 ## 输入
 
 - `data_13_execution_plan`
@@ -38,7 +56,7 @@
 
 1. 从 `dag.json` 读取节点依赖。
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
-3. 对 ready 节点调用 `skills/<node-id>/SKILL.md`。
+3. 对 ready 节点调用对应的已注册 skill 名：`stage2-plan-generation -> benchclaw-stage2-plan-generation`，`real-image-collection-analysis -> benchclaw-stage2-real-image-collection-analysis`，`existing-benchmark-collection-analysis -> benchclaw-stage2-existing-benchmark-collection-analysis`，`simulator-collection-analysis -> benchclaw-stage2-simulator-collection-analysis`。
 4. `stage2-plan-generation` 完成后，先读取 `stage2_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，且必须精确调用节点声明的 `subskill_path`。
 5. 每个 work unit 的后续 subskill 只依赖同一 `work_unit_id` 的前置 subskill；不同数据源之间不得互相等待，除非 `parallel_dag.edges[]` 明确声明且原因写入计划。
 6. 三个类别 summary barrier 只等待本类别 work unit 的末端 subskill；Stage2 最终完成门才等待三个 terminal artifacts。

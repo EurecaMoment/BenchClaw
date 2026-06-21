@@ -1,6 +1,13 @@
+---
+name: benchclaw-stage4-grey-batch-validation
+description: Use for the specific BenchClaw node skill `stage4-grey-batch-validation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 小批量合成灰度验证
 
 ## 内部层级
+
+运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/per-template-batch-synthesis/SKILL.md
@@ -8,6 +15,19 @@ subskills/invalid-item-screening/SKILL.md
 subskills/small-batch-result-evaluation/SKILL.md
 subskills/cdm-irt-analysis/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部流程在 opencode 中必须按顺序显式调用以下 skill 名：
+
+- `per-template-batch-synthesis` -> `benchclaw-stage4-per-template-batch-synthesis`
+- `invalid-item-screening` -> `benchclaw-stage4-invalid-item-screening`
+- `small-batch-result-evaluation` -> `benchclaw-stage4-small-batch-result-evaluation`
+- `cdm-irt-analysis` -> `benchclaw-stage4-cdm-irt-analysis`
+
+## Subskill Context Return Protocol
+
+每个 subskill 只返回：`status`、报告路径、有效/剔除计数、质量门结论、阻塞原因和一句摘要。不要把长推理日志、模型原始输出全文、item 级大表或 CDM/IRT 中间矩阵继续回灌。
 
 ## 输入
 

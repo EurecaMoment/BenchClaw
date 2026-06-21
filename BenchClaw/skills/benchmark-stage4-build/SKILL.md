@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-build
+description: Use for the BenchClaw skill `stage4-build` when the workflow is explicitly entering this stage or manager.
+---
+
 # Benchmark Stage4 Build Skill — 评测集合成与指标构建
 
 ## 角色
@@ -26,6 +31,19 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 只有该命令退出码为 0 且报告 `status: PASS` 时，才允许写 `_STAGE_DONE.json`；报告路径和摘要必须写入 `_stage_report.md` 与 `_STAGE_DONE.json.quality_gate.validator`。若 validator 失败，必须写 `BLOCKED.json` 与 `BLOCKED.md`，不得继续 Stage5。
 - 缺少必需输入、真实数据、标注结果、GT 或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止本 stage。
 
+## Registered Node Skill Names
+
+本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+
+- `stage4-plan-generation` -> `benchclaw-stage4-plan-generation`
+- `template-metric-code-generation` -> `benchclaw-stage4-template-metric-code-generation`
+- `grey-batch-validation` -> `benchclaw-stage4-grey-batch-validation`
+- `full-synthesis` -> `benchclaw-stage4-full-synthesis`
+
+## Node Context Return Protocol
+
+每个节点只向 stage 返回：节点状态、artifact 根路径、质量门结果、关键计数、阻塞原因和简短摘要。不要把模板全文、代码全文、灰度日志全文或整段 dataset.jsonl 持续回灌。
+
 ## 输入
 
 - `data_11_template_metric_initial_draft`
@@ -47,7 +65,7 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 1. 从 `dag.json` 读取节点依赖。
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
-3. 对 ready 节点调用 `skills/<node-id>/SKILL.md`。
+3. 对 ready 节点调用对应的已注册 skill 名：`stage4-plan-generation -> benchclaw-stage4-plan-generation`，`template-metric-code-generation -> benchclaw-stage4-template-metric-code-generation`，`grey-batch-validation -> benchclaw-stage4-grey-batch-validation`，`full-synthesis -> benchclaw-stage4-full-synthesis`。
 4. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
 5. 本 stage 只在所有 terminal artifacts 完成且 `validate_stage_gate.py --stage stage4` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 

@@ -1,13 +1,29 @@
+---
+name: benchclaw-stage2-real-image-collection-analysis
+description: Use for the specific BenchClaw node skill `stage2-real-image-collection-analysis` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 真实图片采集与分析
 
 ## 内部层级
 
-本节点包含两个 subskill，按每个真实图片数据集独立运行：
+本节点包含两个 subskill，按每个真实图片数据集独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/content-analysis/SKILL.md
 subskills/data-structure-normalization/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+
+- `content-analysis` -> `benchclaw-stage2-real-image-content-analysis`
+- `data-structure-normalization` -> `benchclaw-stage2-real-image-data-structure-normalization`
+
+## Work Unit Context Return Protocol
+
+每个真实图片数据集 work unit 只返回：`dataset_id`、`status`、per-dataset 输出目录、媒体/样本计数、阻塞原因和一句摘要。不要把数据卡原文、长目录枚举、日志全文或大批 metadata 记录继续塞回父节点。
 
 ## 动态数据集发现
 
@@ -59,19 +75,19 @@ real_image::<dataset_id>::content-analysis
 real_image::<dataset_id>::data-structure-normalization
 ```
 
-这两个节点必须分别精确调用：
+这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
-skills/real-image-collection-analysis/subskills/content-analysis/SKILL.md
-skills/real-image-collection-analysis/subskills/data-structure-normalization/SKILL.md
+benchclaw-stage2-real-image-content-analysis
+benchclaw-stage2-real-image-data-structure-normalization
 ```
 
 如果 `stage2_execution_plan.yaml` 没有显式列出某个真实图片数据集的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同数据集之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
 每个 work unit 必须先读取自己的 `real_data_card_skill`，再在该数据卡的指导下依次运行：
 
-1. `subskills/content-analysis/SKILL.md`
-2. `subskills/data-structure-normalization/SKILL.md`
+1. `benchclaw-stage2-real-image-content-analysis`
+2. `benchclaw-stage2-real-image-data-structure-normalization`
 
 不同数据集 work unit 之间可以并行处理。并行时必须遵守：
 

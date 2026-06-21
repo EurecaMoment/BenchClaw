@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-capability-dimension-planning
+description: Use for the specific BenchClaw node skill `stage1-capability-dimension-planning` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 能力维度划分
 
 ## 输入

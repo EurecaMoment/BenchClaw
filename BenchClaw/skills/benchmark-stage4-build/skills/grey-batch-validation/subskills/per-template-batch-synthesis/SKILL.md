@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage4-per-template-batch-synthesis
+description: Use for the specific BenchClaw subskill `stage4-per-template-batch-synthesis` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 每模板小批量合成
 
 ## 目标

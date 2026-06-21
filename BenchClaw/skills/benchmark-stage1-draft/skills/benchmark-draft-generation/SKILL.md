@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage1-benchmark-draft-generation
+description: Use for the specific BenchClaw node skill `stage1-benchmark-draft-generation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — benchmark 草稿生成
 
 ## 输入

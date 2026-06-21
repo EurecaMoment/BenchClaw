@@ -1,13 +1,29 @@
+---
+name: benchclaw-stage3-existing-benchmark-evidence-compilation
+description: Use for the specific BenchClaw node skill `stage3-existing-benchmark-evidence-compilation` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 已有 benchmark 清洗与标注
 
 ## 内部层级
 
-本节点包含两个内部 subskill，按每个已有 benchmark 数据集 work unit 独立运行：
+本节点包含两个内部 subskill，按每个已有 benchmark 数据集 work unit 独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/cleaning/SKILL.md
 subskills/annotation/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+
+- `cleaning` -> `benchclaw-stage3-existing-benchmark-cleaning`
+- `annotation` -> `benchclaw-stage3-existing-benchmark-annotation`
+
+## Work Unit Context Return Protocol
+
+每个数据集 work unit 只返回：`dataset_id`、`status`、per-dataset 输出目录、cleaned/official-label/added-annotation 计数、阻塞原因和一句摘要。不要回灌官方标签全文、长清洗日志或全量样本正文。
 
 ## 输入
 
@@ -35,19 +51,19 @@ existing_benchmark::<dataset_id>::cleaning
 existing_benchmark::<dataset_id>::annotation
 ```
 
-这两个节点必须分别精确调用：
+这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
-skills/existing-benchmark-evidence-compilation/subskills/cleaning/SKILL.md
-skills/existing-benchmark-evidence-compilation/subskills/annotation/SKILL.md
+benchclaw-stage3-existing-benchmark-cleaning
+benchclaw-stage3-existing-benchmark-annotation
 ```
 
 如果 `stage3_execution_plan` 没有显式列出某个 benchmark 数据集的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同数据集之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
 每个 work unit 必须依次运行：
 
-1. `subskills/cleaning/SKILL.md`
-2. `subskills/annotation/SKILL.md`
+1. `benchclaw-stage3-existing-benchmark-cleaning`
+2. `benchclaw-stage3-existing-benchmark-annotation`
 
 ## Per-dataset 输出目录
 
@@ -70,8 +86,8 @@ artifacts/data_18_annotated_existing_benchmark_bundle/datasets/<dataset_id>/
 ## 处理
 
 1. 动态发现 `data_15` 中的已有 benchmark 数据集和官方标注。
-2. 对每个数据集先调用 `subskills/cleaning/SKILL.md`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
-3. 基于清洗结果调用 `subskills/annotation/SKILL.md`，该 subskill 必须调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md` 的默认标注流程；默认标注输出作为新增候选，不得覆盖官方 label。
+2. 对每个数据集先调用 `benchclaw-stage3-existing-benchmark-cleaning`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
+3. 基于清洗结果调用 `benchclaw-stage3-existing-benchmark-annotation`，该 subskill 必须调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md` 的默认标注流程；默认标注输出作为新增候选，不得覆盖官方 label。
 4. 对缺失媒体、字段冲突、官方 label 不可解释或新增标注失败的样本写入复核队列。
 5. 将每条清洗样本的媒体、文本、官方 label、新增标注候选和来源字段完整写入 workspace：媒体必须复制或链接到本 bundle 的 `media/`，`text_items.jsonl` 必须包含题干、答案字段、label 文本、任务字段或可追溯文本摘要。
 6. 每个 per-dataset `evidence_manifest.json` 必须记录 Data-Juicer 命令、配置、日志、退出码、输入/输出计数、默认标注命令、tmux session、15 秒监控日志、输出目录、样本到结果的映射、官方 label 来源、媒体 sha256/尺寸和阻塞/复核原因。

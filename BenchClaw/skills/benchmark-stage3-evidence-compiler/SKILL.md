@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-evidence-compiler
+description: Use for the BenchClaw skill `stage3-evidence-compiler` when the workflow is explicitly entering this stage or manager.
+---
+
 # Benchmark Stage3 Evidence Compiler Skill — 证据编译、清洗与 GT 整理
 
 ## 角色
@@ -7,7 +12,7 @@
 ## 关键规则
 
 - 只有本文件 DAG 表中的 4 个节点是本阶段外显节点；用户、Stage2 输入和各节点内部 subskills 都不是 DAG 节点。
-- 三类数据源节点内部必须按自己的 `subskills/cleaning/SKILL.md` 与 `subskills/annotation/SKILL.md` 执行；不得把清洗或标注拆成独立外显节点。
+- 三类数据源节点内部必须按自己已注册的 cleaning skill 与 annotation skill 执行；`subskills/cleaning/SKILL.md` 与 `subskills/annotation/SKILL.md` 只作为源码定位，不得把清洗或标注拆成独立外显节点。
 - 三类数据源节点的 cleaning 必须读取并调用 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md`，通过 Data-Juicer pipeline 产出清洗后的 JSONL；不得只用手写过滤替代 Data-Juicer。
 - `real-image-evidence-compilation` 与 `existing-benchmark-evidence-compilation` 执行 annotation 时必须调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md` 描述的默认标注流程；默认标注输出只能作为 `tool_generated_candidate` 或复核候选，不能直接当最终 GT。
 - `simulator-evidence-compilation` 可以优先使用仿真器自带 privileged GT；只有当 stage plan 明确要求额外视觉伪标注时，才调用默认标注。
@@ -35,6 +40,19 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 只有该命令退出码为 0 且报告 `status: PASS` 时，才允许写 `_STAGE_DONE.json`；报告路径和摘要必须写入 `_stage_report.md` 与 `_STAGE_DONE.json.quality_gate.validator`。若 validator 失败，必须写 `BLOCKED.json` 与 `BLOCKED.md`，不得继续 Stage4。
 - 缺少必需输入、真实数据、真实清洗执行、真实标注执行、GT、落盘媒体、落盘文字、落盘标注记录或模型输出时，必须写 `BLOCKED.json` 与 `BLOCKED.md`，并停止相关节点或本 stage。
 
+## Registered Node Skill Names
+
+本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+
+- `stage3-plan-generation` -> `benchclaw-stage3-plan-generation`
+- `real-image-evidence-compilation` -> `benchclaw-stage3-real-image-evidence-compilation`
+- `existing-benchmark-evidence-compilation` -> `benchclaw-stage3-existing-benchmark-evidence-compilation`
+- `simulator-evidence-compilation` -> `benchclaw-stage3-simulator-evidence-compilation`
+
+## Node Context Return Protocol
+
+每个节点只向 stage 返回：节点状态、artifact 路径、work unit 计数、质量门结果、阻塞原因和简短摘要。不要把清洗日志、默认标注长输出、整段 evidence 正文或大批 JSONL 全文继续回灌。
+
 ## 输入
 
 - `data_13_execution_plan`
@@ -55,10 +73,10 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 1. 从 `dag.json` 读取节点依赖。
 2. 首先运行 `stage3-plan-generation`。
-3. `stage3-plan-generation` 完成后，先读取 `stage3_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `substage: cleaning` 且 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，且必须精确调用节点声明的 `subskill_path`。
+3. `stage3-plan-generation` 完成后，先读取 `stage3_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `substage: cleaning` 且 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，并且要映射到已注册的显式 skill 名，而不是只保留文件路径。
 4. 每个 work unit 的 annotation 节点只依赖同一 `work_unit_id` 的 cleaning 节点；不同数据源之间不得互相等待，除非 `parallel_dag.edges[]` 明确声明且原因写入计划。
 5. 三个类别 summary barrier 只等待本类别 work unit 的 annotation 节点；Stage3 最终完成门才等待三个 terminal artifacts。
-6. 每个数据源节点内部只在本节点工作目录中按 `parallel_dag` 运行 `subskills/cleaning` 再运行 `subskills/annotation`；同一数据源下的不同 dataset/work unit 可以并行，但只能写各自隔离目录。
+6. 每个数据源节点内部只在本节点工作目录中按 `parallel_dag` 运行显式注册的 cleaning skill 再运行显式注册的 annotation skill；同一数据源下的不同 dataset/work unit 可以并行，但只能写各自隔离目录。
 7. 本 stage 只在三个 terminal artifacts 完成、图像/文字/GT 均完整落盘、执行证明齐全且 `validate_stage_gate.py --stage stage3` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据

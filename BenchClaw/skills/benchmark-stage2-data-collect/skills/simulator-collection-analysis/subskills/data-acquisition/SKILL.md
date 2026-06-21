@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-simulator-data-acquisition
+description: Use for the specific BenchClaw subskill `stage2-simulator-data-acquisition` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 仿真器数据采集
 
 ## 作用域

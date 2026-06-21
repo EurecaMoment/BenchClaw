@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-real-image-content-analysis
+description: Use for the specific BenchClaw subskill `stage2-real-image-content-analysis` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 真实图片内容分析
 
 ## 作用域

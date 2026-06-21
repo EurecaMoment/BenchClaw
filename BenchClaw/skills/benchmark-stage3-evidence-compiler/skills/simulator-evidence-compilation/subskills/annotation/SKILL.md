@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage3-simulator-annotation
+description: Use for the specific BenchClaw subskill `stage3-simulator-annotation` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 仿真器 GT 整理与标注
 
 ## 作用域

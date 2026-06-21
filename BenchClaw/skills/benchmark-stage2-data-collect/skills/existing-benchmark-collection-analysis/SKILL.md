@@ -1,13 +1,29 @@
+---
+name: benchclaw-stage2-existing-benchmark-collection-analysis
+description: Use for the specific BenchClaw node skill `stage2-existing-benchmark-collection-analysis` only when its parent stage explicitly dispatches to it.
+---
+
 # Node Skill — 已有 benchmark 采集与分析
 
 ## 内部层级
 
-本节点包含两个 subskill，按每个已有 benchmark 数据集独立运行：
+本节点包含两个 subskill，按每个已有 benchmark 数据集独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/content-label-analysis/SKILL.md
 subskills/data-materialization/SKILL.md
 ```
+
+## Registered Subskill Names
+
+本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+
+- `content-label-analysis` -> `benchclaw-stage2-existing-benchmark-content-label-analysis`
+- `data-materialization` -> `benchclaw-stage2-existing-benchmark-data-materialization`
+
+## Work Unit Context Return Protocol
+
+每个 benchmark 数据集 work unit 只返回：`dataset_id`、`status`、per-dataset 输出目录、媒体/样本/官方标签计数、阻塞原因和一句摘要。不要回灌官方文档全文、长日志、全量样本正文或大段卡片内容。
 
 ## 动态数据集发现
 
@@ -59,19 +75,19 @@ existing_benchmark::<dataset_id>::content-label-analysis
 existing_benchmark::<dataset_id>::data-materialization
 ```
 
-这两个节点必须分别精确调用：
+这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
-skills/existing-benchmark-collection-analysis/subskills/content-label-analysis/SKILL.md
-skills/existing-benchmark-collection-analysis/subskills/data-materialization/SKILL.md
+benchclaw-stage2-existing-benchmark-content-label-analysis
+benchclaw-stage2-existing-benchmark-data-materialization
 ```
 
 如果 `stage2_execution_plan.yaml` 没有显式列出某个 benchmark 数据集的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同数据集之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
 每个 work unit 必须先读取自己的 `dataset_card_skill`，再在该数据集卡的指导下依次运行：
 
-1. `subskills/content-label-analysis/SKILL.md`
-2. `subskills/data-materialization/SKILL.md`
+1. `benchclaw-stage2-existing-benchmark-content-label-analysis`
+2. `benchclaw-stage2-existing-benchmark-data-materialization`
 
 不同数据集 work unit 之间可以并行处理。并行时必须遵守：
 

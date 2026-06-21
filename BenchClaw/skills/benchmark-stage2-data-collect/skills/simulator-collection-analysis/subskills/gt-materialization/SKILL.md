@@ -1,3 +1,8 @@
+---
+name: benchclaw-stage2-simulator-gt-materialization
+description: Use for the specific BenchClaw subskill `stage2-simulator-gt-materialization` only when its parent node explicitly dispatches to it.
+---
+
 # Subskill — 仿真器 GT 物化
 
 ## 作用域
