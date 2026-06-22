@@ -68,6 +68,10 @@ description: Use for the specific BenchClaw subskill `stage4-contract-checking` 
 - `metadata.chain_id` 与模板一致
 - `metadata.reasoning_hop_count >= 3`
 - `metadata.gt_distance_level = far`，除非模板显式声明 `depth_role = baseline_low_depth`
+- 若 item 包含 `source_media`，则 `source_media` 与 `media` 必须长度一致，分别表示原图列与最终作答图列
+- 若 item 启用了 visual marker，则 `metadata.visual_marker.map_paths` 中的每个映射文件都必须存在
+- 若映射文件中声明了 label，则这些 label 不能在图上泄漏答案性词汇，只能是中性标识
+- 若模板声明 `require_label_references = true`，则题干、答案解析和映射文件中的 label 集合必须一致
 
 如果自然语言检查失败，不能写 `DONE`；必须 `blocked` 或 `disabled` 对应模板。
 

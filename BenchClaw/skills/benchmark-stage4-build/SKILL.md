@@ -19,6 +19,7 @@ description: Use for the BenchClaw skill `stage4-build` when the workflow is exp
 - 灰度批量合成、无效题筛选、小批量模型推理/评分、CDM/IRT 分析、全量 benchmark 合成、媒体/GT/评分配置批量落盘等 Stage4 关键命令必须后台 `tmux` 执行，并且每 15 秒检查一次 tmux 状态和日志，直到会话结束；缺少 15 秒监控记录、最终日志、退出码或真实产物时不得写 `DONE.json`。
 - 每个编号数据必须写入：`artifacts/<data-id>/`。
 - Stage4 的产物目录名必须使用当前契约：全量数据集必须包含 `dataset.jsonl`、`media/`、`ground_truth/`、`metrics/`、`cards/benchmark_card.md`、`checksums.json`；不得只写旧命名 `sample_images/`、`gt_bundle/` 或空目录。
+- 当题目需要用图中标识消除对象指称歧义时，Stage4 生成的 benchmark item 必须同时保留原图列和最终作答图列，并保证图中标识来自 GT、映射可追溯、且不会泄漏答案。
 - 在写 `stage4/_STAGE_DONE.json` 或向 pipeline 返回 `PASS` 前，必须运行可执行质量门：
 
 ```bash

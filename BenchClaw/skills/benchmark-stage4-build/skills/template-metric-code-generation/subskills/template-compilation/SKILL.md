@@ -225,6 +225,22 @@ overall_template_quality_score =
 }
 ```
 
+若模板依赖图中对象、区域、路径或关键点的明确指称，还必须在模板定义中补充与当前工程兼容的图片标识策略。不要强行引入固定字段名，但模板需要明确：
+
+- 是否启用 GT 驱动的 visual marker；
+- 最终作答图是否使用 overlay，还是在 GT 不足时回退原图；
+- 题干是否必须引用 label；
+- label 和 object / bbox / point / path 的追溯信息应写入哪类 sidecar 映射文件。
+
+推荐在模板 JSON 中增加轻量配置块，例如 `visual_marker_policy`，用于声明：
+
+- `enabled`
+- `question_media_mode`
+- `label_style`
+- `strict_mode`
+- `require_label_references`
+- 与当前 GT 结构兼容的 selector / target 规则
+
 其中：
 
 - `allowed_chain_ids` 必须来自 `gt_distant_reasoning_chains.jsonl` 中 `status=selected` 的链。

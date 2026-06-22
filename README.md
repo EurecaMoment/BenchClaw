@@ -1,5 +1,22 @@
 # BenchClaw
 
+## Paper
+
+BenchClaw is described in our paper:
+
+- [Embodied-BenchClaw: An Autonomous Multi-Agent System for Embodied Spatial Intelligence Benchmark Construction](https://arxiv.org/abs/2606.11909)
+
+If BenchClaw helps your work, please cite:
+
+```bibtex
+@article{jiang2026embodiedbenchclaw,
+  title={Embodied-BenchClaw: An Autonomous Multi-Agent System for Embodied Spatial Intelligence Benchmark Construction},
+  author={Jiang, Baoyang and Zhang, Fengchun and Wang, Leyuan and Li, Haotian and Wang, Yida and Ji, Zhe and Lai, Jinshan and Ren, Xi and Hu, Jianwei and Ma, Qiang},
+  journal={arXiv preprint arXiv:2606.11909},
+  year={2026}
+}
+```
+
 ## Awesome Benchmark Index
 
 For a year-organized list of existing embodied AI, robotics, navigation, simulation, and multimodal-agent benchmarks tracked from `benchmarks.xlsx`, see [Awesome BenchClaw Benchmarks](AWESOME.md).
@@ -7,6 +24,18 @@ For a year-organized list of existing embodied AI, robotics, navigation, simulat
 BenchClaw is a Skill-first benchmark manufacturing repository for Agent environments such as OpenCode. It is not a single executable app or a traditional Python package. Instead, it provides staged `SKILL.md` contracts, DAG and ready-set execution rules, capability cards, validation scripts, and fixed workspace artifact layouts for data collection, evidence compilation, benchmark packaging, and evaluation.
 
 The repository is designed to turn a rough benchmark idea into a reproducible Stage1 to Stage5 pipeline with explicit artifacts, path isolation, and auditability.
+
+## What BenchClaw Provides
+
+BenchClaw focuses on benchmark construction rather than only benchmark execution. In practice, the repository provides:
+
+- stage-wise `SKILL.md` contracts for planning, collection, evidence compilation, benchmark synthesis, and evaluation
+- fixed workspace layouts so every run can be audited and reproduced
+- source cards for simulators, datasets, and real-image collections
+- annotation-tool contracts for semi-supervised GT generation
+- template, metric, and evaluation packaging logic for turning evidence into executable benchmarks
+
+BenchClaw is intentionally not packaged as a single monolithic CLI. The main unit of reuse is the Skill plus its artifact contract.
 
 ## Current Scope
 
@@ -48,6 +77,18 @@ Important naming notes:
 - real-data source cards live under `realDataCards/`
 - annotation tool contracts live under `annotation-tool/`
 - the fixed Stage5 model roster and multimodal API client live under `modelNeedMeasured/`
+
+## Typical Workflow
+
+At a high level, a normal BenchClaw run looks like this:
+
+1. Stage1 converts an evaluation idea into a benchmark draft, capability decomposition, source selection, and execution plan.
+2. Stage2 materializes raw assets from real data, existing benchmarks, and simulators into a dedicated workspace.
+3. Stage3 converts those assets into normalized evidence, cleaned GT, segmentation or depth byproducts, and audit-ready records.
+4. Stage4 synthesizes benchmark items, media, GT-linked evidence, metrics, and final benchmark packages.
+5. Stage5 evaluates the required model roster on the Stage4 package and writes reports.
+
+The important design choice is that every stage reads shared reference resources from the repository, but writes run-specific outputs only into `WORKSPACE_ROOT`.
 
 ## Core Skills
 
@@ -174,6 +215,22 @@ Stage1 draft
 | Stage4 | final benchmark packaging | `37-benchmark-artifact-pack/EVALSET_DATASET/`, `FINAL_BENCHMARK_CARD.md`, `STAGE4_REPORT.md` |
 | Stage5 | required model evaluation and reporting | `38-evaluation-run/`, `39-evaluation-report/` |
 
+## What A Final Benchmark Looks Like
+
+By the time a run reaches the Stage4 terminal package, the benchmark should be executable rather than only descriptive. In the current contract, Stage5 consumes a package shaped like:
+
+```text
+EVALSET_DATASET/
+├── README.md
+├── data/
+│   └── test.jsonl
+├── images/
+└── metrics/
+    └── evaluate.py
+```
+
+Depending on the benchmark family, Stage4 may also retain richer intermediate artifacts in the workspace, such as generated answer programs, template manifests, GT-linked evidence tables, or dual-image benchmark items where the original image and the answer-facing processed image are both preserved for auditability.
+
 ## Stage-Specific Conventions
 
 ### Stage1
@@ -291,6 +348,17 @@ You can also run a single stage directly:
 
 Using `benchmark-pipeline` is recommended because it creates and passes a consistent `WORKSPACE_ROOT`, then stops at each major stage boundary to show the summary, gate verdict, key artifacts, and blocking issues.
 
+## Minimal Local Expectations
+
+BenchClaw assumes you already have an environment that can invoke repository Skills and, when needed, connect to local tools or simulator endpoints. Before running a full pipeline, it helps to confirm:
+
+- you have a writable `WORKSPACE_ROOT`
+- required local services for selected annotation tools are already running if the card marks them as service-style
+- selected simulator endpoints are already attached and reachable when Stage2 expects attach-only behavior
+- any private or external data sources referenced by a run have already been approved and materialized into the workspace
+
+For ordinary development, you usually edit the repository under `BenchClaw/` and inspect generated artifacts under `workspaces/`.
+
 ## Workspace Convention
 
 BenchClaw treats this repository as a shared read-only resource root during benchmark runs. Generated run artifacts should be written to an isolated workspace:
@@ -316,6 +384,12 @@ Key rules:
 - `BENCHCLAW_ROOT` should be used as read-only reference material,
 - reports, generated scripts, temporary files, logs, model outputs, and evaluation results belong in the active workspace.
 
+The repository root already includes example long-lived directories such as:
+
+- `BenchClaw/` for the reusable Skill and card library
+- `workspaces/` for isolated benchmark runs
+- `path_resolution.json` for repository-level path anchoring used by some flows
+
 ## Quality Gates
 
 Common gate verdicts:
@@ -329,6 +403,97 @@ WARNING       A non-blocking risk was found and should be tracked.
 ```
 
 BenchClaw follows a check-before-proceeding policy. A `PASS` verdict means the next stage is allowed, not that the pipeline should automatically continue.
+
+## How To Add A New Data Source Or Simulator Card
+
+BenchClaw is easiest to extend by adding or updating a source card first, then letting Stage1 and Stage2 select it through the normal pipeline rather than hard-coding special cases into a run.
+
+### Add A New Real-Data Or Benchmark-Dataset Source
+
+1. Create or update a card under `realDataCards/` or `benchmarkDatasetCards/`.
+2. Document what the source contains:
+   - modalities such as RGB, depth, text, trajectory, metadata, or labels
+   - license or usage constraints
+   - expected acquisition method
+   - how the source should be materialized into `WORKSPACE_ROOT/stage2/`
+3. Make sure the card states whether the source is fully local, externally mounted, or requires a preprocessing step before Stage2 can ingest it.
+4. Keep the downstream contract in mind:
+   - Stage2 must materialize the source into the active workspace
+   - Stage3 must be able to derive evidence, GT, or annotation-ready records from it
+   - Stage4 must be able to trace benchmark items back to source evidence
+5. If the source needs custom cleaning or annotation assumptions, add or update the corresponding Stage3 documentation or helper logic instead of burying those assumptions in Stage2 prompts alone.
+
+### Add A New Simulator Card
+
+1. Create a new directory under `simulatorCards/`.
+2. Describe the simulator’s observation channels and privileged signals as concretely as possible:
+   - RGB or multi-view images
+   - segmentation, depth, normals, occupancy, or maps
+   - object IDs, poses, trajectories, relations, or action logs
+   - scene reset, stepping, and collection semantics
+3. State whether BenchClaw should:
+   - attach to an already running localhost endpoint, or
+   - run a local executable or script as part of collection
+4. Define what Stage2 is expected to save per scene or episode and where it should land under `WORKSPACE_ROOT/stage2/`.
+5. Define what Stage3 can trust as privileged GT versus what still needs cleaning, normalization, or derived annotations.
+6. If the simulator introduces a new artifact pattern, update the relevant stage skill or contract documentation so the change is explicit and reusable.
+
+### Extension Checklist
+
+Before considering a new source integrated, it is worth checking:
+
+- Stage1 can discover and justify selecting the source
+- Stage2 can materialize it into the workspace without hidden manual steps
+- Stage3 can produce usable evidence or GT from it
+- Stage4 can build benchmark items whose answers remain traceable to source evidence
+- Stage5 can consume the resulting benchmark package without special-case evaluation hacks
+
+## FAQ
+
+### Is BenchClaw a Python package or a standalone app?
+
+No. BenchClaw is primarily a repository of Skills, contracts, cards, and artifact conventions. Some stages generate scripts or runnable outputs inside a workspace, but the repository itself is not organized as a single installable app.
+
+### Where should generated data go?
+
+Generated data should go into the active `WORKSPACE_ROOT`, not back into the repository source tree. The repository is the reusable definition layer; the workspace is the run-specific artifact layer.
+
+### Can I run only one stage?
+
+Yes. Individual stages can be invoked directly, but the recommended entrypoint is still `benchmark-pipeline` because it keeps `WORKSPACE_ROOT`, stage handoff, and gate semantics consistent.
+
+### When should I edit a Skill versus a source card?
+
+Edit a source card when the capability, acquisition method, or source contract changes. Edit a Skill when the stage logic, artifact rules, or execution procedure changes.
+
+### Can I point BenchClaw to data that already exists elsewhere on disk?
+
+You can reference existing data during planning, but the normal pipeline still expects selected data to be materialized into the active workspace so later stages remain reproducible and auditable.
+
+### What if a simulator or annotation tool already runs as a service?
+
+The current project generally prefers attach-only behavior for service-style tools. If a card says the tool should attach to an existing localhost endpoint, the pipeline should not repeatedly relaunch it during ordinary collection.
+
+### What is the most common reason a stage gets blocked?
+
+Usually one of four things:
+
+- the selected source was never fully materialized into the workspace
+- a required local tool or simulator endpoint is unavailable
+- a downstream artifact contract is underspecified
+- the evidence or GT is not strong enough to support an auditable benchmark item
+
+## Current Project Direction
+
+The repository is currently oriented toward embodied spatial intelligence benchmark manufacturing across mixed carriers and sources, including:
+
+- indoor embodied reasoning
+- outdoor and aerial spatial reasoning
+- simulator-native privileged GT construction
+- semi-supervised enhancement of existing benchmark images
+- evaluation packages that remain executable, traceable, and maintainable after synthesis
+
+Recent Stage3 and Stage4 work in this repository emphasizes stronger GT traceability, benchmark-item auditability, workspace-local path stability, and benchmark packages that can be regenerated or repaired instead of being treated as static one-off datasets.
 
 ## Maintenance Principles
 

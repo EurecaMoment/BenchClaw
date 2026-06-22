@@ -168,6 +168,8 @@ reference_library/schema_patch_notes.md
 - 为每个通过模板生成答案程序，能从单条 evidence record 计算 `answer`，并解释 `answer_derivation`。
 - 生成 `compute_reasoning_chain(record, template_config)`，用于输出可审计的紧凑证据推理链，而不是要求评测模型泄漏私有推理。
 - `generate_items.py` 必须支持按 `--min-reasoning-hops`、`--min-gt-distance-level`、`--depth-role` 过滤生成样本。
+- `generate_items.py` 和各模板 `build_item()` 写出的 `media` 必须统一规范化为当前 `WORKSPACE_ROOT` 内可访问的本地绝对路径；不得把 `stage3/...` 相对路径直接透传到 `benchmark_items.jsonl` 或后续 dataset。
+- 对依赖对象/区域/路径指称的题型，必须在题目最终落盘前接入 GT 图片标识处理：保留 `source_media` 原图列，同时输出 `media` 作答图列，并把 label ↔ object_id ↔ GT evidence 的映射写入 sidecar 文件。
 - 对任何无法证明唯一答案、缺媒体、缺 GT、干扰项构造失败或题干不自然的样本，必须写入 `filtered_items.jsonl` 并给出明确原因。
 
 ### 5. 契约与可执行性检查

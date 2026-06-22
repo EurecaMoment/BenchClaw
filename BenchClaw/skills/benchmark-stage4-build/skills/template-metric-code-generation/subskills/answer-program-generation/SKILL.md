@@ -23,6 +23,7 @@ description: Use for the specific BenchClaw subskill `stage4-answer-program-gene
 - `gt_kinship/gt_distant_reasoning_chains.jsonl`
 - 本 stage `templates/benchmark_item.schema.json`
 - 本 skill `reference_library/answer_type_metric_registry.json`、`reference_library/template_family_registry.yaml` 和 `schema_patch_notes.md`
+- `WORKSPACE_ROOT/path_resolution.json`
 
 ## 每模板答案程序接口
 
@@ -107,6 +108,18 @@ def compute_reasoning_chain(record, template_config):
 - `answer_derivation` 是给 gold/audit 使用的简洁解释，不是要求被评测模型输出完整思维链。
 - `metadata.chain_id` 必须与模板 `reasoning_chain_plan.chain_id` 一致。
 
+媒体路径硬约束：
+
+- `build_item` 写出的 `media` 必须是可直接访问的本地绝对路径。
+- 所有 `media` 路径必须位于当前 `WORKSPACE_ROOT` 内；禁止继续输出 `stage3/...`、`../...`、裸相对路径，或指向其他 workspace 的绝对路径。
+- 如果上游 evidence 只提供相对路径，答案程序必须先基于当前 `WORKSPACE_ROOT` 完成路径解析与规范化，再写入 item。
+- 如果原始媒体不在当前 workspace 内，必须先复制或链接到当前 workspace 内稳定目录，再把该 workspace 内绝对路径写入 `media`。
+- 多图题的 `media` 数组中每个元素都必须满足以上要求。
+- 当启用 GT 图片标识处理时，item 还必须保留原始作图输入列。推荐保持：
+  - `source_media`：原图绝对路径数组；
+  - `media`：最终给模型作答使用的处理图绝对路径数组，可能是 overlay 图，也可能是在 GT 不足时回退到原图。
+- 对需要对象指称消歧的题，答案程序或其下游 helper 必须把 label ↔ object_id ↔ GT evidence 的映射落到 sidecar 映射文件，并把映射路径写回 item 的 `metadata`。
+
 ## 题干自然语言约束
 
 `build_item` 生成题干时必须符合：
@@ -131,6 +144,14 @@ def compute_reasoning_chain(record, template_config):
 --min-gt-distance-level far
 --depth-role high_depth
 ```
+
+并且无论模板程序返回什么形式的媒体引用，`generate_items.py` 在落盘 `benchmark_items.jsonl`、`generated_items.jsonl` 或其他 item jsonl 前，都必须执行一次统一路径规范化，保证最终 item 的 `media` 字段只包含当前 `WORKSPACE_ROOT` 内的本地绝对路径。
+
+若启用了 visual marker：
+
+- `generate_items.py` 必须在“候选对象已确定、题干最终落盘之前”调用 GT 标识处理。
+- 处理后若题干要求引用 label，则题干、答案、解析、评分和映射文件必须共用同一套 label-object 对应关系。
+- 标识失败且题目又依赖 label 时，该样本必须进入 `filtered_items.jsonl` 或被显式降级，不能静默输出不可审计题。
 
 并把被过滤样本写入 `filtered_items.jsonl`，每条至少包含：
 

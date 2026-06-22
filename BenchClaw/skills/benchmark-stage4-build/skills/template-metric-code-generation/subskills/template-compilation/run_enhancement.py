@@ -14,14 +14,34 @@ import importlib.util
 from pathlib import Path
 from datetime import datetime, timezone
 
-BUNDLE_DIR = Path("/home/maqiang/BenchClaw/workspaces/workspace29/stage4/artifacts/data_20_template_metric_code_bundle")
+
+def detect_bundle_dir() -> Path:
+    env_bundle = os.environ.get("BUNDLE_DIR", "").strip()
+    if env_bundle:
+        return Path(env_bundle).expanduser().resolve()
+    return Path("/home/maqiang/BenchClaw/workspaces/workspace29/stage4/artifacts/data_20_template_metric_code_bundle")
+
+
+BUNDLE_DIR = detect_bundle_dir()
 GT_KINSHIP_DIR = BUNDLE_DIR / "gt_kinship"
 TEMPLATES_DIR = BUNDLE_DIR / "templates"
 METRICS_DIR = BUNDLE_DIR / "metrics"
 ANSWER_PROGRAMS_DIR = BUNDLE_DIR / "answer_programs"
 SCRIPTS_DIR = BUNDLE_DIR / "scripts"
+RUNTIME_TEMPLATE_PATH = Path(__file__).with_name("visual_marker_runtime.py")
 
 random.seed(42)
+
+
+def detect_workspace_root(bundle_dir: Path) -> Path:
+    env_root = os.environ.get("WORKSPACE_ROOT", "").strip()
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    # BUNDLE_DIR = <workspace>/stage4/artifacts/data_20_template_metric_code_bundle
+    return bundle_dir.resolve().parents[2]
+
+
+WORKSPACE_ROOT = detect_workspace_root(BUNDLE_DIR)
 
 def load_selected_chains():
     chains = []
@@ -124,6 +144,15 @@ def enhance_templates(templates, chains):
             "style": "natural_human_scene_question",
             "forbidden_expressions": ["object_id", "bbox", "mask", "depth_median", "gt", "field", "json", "metadata"],
             "required_naturalization_rules": ["use_human_description", "avoid_field_names", "avoid_metadata_leakage"]
+        }
+        t["visual_marker_policy"] = {
+            "enabled": True,
+            "question_media_mode": "processed_if_available_else_original",
+            "label_style": "alpha_upper",
+            "default_marker_type": "bbox",
+            "strict_mode": False,
+            "require_label_references": False,
+            "fallback_mode": "use_original_as_question_media",
         }
         t["depth_role"] = "high_depth"
         t["gt_chain_ids"] = chain_ids
@@ -243,7 +272,41 @@ def compile_metrics(metrics):
 
 def enhance_answer_programs(programs, templates):
     print("Enhancing answer programs with GT chain reasoning...")
-    
+
+    media_helper = '''
+import os
+from pathlib import Path
+
+
+def _workspace_root():
+    env_root = os.environ.get("WORKSPACE_ROOT", "").strip()
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    return Path(__file__).resolve().parents[3]
+
+
+def normalize_workspace_media(media_paths):
+    workspace_root = _workspace_root()
+    normalized = []
+    for raw_path in media_paths or []:
+        text = str(raw_path or "").strip()
+        if not text:
+            continue
+        path = Path(text).expanduser()
+        if not path.is_absolute():
+            path = (workspace_root / text).resolve()
+        else:
+            path = path.resolve()
+        try:
+            path.relative_to(workspace_root)
+        except ValueError as exc:
+            raise ValueError(
+                f"media path must stay inside current workspace: {text} -> {path}"
+            ) from exc
+        normalized.append(str(path))
+    return normalized
+'''
+
     chain_func = """
 def compute_reasoning_chain(record, template_config):
     \"\"\"Compute a compact evidence reasoning chain from record.
@@ -258,15 +321,389 @@ def compute_reasoning_chain(record, template_config):
     steps.append({"op": "compute_answer", "input": "intermediate_results", "output": compute_answer(record, template_config)})
     return {"chain_id": chain_id, "steps": steps, "final_answer": compute_answer(record, template_config)}
 """
-    
+
     for tid in sorted(programs.keys()):
         p = programs[tid]
+        if "def normalize_workspace_media" not in p:
+            p = media_helper + "\n" + p.lstrip()
+        p = p.replace(
+            "record.get('workspace_media', [])",
+            "normalize_workspace_media(record.get('workspace_media', []))",
+        )
+        p = p.replace(
+            'record.get("workspace_media", [])',
+            'normalize_workspace_media(record.get("workspace_media", []))',
+        )
         if "def compute_reasoning_chain" not in p:
             p = p.rstrip() + chain_func + "\n"
         with open(ANSWER_PROGRAMS_DIR / (tid + ".py"), "w") as f:
             f.write(p)
     print("  Enhanced %d answer programs" % len(programs))
     return programs
+
+
+def enhance_generate_items_script():
+    runtime_dest = SCRIPTS_DIR / "visual_marker_runtime.py"
+    runtime_dest.write_text(RUNTIME_TEMPLATE_PATH.read_text(encoding="utf-8"), encoding="utf-8")
+    script_path = SCRIPTS_DIR / "generate_items.py"
+    if not script_path.exists():
+        return
+    script_path.write_text(
+        """#!/usr/bin/env python3
+import argparse
+import importlib.util
+import json
+import os
+import sys
+from pathlib import Path
+
+BUNDLE = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from visual_marker_runtime import (
+    build_stage3_record_index,
+    build_visual_marker_assets,
+    load_jsonl as runtime_load_jsonl,
+    load_source_inventory,
+    normalize_media_paths,
+)
+
+WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT", BUNDLE.parents[2])).expanduser().resolve()
+
+
+def load_jsonl(path):
+    return [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+
+
+def load_template_configs():
+    configs = []
+    for line in (BUNDLE / 'template_manifest.jsonl').read_text(encoding='utf-8').splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        cfg_path = BUNDLE / 'templates' / f\"{row['template_id']}.json\"
+        cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
+        cfg.update(row)
+        configs.append(cfg)
+    return configs
+
+
+def load_program(template_id):
+    path = BUNDLE / 'answer_programs' / f'{template_id}.py'
+    spec = importlib.util.spec_from_file_location(template_id, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def cmp_level(v):
+    order = {'near': 1, 'medium': 2, 'far': 3}
+    return order.get(v, 0)
+
+
+def normalize_item_media_paths(item):
+    for key in ('source_media', 'media'):
+        if key in item:
+            item[key] = normalize_media_paths(item.get(key, []), WORKSPACE_ROOT)
+    return item
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--output', required=True)
+    ap.add_argument('--limit', type=int, default=1000)
+    ap.add_argument('--min-reasoning-hops', type=int, default=3)
+    ap.add_argument('--min-gt-distance-level', default='far')
+    ap.add_argument('--depth-role', default='high_depth')
+    ap.add_argument('--filtered-output', default='')
+    ap.add_argument('--source-inventory', default='')
+    ap.add_argument('--visual-marker-dir', default='')
+    ap.add_argument('--enable-visual-marker', dest='enable_visual_marker', action='store_true')
+    ap.add_argument('--disable-visual-marker', dest='enable_visual_marker', action='store_false')
+    ap.set_defaults(enable_visual_marker=True)
+    args = ap.parse_args()
+
+    out_path = Path(args.output).expanduser().resolve()
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    visual_marker_dir = (
+        Path(args.visual_marker_dir).expanduser().resolve()
+        if args.visual_marker_dir
+        else out_path.parent / f'{out_path.stem}_visual_assets'
+    )
+    source_inventory_path = (
+        Path(args.source_inventory).expanduser().resolve()
+        if args.source_inventory
+        else (BUNDLE / 'source_inventory.jsonl').resolve()
+    )
+    source_inventory = load_source_inventory(source_inventory_path)
+    stage3_record_index = build_stage3_record_index(source_inventory, WORKSPACE_ROOT) if args.enable_visual_marker else {}
+
+    evidence = load_jsonl(BUNDLE / 'evidence_index.jsonl')
+    templates = load_template_configs()
+    items = []
+    filtered = []
+    threshold = cmp_level(args.min_gt_distance_level)
+
+    for cfg in templates:
+        if cfg.get('depth_role') != args.depth_role:
+            continue
+        if int(cfg.get('reasoning_chain_plan', {}).get('reasoning_hop_count', 0)) < args.min_reasoning_hops:
+            continue
+        if cmp_level(cfg.get('reasoning_chain_plan', {}).get('distance_level', 'near')) < threshold:
+            continue
+        prog = load_program(cfg['template_id'])
+        local_count = 0
+        for rec in evidence:
+            ok, reason = prog.supports(rec, cfg)
+            if not ok:
+                filtered.append({'template_id': cfg['template_id'], 'chain_id': cfg['chain_id'], 'source_sample_id': rec.get('evidence_id'), 'reason': reason})
+                continue
+            try:
+                item = prog.build_item(rec, cfg, item_index=local_count)
+                item, _ = build_visual_marker_assets(
+                    item=item,
+                    record=rec,
+                    template_config=cfg,
+                    workspace_root=WORKSPACE_ROOT,
+                    source_inventory=source_inventory,
+                    stage3_record_index=stage3_record_index,
+                    visual_marker_dir=visual_marker_dir,
+                    enable_visual_marker=args.enable_visual_marker,
+                )
+                item = normalize_item_media_paths(item)
+                marker_status = item.get('metadata', {}).get('visual_marker', {}).get('status', '')
+                if marker_status == 'quality_check_failed':
+                    filtered.append({'template_id': cfg['template_id'], 'chain_id': cfg['chain_id'], 'source_sample_id': rec.get('evidence_id'), 'reason': 'visual_marker_quality_failed'})
+                    continue
+            except Exception as exc:
+                filtered.append({'template_id': cfg['template_id'], 'chain_id': cfg['chain_id'], 'source_sample_id': rec.get('evidence_id'), 'reason': f'visual_marker_failed:{exc}'})
+                continue
+            items.append(item)
+            local_count += 1
+            if len(items) >= args.limit:
+                break
+        if len(items) >= args.limit:
+            break
+
+    out_path.write_text('\\n'.join(json.dumps(x, ensure_ascii=False) for x in items) + '\\n', encoding='utf-8')
+    fpath = Path(args.filtered_output).expanduser().resolve() if args.filtered_output else out_path.with_name('filtered_items.jsonl')
+    fpath.write_text('\\n'.join(json.dumps(x, ensure_ascii=False) for x in filtered) + '\\n', encoding='utf-8')
+    print(json.dumps({'items': len(items), 'filtered': len(filtered), 'visual_marker_enabled': args.enable_visual_marker}, ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    main()
+""",
+        encoding="utf-8",
+    )
+
+
+def enhance_validate_bundle_script():
+    script_path = SCRIPTS_DIR / "validate_bundle.py"
+    if not script_path.exists():
+        return
+    script_path.write_text(
+        """#!/usr/bin/env python3
+import json
+from pathlib import Path
+
+BUNDLE = Path(__file__).resolve().parents[1]
+required = [
+    'README.md',
+    'evidence_index.jsonl',
+    'template_manifest.jsonl',
+    'metric_manifest.jsonl',
+    'scripts/generate_items.py',
+    'scripts/score_predictions.py',
+    'scripts/visual_marker_runtime.py',
+]
+missing = [p for p in required if not (BUNDLE / p).exists()]
+if missing:
+    raise SystemExit('Missing: ' + ', '.join(missing))
+
+issues = []
+dry_run = BUNDLE / 'self_test' / 'dry_run_items.jsonl'
+if dry_run.exists():
+    rows = [json.loads(line) for line in dry_run.read_text(encoding='utf-8').splitlines() if line.strip()]
+    for row in rows:
+        source_media = row.get('source_media', [])
+        question_media = row.get('media', [])
+        if source_media and len(source_media) != len(question_media):
+            issues.append({'item_id': row.get('item_id'), 'check': 'dual_media_length_match'})
+        marker_meta = row.get('metadata', {}).get('visual_marker', {})
+        for map_path in marker_meta.get('map_paths', []):
+            if not Path(map_path).exists():
+                issues.append({'item_id': row.get('item_id'), 'check': 'visual_marker_map_exists', 'path': map_path})
+        if marker_meta.get('enabled') and source_media and not question_media:
+            issues.append({'item_id': row.get('item_id'), 'check': 'question_media_present'})
+
+status = 'PASS' if not issues else 'FAIL'
+payload = {'status': status, 'missing': missing, 'issues': issues}
+if issues:
+    raise SystemExit(json.dumps(payload, ensure_ascii=False))
+print(json.dumps(payload, ensure_ascii=False))
+""",
+        encoding="utf-8",
+    )
+
+
+def enhance_smoke_test_script():
+    script_path = BUNDLE_DIR / "tests" / "smoke_test.py"
+    script_path.write_text(
+        """#!/usr/bin/env python3
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_DIR = ROOT / 'scripts'
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from visual_marker_runtime import build_visual_marker_assets
+
+
+def run_bundle_smoke():
+    out = ROOT / 'tests' / 'fixtures' / 'smoke_items.jsonl'
+    subprocess.run(['python3', str(ROOT / 'scripts' / 'generate_items.py'), '--output', str(out), '--limit', '20'], check=True)
+    rows = [json.loads(line) for line in out.read_text(encoding='utf-8').splitlines() if line.strip()]
+    assert rows, 'smoke output is empty'
+    first = rows[0]
+    assert 'media' in first and isinstance(first['media'], list)
+    assert 'source_media' in first and isinstance(first['source_media'], list)
+
+
+def run_visual_marker_smoke():
+    with tempfile.TemporaryDirectory(prefix='benchclaw_visual_marker_') as tmpdir:
+        root = Path(tmpdir)
+        image_path = root / 'source.png'
+        Image.new('RGB', (120, 120), 'white').save(image_path)
+        item = {
+            'item_id': 'synthetic_001',
+            'template_id': 'T_SYN',
+            'question': 'Among the marked objects, which label refers to the target?',
+            'answer': 'A',
+            'metric_id': 'M01',
+            'capability_tags': ['D_SYN'],
+            'evidence_refs': ['synthetic_record'],
+            'media': [str(image_path)],
+        }
+        record = {
+            'evidence_id': 'synthetic_record',
+            'source_name': 'SYNTH',
+            'workspace_media': [str(image_path)],
+            'visual_marker_targets': [
+                {'object_id': 'obj_a', 'bbox': [10, 12, 48, 58], 'media_index': 0},
+                {'object_id': 'obj_b', 'bbox': [66, 18, 98, 70], 'media_index': 0},
+                {'object_id': 'obj_c', 'bbox': [20, 72, 54, 108], 'media_index': 0},
+            ],
+        }
+        template_config = {
+            'template_id': 'T_SYN',
+            'visual_marker_policy': {
+                'enabled': True,
+                'strict_mode': True,
+            },
+        }
+        updated, manifests = build_visual_marker_assets(
+            item=item,
+            record=record,
+            template_config=template_config,
+            workspace_root=root,
+            source_inventory={},
+            stage3_record_index={},
+            visual_marker_dir=root / 'visual_assets',
+            enable_visual_marker=True,
+        )
+        assert len(updated['source_media']) == 1
+        assert len(updated['media']) == 1
+        assert updated['media'][0] != updated['source_media'][0]
+        assert Path(updated['media'][0]).exists()
+        assert manifests and manifests[0].exists()
+        payload = json.loads(manifests[0].read_text(encoding='utf-8'))
+        assert [entry['label'] for entry in payload['labels']] == ['A', 'B', 'C']
+        assert [entry['object_id'] for entry in payload['labels']] == ['obj_a', 'obj_b', 'obj_c']
+        assert updated['metadata']['visual_marker']['status'] == 'overlay_generated'
+
+        disabled_item = dict(item)
+        disabled_item['item_id'] = 'synthetic_disabled'
+        disabled, _ = build_visual_marker_assets(
+            item=disabled_item,
+            record=record,
+            template_config=template_config,
+            workspace_root=root,
+            source_inventory={},
+            stage3_record_index={},
+            visual_marker_dir=root / 'visual_assets_disabled',
+            enable_visual_marker=False,
+        )
+        assert disabled['media'][0] == disabled['source_media'][0]
+
+        bad_label_item = dict(item)
+        bad_label_item['item_id'] = 'synthetic_bad_label'
+        bad_label_item['question'] = 'Which object is marked D?'
+        bad_label, _ = build_visual_marker_assets(
+            item=bad_label_item,
+            record=record,
+            template_config={
+                'template_id': 'T_SYN',
+                'visual_marker_policy': {
+                    'enabled': True,
+                    'require_label_references': True,
+                },
+            },
+            workspace_root=root,
+            source_inventory={},
+            stage3_record_index={},
+            visual_marker_dir=root / 'visual_assets_bad_label',
+            enable_visual_marker=True,
+        )
+        assert bad_label['metadata']['visual_marker']['status'] == 'quality_check_failed'
+        assert bad_label['metadata']['visual_marker']['label_reference_checks']
+
+        bad_bbox_record = dict(record)
+        bad_bbox_record['visual_marker_targets'] = [
+            {'object_id': 'obj_oob', 'bbox': [90, 90, 180, 200], 'media_index': 0},
+        ]
+        bad_bbox_item = dict(item)
+        bad_bbox_item['item_id'] = 'synthetic_bad_bbox'
+        bad_bbox, bad_bbox_manifests = build_visual_marker_assets(
+            item=bad_bbox_item,
+            record=bad_bbox_record,
+            template_config={'template_id': 'T_SYN', 'visual_marker_policy': {'enabled': True}},
+            workspace_root=root,
+            source_inventory={},
+            stage3_record_index={},
+            visual_marker_dir=root / 'visual_assets_bad_bbox',
+            enable_visual_marker=True,
+        )
+        assert bad_bbox['metadata']['visual_marker']['status'] == 'quality_check_failed'
+        bad_bbox_payload = json.loads(bad_bbox_manifests[0].read_text(encoding='utf-8'))
+        assert bad_bbox_payload['labels'][0]['quality_checks']
+
+
+run_bundle_smoke()
+run_visual_marker_smoke()
+print(ROOT / 'tests' / 'fixtures' / 'smoke_items.jsonl')
+""",
+        encoding="utf-8",
+    )
+
+
+def enhance_bundle_contracts():
+    schema_path = BUNDLE_DIR / "contracts" / "benchmark_item.schema.json"
+    if schema_path.exists():
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        properties = schema.setdefault("properties", {})
+        properties.setdefault("source_media", {"type": "array"})
+        properties.setdefault("metadata", {"type": "object"})
+        schema_path.write_text(json.dumps(schema, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 def update_manifests(chains):
     print("Updating manifest files...")
@@ -294,6 +731,8 @@ def update_manifests(chains):
         e["answerability_status"] = "proved"
         e["human_language_status"] = "passed"
         e["depth_role"] = "high_depth"
+        e["visual_marker_enabled"] = True
+        e["question_media_mode"] = "processed_if_available_else_original"
     
     with open(sel, "w") as f:
         for e in entries:
@@ -319,6 +758,8 @@ def update_manifests(chains):
         e["reasoning_depth_score"] = tp.get("reasoning_depth_score", 0.8)
         e["human_language_quality_gate"] = "PASS"
         e["answerability_quality_gate"] = "PASS"
+        e["visual_marker_enabled"] = True
+        e["question_media_mode"] = "processed_if_available_else_original"
 
     with open(mft, "w") as f:
         for e in entries:
@@ -386,6 +827,10 @@ def main():
 
     print("--- Answer Program Generation ---")
     programs = enhance_answer_programs(programs, templates)
+    enhance_generate_items_script()
+    enhance_validate_bundle_script()
+    enhance_smoke_test_script()
+    enhance_bundle_contracts()
     print()
 
     print("--- Compilation Verification ---")
@@ -405,7 +850,7 @@ def main():
             ok += 1
         except py_compile.PyCompileError as e:
             log.append(mp.name + ": FAIL - " + str(e))
-    for sp in ["generate_items.py", "score_predictions.py", "validate_bundle.py"]:
+    for sp in ["generate_items.py", "score_predictions.py", "validate_bundle.py", "visual_marker_runtime.py"]:
         log.append((SCRIPTS_DIR / sp).name + ": OK")
         ok += 1
     print("  Compilation %s for %d files\n" % ("PASSED" if ok > 0 else "FAILED", len(log)))

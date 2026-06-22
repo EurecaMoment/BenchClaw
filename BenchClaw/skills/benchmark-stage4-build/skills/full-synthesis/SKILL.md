@@ -32,10 +32,15 @@ tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf 
 
 1. 只使用通过灰度验证的模板与指标。
 2. 按执行计划生成全量 benchmark item、媒体副本、GT、评分配置、数据集卡和校验和。
-3. 所有媒体引用必须指向 workspace 内稳定存在的文件。
-4. 每个 item 必须能追溯到数据源、证据记录、模板、答案程序与能力维度。
-5. 禁止只输出旧版目录名 `sample_images/`、`gt_bundle/`；如果需要兼容旧调用，可额外写这些目录，但当前契约目录 `media/` 和 `ground_truth/` 必须存在且非空。
-6. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数和质量门结果。
+3. 所有媒体引用必须指向当前 `WORKSPACE_ROOT` 内稳定存在的文件，且在最终 `dataset.jsonl` 中必须写为可直接访问的本地绝对路径。
+4. 默认应把最终 benchmark 使用的媒体统一收敛到 `artifacts/data_22_full_benchmark_dataset/media/` 或当前 workspace 内其他稳定目录；禁止把 `dataset.jsonl` 中的图片路径继续写成 `stage3/...`、相对路径或其他 workspace 的绝对路径。
+5. 最终 benchmark item 必须同时保留原图列与作答图列：
+   - `source_media`：原图；
+   - `media`：给模型作答使用的处理图，可能是 GT overlay 图，也可能是无标识的回退处理图。
+6. 若某题启用了 GT 图片标识处理，则必须同步落盘 sidecar 映射文件，使 label ↔ object_id ↔ GT evidence 可追溯；映射缺失的题不得进入最终 benchmark。
+7. 每个 item 必须能追溯到数据源、证据记录、模板、答案程序与能力维度。
+8. 禁止只输出旧版目录名 `sample_images/`、`gt_bundle/`；如果需要兼容旧调用，可额外写这些目录，但当前契约目录 `media/` 和 `ground_truth/` 必须存在且非空。
+9. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数和质量门结果。
 
 ## 输出
 

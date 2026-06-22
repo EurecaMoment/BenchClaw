@@ -17,6 +17,9 @@
     "media": {
       "type": "array"
     },
+    "source_media": {
+      "type": "array"
+    },
     "question": {
       "type": "string"
     },
@@ -38,6 +41,9 @@
     },
     "metric_id": {
       "type": "string"
+    },
+    "metadata": {
+      "type": "object"
     }
   }
 }
