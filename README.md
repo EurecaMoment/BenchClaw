@@ -6,17 +6,6 @@ BenchClaw is described in our paper:
 
 - [Embodied-BenchClaw: An Autonomous Multi-Agent System for Embodied Spatial Intelligence Benchmark Construction](https://arxiv.org/abs/2606.11909)
 
-If BenchClaw helps your work, please cite:
-
-```bibtex
-@article{jiang2026embodiedbenchclaw,
-  title={Embodied-BenchClaw: An Autonomous Multi-Agent System for Embodied Spatial Intelligence Benchmark Construction},
-  author={Jiang, Baoyang and Zhang, Fengchun and Wang, Leyuan and Li, Haotian and Wang, Yida and Ji, Zhe and Lai, Jinshan and Ren, Xi and Hu, Jianwei and Ma, Qiang},
-  journal={arXiv preprint arXiv:2606.11909},
-  year={2026}
-}
-```
-
 ## Awesome Benchmark Index
 
 For a year-organized list of existing embodied AI, robotics, navigation, simulation, and multimodal-agent benchmarks tracked from `benchmarks.xlsx`, see [Awesome BenchClaw Benchmarks](AWESOME.md).
@@ -506,3 +495,16 @@ Recent Stage3 and Stage4 work in this repository emphasizes stronger GT traceabi
 ## License
 
 BenchClaw is licensed under the Apache License 2.0. See `LICENSE` for details.
+
+## Citation
+
+If BenchClaw helps your work, please cite:
+
+```bibtex
+@article{jiang2026embodiedbenchclaw,
+  title={Embodied-BenchClaw: An Autonomous Multi-Agent System for Embodied Spatial Intelligence Benchmark Construction},
+  author={Jiang, Baoyang and Zhang, Fengchun and Wang, Leyuan and Li, Haotian and Wang, Yida and Ji, Zhe and Lai, Jinshan and Ren, Xi and Hu, Jianwei and Ma, Qiang},
+  journal={arXiv preprint arXiv:2606.11909},
+  year={2026}
+}
+```
