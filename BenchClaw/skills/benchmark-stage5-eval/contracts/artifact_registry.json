@@ -5,10 +5,24 @@
     "required_before": [
       "stage5/_STAGE_DONE.json",
       "pipeline Stage5 PASS",
-      "PIPELINE_DONE.json"
+      "PIPELINE_DONE.json",
+      "WORKSPACE_ROOT/EVALSET_DATASET complete package"
     ]
   },
   "artifacts": [
+    {
+      "id": "workspace_evalset_dataset",
+      "required_at_workspace_root": "EVALSET_DATASET",
+      "required_files": [
+        "README.md",
+        "data/test.jsonl"
+      ],
+      "required_nonempty_directories": [
+        "images",
+        "metrics"
+      ],
+      "must_be_stage5_consumed": true
+    },
     {
       "id": "data_23_evaluation_report",
       "required_files": [

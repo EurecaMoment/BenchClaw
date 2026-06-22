@@ -7,7 +7,7 @@ description: Use for the BenchClaw skill `stage5-eval` when the workflow is expl
 
 ## 角色
 
-读取 Stage4 全量 benchmark 数据集，完成真实模型评测或读取用户提供的已物化预测文件，生成最终评测报告。
+读取 `WORKSPACE_ROOT/EVALSET_DATASET/` 这一份最终完整评测包，完成真实模型评测或读取用户提供的已物化预测文件，生成最终评测报告。
 
 ## 关键规则
 
@@ -17,6 +17,7 @@ description: Use for the BenchClaw skill `stage5-eval` when the workflow is expl
 - 每个节点完成后必须写：`nodes/<node-id>/USED_INPUTS.json`、`nodes/<node-id>/DONE.json`、`nodes/<node-id>/NODE_REPORT.md`。
 - 继承总入口和 pipeline 的长任务 `tmux` 执行协议：任何下载、检索、外部工具调用、批处理、模型推理、训练、仿真、清洗、标注或全量评测等可能长时间运行的命令，必须在 `tmux` 会话中执行、写入 `nodes/<node-id>/run_logs/` 并定期监控；未使用 `tmux` 必须在 `NODE_REPORT.md` 说明短任务依据和实际耗时。
 - 每个编号数据必须写入：`artifacts/<data-id>/`。
+- Stage5 默认且必须以 `WORKSPACE_ROOT/EVALSET_DATASET/` 作为完整评测包入口；该目录必须包含评测图文、答案/GT 和评测指标代码。若只存在 `stage4/artifacts/data_22_full_benchmark_dataset/` 而 `WORKSPACE_ROOT/EVALSET_DATASET/` 缺失或不完整，Stage5 必须阻塞。
 - Stage5 完成必须有真实预测或真实模型调用来源，且输出 `evaluation_report.md`、`metrics.json`、`prediction_audit.jsonl`、`error_taxonomy.jsonl` 均非空；不得只用 Stage4 原始 artifact、自然语言摘要或占位目录冒充评测。
 - 在写 `stage5/_STAGE_DONE.json` 或向 pipeline 返回 `PASS` 前，必须运行可执行质量门：
 
@@ -44,6 +45,7 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 - `data_13_execution_plan`
 - `data_22_full_benchmark_dataset`
+- `WORKSPACE_ROOT/EVALSET_DATASET`
 
 ## DAG 节点
 

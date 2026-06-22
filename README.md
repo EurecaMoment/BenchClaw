@@ -160,26 +160,6 @@ For normal workflow, these service-style tools are expected to attach to already
 
 `modelNeedMeasured/` defines the Stage5 model roster and multimodal API contract.
 
-Current required Stage5 evaluation roster:
-
-- `qwen3-vl-235b-a22b-instruct`
-- `kimi-k2.5`
-- `llama-4-maverick-17b-128e-instruct`
-- `grok-4-fast`
-- `gpt-5.4-mini-2026-03-17`
-- `glm-4.5v`
-- `gemini-3-flash-preview`
-- `claude-haiku-4-5-20251001-thinking`
-- `claude-sonnet-4-5-20250929`
-
-The current local client is:
-
-- `modelNeedMeasured/yeysai_multimodal_client.py`
-
-and the current API target is:
-
-- `https://yeysai.com/v1/chat/completions`
-
 ## Reference Templates
 
 `templates/` contains 48 reference JSON templates covering embodied perception, navigation, memory, dynamics, active inspection, semantic reasoning, CARLA driving, and QA or audit tasks.

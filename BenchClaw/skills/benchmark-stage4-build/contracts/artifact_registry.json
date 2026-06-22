@@ -4,7 +4,8 @@
     "command": "python3 BENCHCLAW_ROOT/skills/validate_stage_gate.py --workspace-root WORKSPACE_ROOT --stage stage4 --report WORKSPACE_ROOT/stage4/stage4_gate_report.json",
     "required_before": [
       "stage4/_STAGE_DONE.json",
-      "pipeline Stage4 PASS"
+      "pipeline Stage4 PASS",
+      "WORKSPACE_ROOT/EVALSET_DATASET complete package"
     ]
   },
   "artifacts": [
@@ -70,6 +71,19 @@
         "sample_images",
         "gt_bundle"
       ]
+    },
+    {
+      "id": "workspace_evalset_dataset",
+      "required_at_workspace_root": "EVALSET_DATASET",
+      "required_files": [
+        "README.md",
+        "data/test.jsonl"
+      ],
+      "required_nonempty_directories": [
+        "images",
+        "metrics"
+      ],
+      "must_be_stage5_consumable": true
     }
   ]
 }

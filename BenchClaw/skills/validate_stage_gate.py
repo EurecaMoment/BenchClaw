@@ -222,6 +222,24 @@ def count_result_json(root: Path) -> int:
     )
 
 
+def first_jsonl_record(path: Path) -> dict[str, Any] | None:
+    if not path.is_file() or path.stat().st_size == 0:
+        return None
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                data = json.loads(stripped)
+                if isinstance(data, dict):
+                    return data
+                return None
+    except Exception:
+        return None
+    return None
+
+
 def nonempty_jsonl_records(paths: Iterable[Path]) -> int:
     total = 0
     for path in paths:
@@ -235,6 +253,45 @@ def nonempty_jsonl_records(paths: Iterable[Path]) -> int:
         except Exception:
             continue
     return total
+
+
+def check_workspace_evalset_dataset(gate: Gate, stage: str) -> None:
+    evalset_root = gate.workspace_root / "EVALSET_DATASET"
+    gate.dir_nonempty_files(evalset_root, f"{stage}.evalset_dataset.nonempty")
+    if not evalset_root.exists():
+        return
+
+    gate.file_nonempty(evalset_root / "README.md", f"{stage}.evalset_dataset.readme")
+    data_dir = evalset_root / "data"
+    images_dir = evalset_root / "images"
+    metrics_dir = evalset_root / "metrics"
+    gate.dir_nonempty_files(data_dir, f"{stage}.evalset_dataset.data_dir")
+    gate.dir_nonempty_files(images_dir, f"{stage}.evalset_dataset.images_dir")
+    gate.dir_nonempty_files(metrics_dir, f"{stage}.evalset_dataset.metrics_dir")
+
+    test_jsonl = data_dir / "test.jsonl"
+    record_count = gate.jsonl_nonempty(test_jsonl, f"{stage}.evalset_dataset.test_jsonl")
+    record = first_jsonl_record(test_jsonl)
+    if record is None:
+        gate.fail(f"{stage}.evalset_dataset.answer_fields", "missing readable first test.jsonl record", test_jsonl)
+    else:
+        has_question = any(key in record for key in ("question", "question_text", "prompt"))
+        has_media = any(key in record for key in ("media", "image", "images", "image_path", "image_paths"))
+        has_answer = any(key in record for key in ("answer", "answers", "gold_answer", "ground_truth", "gt"))
+        gate.add(has_question, f"{stage}.evalset_dataset.question_fields", "question field exists in test.jsonl records" if has_question else "missing question field in test.jsonl record", test_jsonl, records=record_count)
+        gate.add(has_media, f"{stage}.evalset_dataset.media_fields", "media field exists in test.jsonl records" if has_media else "missing media field in test.jsonl record", test_jsonl, records=record_count)
+        gate.add(has_answer, f"{stage}.evalset_dataset.answer_fields", "answer/GT field exists in test.jsonl records" if has_answer else "missing answer/GT field in test.jsonl record", test_jsonl, records=record_count)
+
+    eval_py = metrics_dir / "evaluate.py"
+    if eval_py.exists():
+        gate.file_nonempty(eval_py, f"{stage}.evalset_dataset.evaluate_py")
+    else:
+        gate.add(
+            any(p.suffix == ".py" and p.is_file() and p.stat().st_size > 0 for p in metrics_dir.rglob("*")),
+            f"{stage}.evalset_dataset.metric_code",
+            "non-empty metric python file exists" if any(p.suffix == ".py" and p.is_file() and p.stat().st_size > 0 for p in metrics_dir.rglob("*")) else "missing executable metric python code",
+            metrics_dir,
+        )
 
 
 def check_common_stage(gate: Gate, stage: str) -> None:
@@ -444,6 +501,7 @@ def check_stage4(gate: Gate) -> None:
         else:
             gate.pass_("stage4.data22.current_contract_names", "current full-synthesis directory names are used", data22)
 
+    check_workspace_evalset_dataset(gate, "stage4")
     check_full_synthesis_logs(gate)
 
 
@@ -498,6 +556,7 @@ def check_stage5(gate: Gate) -> None:
         else "missing real model/prediction provenance in USED_INPUTS or NODE_REPORT",
         node_dir,
     )
+    check_workspace_evalset_dataset(gate, "stage5")
 
 
 def normalize_stage_name(value: str) -> str:
