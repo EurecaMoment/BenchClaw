@@ -337,6 +337,105 @@ You can also run a single stage directly:
 
 Using `benchmark-pipeline` is recommended because it creates and passes a consistent `WORKSPACE_ROOT`, then stops at each major stage boundary to show the summary, gate verdict, key artifacts, and blocking issues.
 
+## Start From Scratch
+
+If you are using BenchClaw for the first time, the safest way to start is to treat the repository as a reusable definition layer and create one fresh workspace for one fresh benchmark run.
+
+### 1. Prepare The Repository And Workspace
+
+1. Clone the repository and enter the project root:
+
+```bash
+git clone <your-benchclaw-repo-url>
+cd BenchClaw
+```
+
+2. Pick or create a new workspace directory. A typical choice is under `workspaces/`:
+
+```bash
+mkdir -p workspaces/workspace001
+```
+
+3. Make sure you know the two important roots:
+   - `BENCHCLAW_ROOT`: the reusable repository root, for example `/path/to/BenchClaw/BenchClaw`
+   - `WORKSPACE_ROOT`: the run-specific artifact root, for example `/path/to/BenchClaw/workspaces/workspace001`
+
+4. Confirm the workspace is writable and is not being reused by another unfinished run.
+
+### 2. Check The Minimum Runtime Assumptions
+
+Before launching a pipeline, confirm:
+
+- your Agent environment can invoke repository Skills
+- any required localhost simulator service is already running if its card says attach-only
+- any required annotation tool service is already running if its card says attach-only
+- any external or private source data you intend to use can be legally and practically materialized into `WORKSPACE_ROOT`
+
+If you are just exploring the repository structure, you do not need every service up front. But if you want a real end-to-end run, Stage2 and Stage3 usually depend on these local capabilities being ready.
+
+### 3. Start With The Top-Level Pipeline
+
+For a normal first run, use the top-level pipeline instead of jumping directly into a later stage:
+
+```text
+/benchmark-pipeline "Build an embodied spatial benchmark for <your task idea>"
+```
+
+This is the recommended entrypoint because it:
+
+- creates or locks in one consistent `WORKSPACE_ROOT`
+- handles stage handoff in order
+- keeps path resolution stable across stages
+- exposes stage summaries and gate verdicts before you continue
+
+### 4. What To Expect Stage By Stage
+
+When the pipeline runs normally, you can think of the stages like this:
+
+1. Stage1 defines the benchmark: capability scope, source selection, template direction, and execution plan.
+2. Stage2 collects or materializes raw data from selected sources into the workspace.
+3. Stage3 turns raw assets into evidence, GT, and annotation-ready records.
+4. Stage4 turns evidence into benchmark items, media, metrics, and final packages.
+5. Stage5 evaluates the required model roster on the Stage4 package.
+
+After each stage, check the generated report and gate result before moving on.
+
+### 5. Where To Look For Outputs
+
+During a run, the most important files and folders are usually:
+
+- `WORKSPACE_ROOT/stage1/` through `WORKSPACE_ROOT/stage5/`
+- `WORKSPACE_ROOT/path_resolution.json`
+- `WORKSPACE_ROOT/pipeline_state.json`
+- `WORKSPACE_ROOT/PIPELINE_REPORT.md`
+- stage-specific reports, filtered items, manifests, logs, and final dataset packages inside each stage directory
+
+If a benchmark build succeeds, the Stage4 final package is typically the artifact you will inspect first, and Stage5 reports are the place to look for model-level outcomes.
+
+### 6. If You Only Want To Run One Stage
+
+You can run stages individually, but this is better after you already understand the workspace layout:
+
+```text
+/benchmark-stage1-draft "your benchmark idea"
+/benchmark-stage2-data-collect "$WORKSPACE_ROOT/stage1"
+/benchmark-stage3-evidence-compiler "$WORKSPACE_ROOT/stage2"
+/benchmark-stage4-build "$WORKSPACE_ROOT/stage3"
+/benchmark-stage5-eval "$WORKSPACE_ROOT/stage4"
+```
+
+As a first-time user, prefer the full pipeline unless you are explicitly debugging one stage.
+
+### 7. Common First-Run Pitfalls
+
+The most common mistakes when starting from scratch are:
+
+- writing artifacts back into the repository tree instead of the workspace
+- reusing an old workspace with partially stale outputs
+- trying to skip Stage1 and Stage2 before source assumptions are clear
+- forgetting that some simulators or annotation tools are expected to be pre-running local services
+- assuming the repository is a single install-and-run app rather than a Skill-driven pipeline
+
 ## Minimal Local Expectations
 
 BenchClaw assumes you already have an environment that can invoke repository Skills and, when needed, connect to local tools or simulator endpoints. Before running a full pipeline, it helps to confirm:
