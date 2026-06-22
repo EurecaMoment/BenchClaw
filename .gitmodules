@@ -19,3 +19,6 @@
 [submodule "thirty_part/ModelScope-CDM-IRT"]
 	path = thirty_part/ModelScope-CDM-IRT
 	url = https://github.com/EurecaAI/ModelScope-CDM-IRT.git
+[submodule "thirty_part/opencode"]
+	path = thirty_part/opencode
+	url = https://github.com/EurecaAI/opencode.git
