@@ -4,60 +4,85 @@
 
 ## Role
 
-Provide the fixed multimodal model roster and the concrete API calling contract used by BenchClaw Stage5 evaluation.
+This skill defines how Stage5 reads and uses the model template configuration stored in:
 
-This skill is the canonical source for:
+- `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json`
 
-1. the candidate models that must be evaluated in Stage5;
-2. the OpenAI-compatible multimodal request format for `https://yeysai.com/v1/chat/completions`;
-3. the API credential lookup rule;
-4. the local client script that turns Stage4 eval items plus media files into real model predictions.
+This skill itself no longer hardcodes any concrete model roster. All provider settings, model aliases, and test-group assignments must come from the JSON template.
 
-## Required Candidate Models
+## What The JSON Controls
 
-Stage5 must evaluate all of the following models:
+`model_config.json` is the single source of truth for:
 
-```text
-qwen3-vl-235b-a22b-instruct
-kimi-k2.5
-llama-4-maverick-17b-128e-instruct
-grok-4-fast
-gpt-5.4-mini-2026-03-17
-glm-4.5v
-gemini-3-flash-preview
-claude-haiku-4-5-20251001-thinking
-claude-sonnet-4-5-20250929
+1. provider definitions in an opencode-style structure;
+2. model aliases under each provider;
+3. the default model fields;
+4. the `grey_test` model group;
+5. the `full_test` model group;
+6. request-level defaults such as endpoint, API key placeholder, timeout, and multimodal capability flags.
+
+## Required Read Order
+
+Before Stage5 starts any real model call, the caller must:
+
+1. read `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json`;
+2. resolve the provider and model alias referenced by the active test group;
+3. verify that every selected model exists in `provider.<provider_id>.models`;
+4. verify that the selected provider exposes an OpenAI-compatible endpoint;
+5. block if the config is incomplete instead of fabricating or silently replacing models.
+
+## Config Conventions
+
+The JSON uses an opencode-like top-level layout:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {},
+  "model": "provider_id/model_id",
+  "small_model": "provider_id/model_id",
+  "grey_test": {},
+  "full_test": {}
+}
 ```
 
-Stage5 must not silently drop, replace, rename, or subset this roster.
+Interpretation rules:
 
-## API Contract
+- `provider` contains provider definitions and their `models`.
+- `model` is the default primary model reference.
+- `small_model` is the default lightweight model reference.
+- `grey_test.models` lists the models used for canary or small-batch evaluation.
+- `full_test.models` lists the models used for full benchmark evaluation.
 
-Use the OpenAI-compatible chat completions endpoint:
+## How Stage5 Chooses Models
 
-```text
-POST https://yeysai.com/v1/chat/completions
-Authorization: Bearer <api_key>
-Content-Type: application/json
-```
+When running grey validation:
 
-Credential lookup order:
+- load `grey_test.models`;
+- evaluate only that group unless the user explicitly overrides the stage behavior;
+- preserve listed order unless the caller has a documented scheduling reason.
 
-1. `YEYSAI_API_KEY` environment variable;
-2. `api_key` field in `BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml` if it is not the placeholder `xxxx`.
+When running full evaluation:
 
-If the resolved API key is empty or still equals `xxxx`, the caller must block instead of fabricating predictions.
+- load `full_test.models`;
+- treat that group as the full evaluation target set;
+- do not silently inherit grey-only models unless they are also listed in `full_test.models`.
 
-## Multimodal Message Format
+If any configured model is missing, disabled, or unresolved, the caller must fail loudly and record the exact config problem.
 
-For image-based eval items, build `messages` in OpenAI-compatible multimodal format:
+## Multimodal Calling Contract
+
+Providers referenced by this template are expected to expose an OpenAI-compatible chat completions API. For image-based eval items, callers should build multimodal `messages` in standard OpenAI-compatible format, for example:
 
 ```json
 [
   {
     "role": "system",
     "content": [
-      {"type": "text", "text": "You are evaluating benchmark items. Answer concisely and only with the requested answer."}
+      {
+        "type": "text",
+        "text": "You are evaluating benchmark items. Answer concisely and only with the requested answer."
+      }
     ]
   },
   {
@@ -70,16 +95,16 @@ For image-based eval items, build `messages` in OpenAI-compatible multimodal for
 ]
 ```
 
-The local client script must resolve Stage4 `image_refs` / `media_refs` to files under `WORKSPACE_ROOT/stage4/37-benchmark-artifact-pack/EVALSET_DATASET/media/`, encode them as data URLs, and call the endpoint with the selected model name.
+The local caller must resolve Stage4 `image_refs` or `media_refs` to real files, encode them as data URLs when required by the selected provider, and submit the request using the provider settings declared in `model_config.json`.
 
 ## Files
 
-- `BENCHCLAW_ROOT/modelNeedMeasured/model_roster.yaml`
-- `BENCHCLAW_ROOT/modelNeedMeasured/yeysai_multimodal_client.py`
+- `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json`
 
 ## Non-negotiable Constraints
 
-- This skill defines a fixed required evaluation roster for Stage5.
-- It does not authorize synthetic predictions, cached placeholders, or rule-based substitutes.
-- If a model call fails, the caller must log the failure and keep the model in the evaluation summary with explicit missing/error counts.
-- If an eval item references images, the caller must send a real multimodal request rather than downgrading the sample to text-only without explicit evidence that the sample has no media.
+- This skill is a usage guide for the JSON template, not a hardcoded model roster.
+- Concrete model names must live in `model_config.json`, not in this document.
+- If the resolved API key, base URL, or model alias is missing, the caller must block instead of fabricating predictions.
+- If an eval item references images, the caller must send a real multimodal request unless the selected config explicitly marks that model as text-only.
+- If a model call fails, the caller must log the failure and keep the model in the evaluation summary with explicit missing or error counts.

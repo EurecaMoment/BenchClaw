@@ -40,46 +40,30 @@ DEFAULT_DATASET = Path("artifacts/data_20_grey_batch/items.jsonl")
 DEFAULT_OUT_ROOT = Path("artifacts/data_21_grey_eval_results")
 DEFAULT_PER_FORMAT = 100
 DEFAULT_SEED = 20260601
-DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "user_eval_config.json"
+
+
+def find_benchclaw_root() -> Path:
+    here = Path(__file__).resolve()
+    for parent in here.parents:
+        if (parent / "modelNeedMeasured").is_dir() and (parent / "skills").is_dir():
+            return parent
+    raise RuntimeError("Cannot locate BENCHCLAW_ROOT from grey_batch_eval.py")
+
+
+BENCHCLAW_ROOT = find_benchclaw_root()
+DEFAULT_CONFIG = BENCHCLAW_ROOT / "modelNeedMeasured" / "model_config.json"
 
 DEFAULT_ENDPOINT = "https://api.ephone.ai/v1/chat/completions"
 
-# Intentionally empty slots. Put real values in the environment or --api-keys,
-# never commit API keys into this file.
+# Legacy env fallback is still accepted for local compatibility, but the
+# canonical source of truth is BENCHCLAW_ROOT/modelNeedMeasured/model_config.json.
 DEFAULT_API_KEY_SLOTS: Dict[str, str] = {
     "key1": "",
     "key2": "",
     "key3": "",
 }
 DEFAULT_API_KEY_ENV_NAMES = ("EPHONE_KEY_1", "EPHONE_KEY_2", "EPHONE_KEY_3")
-
-# 只放多模态/视觉模型，按“便宜 / 中档 / 强模型”分层。
-DEFAULT_MODEL_GROUPS: Dict[str, Dict[str, Any]] = {
-    "cheap": {
-        "sample_ratio": 1.0,
-        "models": [
-            "gpt-4.1",
-            # "qwen3-vl-flash-2025-10-15",
-            "claude-haiku-4-5-20251001",
-        ],
-    },
-    "middle": {
-        "sample_ratio": 0.3,
-        "models": [
-            "gpt-5.2",
-            "claude-sonnet-4-6",
-            "moonshot-v1-128k-vision-preview",
-        ],
-    },
-    "strong": {
-        "sample_ratio": 0.1,
-        "models": [
-            "gpt-5.4",
-            "claude-opus-4-5-20251101",
-            "grok-4.20-0309-reasoning",
-        ],
-    },
-}
+DEFAULT_MODEL_GROUPS: Dict[str, Dict[str, Any]] = {}
 
 DEFAULT_SYSTEM_PROMPT = (
     "你是一个严谨的图文题评测模型。"
@@ -149,6 +133,118 @@ def load_config(path_value: Optional[str]) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"Config file must contain a JSON object: {path}")
     return payload
+
+
+def is_opencode_model_config(config: Dict[str, Any]) -> bool:
+    return isinstance(config.get("provider"), dict) and (
+        "grey_test" in config or "full_test" in config
+    )
+
+
+def normalize_chat_completions_endpoint(base_url: str) -> str:
+    text = str(base_url or "").strip()
+    if not text:
+        return ""
+    if text.endswith("/chat/completions"):
+        return text
+    return text.rstrip("/") + "/chat/completions"
+
+
+def resolve_api_key_value(raw_value: Any) -> str:
+    text = str(raw_value or "").strip()
+    if not text or text in {"EMPTY", "xxxx"}:
+        return ""
+    if text.startswith("${") and text.endswith("}"):
+        return os.environ.get(text[2:-1], "").strip()
+    return text
+
+
+def resolve_api_model_name(model_id: str, model_cfg: Dict[str, Any]) -> str:
+    for key in ("api_model", "model", "name"):
+        value = str(model_cfg.get(key) or "").strip()
+        if value:
+            return value
+    return model_id
+
+
+def parse_model_ref(model_ref: str) -> Tuple[str, str]:
+    provider_id, sep, model_id = str(model_ref).partition("/")
+    if not sep or not provider_id.strip() or not model_id.strip():
+        raise ValueError(
+            f"Invalid model reference {model_ref!r}; expected 'provider_id/model_id'."
+        )
+    return provider_id.strip(), model_id.strip()
+
+
+def build_plan_from_opencode_config(
+    config: Dict[str, Any],
+    test_group: str,
+    models_filter: Optional[Sequence[str]] = None,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]]]:
+    if test_group not in config:
+        raise ValueError(
+            f"Config missing test group {test_group!r}; expected one of grey_test/full_test."
+        )
+    group_cfg = config.get(test_group) or {}
+    model_refs = group_cfg.get("models")
+    if not isinstance(model_refs, list) or not model_refs:
+        raise ValueError(f"Config {test_group}.models must be a non-empty list.")
+
+    selected_models = set(models_filter or [])
+    providers = config.get("provider") or {}
+    plan: List[Dict[str, Any]] = []
+    seen = set()
+    for raw_ref in model_refs:
+        model_ref = str(raw_ref).strip()
+        if not model_ref:
+            continue
+        if selected_models and model_ref not in selected_models:
+            continue
+        if model_ref in seen:
+            continue
+        provider_id, model_id = parse_model_ref(model_ref)
+        provider_cfg = providers.get(provider_id)
+        if not isinstance(provider_cfg, dict):
+            raise ValueError(f"Unknown provider {provider_id!r} for model {model_ref!r}.")
+        provider_models = provider_cfg.get("models") or {}
+        model_cfg = provider_models.get(model_id)
+        if not isinstance(model_cfg, dict):
+            raise ValueError(f"Unknown model id {model_id!r} under provider {provider_id!r}.")
+        options = provider_cfg.get("options") or {}
+        endpoint = normalize_chat_completions_endpoint(
+            str(options.get("baseURL") or options.get("baseUrl") or "")
+        )
+        if not endpoint:
+            raise ValueError(f"Provider {provider_id!r} missing options.baseURL/baseUrl.")
+        provider_api_key = resolve_api_key_value(options.get("apiKey"))
+        key_items = [(provider_id, provider_api_key)] if provider_api_key else []
+        plan.append(
+            {
+                "tier": test_group,
+                "model": model_ref,
+                "api_model": resolve_api_model_name(model_id, model_cfg),
+                "provider_id": provider_id,
+                "display_name": str(model_cfg.get("name") or model_id),
+                "endpoint": endpoint,
+                "key_items": key_items,
+                "capabilities": model_cfg.get("capabilities") or {},
+            }
+        )
+        seen.add(model_ref)
+    if not plan:
+        raise ValueError(f"No models selected from {test_group}.models.")
+
+    sampling = group_cfg.get("sampling") if isinstance(group_cfg, dict) else None
+    sample_ratio = 1.0
+    if isinstance(sampling, dict) and sampling.get("enabled") is False:
+        sample_ratio = 1.0
+    model_groups = {
+        test_group: {
+            "sample_ratio": sample_ratio,
+            "models": [entry["model"] for entry in plan],
+        }
+    }
+    return plan, model_groups
 
 
 def pick_config_value(
@@ -1158,12 +1254,15 @@ def infer_ephone_task(
 ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     tier = str(model_entry["tier"])
     model = str(model_entry["model"])
+    api_model = str(model_entry.get("api_model") or model)
+    endpoint = str(model_entry.get("endpoint") or args.endpoint)
     safe_model = safe_id(model)
     item_key = eval_key(item)
     qf = question_format_of(item)
     raw_model_dir = raw_root / safe_model
     raw_path = raw_model_dir / f"{safe_id(item_key)}.json"
-    key_candidates = ordered_api_key_candidates(key_items, model, tier, task_index, key_map=key_map)
+    model_key_items = model_entry.get("key_items") or key_items
+    key_candidates = ordered_api_key_candidates(model_key_items, model, tier, task_index, key_map=key_map)
     key_name = key_candidates[0][0] if key_candidates else None
 
     loaded_existing_raw = False
@@ -1228,9 +1327,11 @@ def infer_ephone_task(
                     "question_format": qf,
                     "answer_type": item.get("answer_type"),
                     "model": model,
+                    "api_model": api_model,
                     "tier": tier,
+                    "provider_id": model_entry.get("provider_id"),
                     "key_name": candidate_key_name,
-                    "endpoint": args.endpoint,
+                    "endpoint": endpoint,
                     "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                     "key_failover_order": [name for name, _value in key_candidates],
                     "request": {
@@ -1264,11 +1365,11 @@ def infer_ephone_task(
                         with semaphore:
                             call_result = call_ephone_model(
                                 item=item,
-                                model=model,
+                                model=api_model,
                                 tier=tier,
                                 key_name=str(candidate_key_name),
                                 api_key=str(candidate_api_key),
-                                endpoint=args.endpoint,
+                                endpoint=endpoint,
                                 system_prompt=args.system_prompt,
                                 temperature=args.temperature,
                                 max_tokens=args.max_tokens,
@@ -1317,6 +1418,7 @@ def infer_ephone_task(
         "id": item.get("id"),
         "question_format": qf,
         "model": model,
+        "api_model": api_model,
         "tier": tier,
         "prediction": prediction,
         "ok": ok,
@@ -1330,6 +1432,7 @@ def infer_ephone_task(
         "template_id": item.get("template_id"),
         "answer_type": item.get("answer_type"),
         "model": model,
+        "api_model": api_model,
         "tier": tier,
         "score": score_value,
         "ok": ok,
@@ -1464,15 +1567,25 @@ def write_ephone_outputs(
 
 def infer_ephone(args: argparse.Namespace) -> None:
     config = load_config(args.config)
-    if "model_groups" in config:
-        if not isinstance(config["model_groups"], dict):
-            raise SystemExit("config.model_groups must be a JSON object.")
-        global DEFAULT_MODEL_GROUPS
-        DEFAULT_MODEL_GROUPS = config["model_groups"]
+    if not is_opencode_model_config(config):
+        raise SystemExit(
+            "infer-ephone requires BENCHCLAW_ROOT/modelNeedMeasured/model_config.json "
+            "or another config with the same opencode-style provider/grey_test/full_test schema."
+        )
+
+    model_plan: List[Dict[str, Any]]
+    selected_tiers: List[str]
+    models_filter = csv_or_list(args.models) if args.models else None
+    model_plan, model_groups = build_plan_from_opencode_config(
+        config,
+        test_group=args.test_group,
+        models_filter=models_filter,
+    )
+    global DEFAULT_MODEL_GROUPS
+    DEFAULT_MODEL_GROUPS = model_groups
+    selected_tiers = [args.test_group]
 
     args.endpoint = pick_config_value(args, config, "endpoint", default=DEFAULT_ENDPOINT)
-    args.tiers = pick_config_value(args, config, "tiers", default="cheap,middle,strong")
-    args.models = pick_config_value(args, config, "models", default="")
     args.api_keys = pick_config_value(args, config, "api_keys", default="")
     args.model_key_map = pick_config_value(args, config, "model_key_map", default="")
     args.temperature = infer_setting(args, config, "temperature", 0.0)
@@ -1490,9 +1603,6 @@ def infer_ephone(args: argparse.Namespace) -> None:
     if not gold_items:
         raise SystemExit(f"Gold file is empty: {gold_path}")
 
-    tiers = csv_or_list(args.tiers)
-    models_filter = csv_or_list(args.models) if args.models else None
-    model_plan = iter_model_plan(tiers, models_filter=models_filter)
     if args.max_models:
         model_plan = model_plan[: args.max_models]
     if not model_plan:
@@ -1510,10 +1620,11 @@ def infer_ephone(args: argparse.Namespace) -> None:
     api_keys_arg = args.api_keys if isinstance(args.api_keys, (dict, list)) else load_json_arg(args.api_keys, default=None)
     api_keys = api_keys_arg if api_keys_arg is not None else read_api_keys_from_env()
     key_items = normalize_api_keys(api_keys)
-    if not key_items and not args.dry_run:
+    any_model_keys = any(entry.get("key_items") for entry in model_plan)
+    if not key_items and not any_model_keys and not args.dry_run:
         raise SystemExit(
-            "No API key found. Fill one or more empty slots via EPHONE_KEY_1/2/3 "
-            "or pass --api-keys '{\"key1\":\"...\",\"key2\":\"...\",\"key3\":\"...\"}'."
+            "No API key found. Provide provider.options.apiKey in model_config.json, set the referenced "
+            "environment variable, or pass --api-keys as JSON."
         )
 
     key_map = (
@@ -1536,7 +1647,8 @@ def infer_ephone(args: argparse.Namespace) -> None:
         "api_key_slots": list(DEFAULT_API_KEY_SLOTS.keys()),
         "api_key_env_names": list(DEFAULT_API_KEY_ENV_NAMES),
         "selected_items": len(items),
-        "selected_tiers": tiers,
+        "selected_tiers": selected_tiers,
+        "selected_test_group": args.test_group if is_opencode_model_config(config) else None,
         "selected_models": model_plan,
         "model_groups": DEFAULT_MODEL_GROUPS,
         "note": (
@@ -1575,12 +1687,25 @@ def infer_ephone(args: argparse.Namespace) -> None:
         "max_pending": args.max_pending,
         "flush_every": args.flush_every,
         "reuse_failed_raw": args.reuse_failed_raw,
-        "key_slots": [name for name, _value in key_items],
+        "key_slots": sorted(
+            {
+                name
+                for entry in model_plan
+                for name, _value in (entry.get("key_items") or key_items)
+            }
+        ),
     }, ensure_ascii=False, indent=2))
 
-    max_workers = max(1, (len(key_items) or 1) * max(args.parallel_per_key, 1))
+    all_key_names = sorted(
+        {
+            name
+            for entry in model_plan
+            for name, _value in (entry.get("key_items") or key_items)
+        }
+    )
+    max_workers = max(1, (max(len(all_key_names), 1)) * max(args.parallel_per_key, 1))
     max_pending = max(max_workers, args.max_pending or max_workers * 4)
-    semaphores = {name: threading.Semaphore(max(args.parallel_per_key, 1)) for name, _value in key_items}
+    semaphores = {name: threading.Semaphore(max(args.parallel_per_key, 1)) for name in all_key_names}
     item_order = {eval_key(item): idx for idx, item in enumerate(items)}
     prediction_rows_by_model: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
     score_rows_by_model: Dict[Tuple[str, str], List[Dict[str, Any]]] = defaultdict(list)
@@ -1794,7 +1919,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_ephone.add_argument(
         "--config",
         default=str(DEFAULT_CONFIG),
-        help="User-editable JSON config for endpoint, API keys, models, and model difficulty tiers.",
+        help="JSON config path. Must use the modelNeedMeasured opencode-style config schema.",
+    )
+    p_ephone.add_argument(
+        "--test-group",
+        default="grey_test",
+        choices=["grey_test", "full_test"],
+        help="When using modelNeedMeasured/model_config.json, select which configured model group to run.",
     )
     p_ephone.add_argument("--endpoint", default="")
     p_ephone.add_argument(
@@ -1811,12 +1942,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_ephone.add_argument(
         "--tiers",
         default="",
-        help="Comma-separated model difficulty tiers, or a list in --config. Defaults to config.tiers or all tiers.",
+        help="Deprecated no-op for old configs. Keep empty when using modelNeedMeasured config.",
     )
     p_ephone.add_argument(
         "--models",
         default="",
-        help="Optional comma-separated model allowlist. Names must match DEFAULT_MODEL_GROUPS.",
+        help="Optional comma-separated model allowlist. In opencode config, values must match provider/model refs.",
     )
     p_ephone.add_argument("--max-items", type=int, default=0, help="Debug limit on gold rows; 0 means all.")
     p_ephone.add_argument("--max-models", type=int, default=0, help="Debug limit on selected models; 0 means all.")

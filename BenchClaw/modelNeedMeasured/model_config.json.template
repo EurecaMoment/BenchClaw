@@ -1,0 +1,64 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "your_provider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Your Provider",
+      "options": {
+        "baseURL": "https://your-openai-compatible-endpoint/v1",
+        "apiKey": "${YOUR_API_KEY}",
+        "timeout": 300000,
+        "chunkTimeout": 300000
+      },
+      "models": {
+        "your_default_model": {
+          "name": "Your Default Model",
+          "capabilities": {
+            "multimodal": true
+          }
+        },
+        "your_small_model": {
+          "name": "Your Small Model",
+          "capabilities": {
+            "multimodal": true
+          }
+        },
+        "your_grey_model_a": {
+          "name": "Your Grey Test Model A",
+          "capabilities": {
+            "multimodal": true
+          }
+        },
+        "your_full_model_a": {
+          "name": "Your Full Test Model A",
+          "capabilities": {
+            "multimodal": true
+          }
+        }
+      }
+    }
+  },
+  "model": "your_provider/your_default_model",
+  "small_model": "your_provider/your_small_model",
+  "grey_test": {
+    "description": "Grey or canary evaluation model set.",
+    "models": [
+      "your_provider/your_grey_model_a"
+    ],
+    "sampling": {
+      "enabled": true,
+      "max_items": 100
+    },
+    "fail_fast": true
+  },
+  "full_test": {
+    "description": "Full benchmark evaluation model set.",
+    "models": [
+      "your_provider/your_full_model_a"
+    ],
+    "sampling": {
+      "enabled": false
+    },
+    "fail_fast": false
+  }
+}

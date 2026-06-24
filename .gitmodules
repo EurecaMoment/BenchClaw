@@ -22,3 +22,6 @@
 [submodule "thirty_part/opencode"]
 	path = thirty_part/opencode
 	url = https://github.com/EurecaAI/opencode.git
+[submodule "thirty_part/VLMEvalKit"]
+	path = thirty_part/VLMEvalKit
+	url = https://github.com/open-compass/VLMEvalKit.git

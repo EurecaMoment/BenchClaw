@@ -93,7 +93,7 @@ PROJECT_ROOT/
 - `BENCHCLAW_ROOT`：BenchClaw 代码根目录，固定解析为 `PROJECT_ROOT/BenchClaw`。
 - `WORKSPACE_PARENT`：默认 workspace 父目录，固定解析为 `PROJECT_ROOT/workspaces`。
 - `WORKSPACE_ROOT`：本次流程唯一总工作目录。若用户未提供 workspace，则在 `WORKSPACE_PARENT` 下扫描已有 `workspace{i}` 目录，取现有最大编号的下一个未占用目录作为新工作区。
-- `WORKSPACE_ROOT/EVALSET_DATASET`：最终统一评测包目录。无论 Stage4 中间 artifact 如何组织，最终可直接评测的完整数据集都必须收口到这个固定目录，包含评测图文、答案/GT 与评测指标代码。
+- `WORKSPACE_ROOT/EVALSET_DATASET`：最终统一评测包目录。无论 Stage4 中间 artifact 如何组织，最终可直接评测的完整数据集都必须收口到这个固定目录，直接包含完整图像文件、问题、答案/GT 与评测指标代码；严禁使用链接、symlink、placeholder 或目录外路径冒充评测图片。
 
 所有派生产物只写入 `WORKSPACE_ROOT/stage1` 到 `WORKSPACE_ROOT/stage5`，不得写入 `BENCHCLAW_ROOT`。
 
@@ -159,7 +159,7 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 ```
 
 失败时立即停止并写 `WORKSPACE_ROOT/pipeline_blocked.md`，不得启动 Stage4；通过后把 `stage3` 和 gate report 路径写入 `pipeline_state.json.stages_completed`。
-10. 执行 Stage4。Stage4 必须同时读取 Stage1 的 `data_11`、`data_13` 和 Stage3 的 `data_17`、`data_18`、`data_19`。Stage4 除了写 `stage4/artifacts/data_22_full_benchmark_dataset/` 外，还必须把最终可直接评测的完整包收口到 `WORKSPACE_ROOT/EVALSET_DATASET/`，其中必须包含评测用图文、答案/GT 和评测指标代码，且目录内容与 Stage5 实际消费内容一致。Stage4 返回后必须运行：
+10. 执行 Stage4。Stage4 必须同时读取 Stage1 的 `data_11`、`data_13` 和 Stage3 的 `data_17`、`data_18`、`data_19`。Stage4 除了写 `stage4/artifacts/data_22_full_benchmark_dataset/` 外，还必须把最终可直接评测的完整包收口到 `WORKSPACE_ROOT/EVALSET_DATASET/`，其中必须包含真实落盘的评测图像文件、问题、答案/GT 和评测指标代码，且目录内容与 Stage5 实际消费内容一致；严禁链接型图片、placeholder 文件或外部路径引用。Stage4 返回后必须运行：
 
 ```bash
 python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
@@ -208,7 +208,7 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 - 编号数据目录是否与椭圆节点目录分离；
 - 长任务是否存在 `nodes/<node-id>/run_logs/<task>.log`、`NODE_REPORT.md` tmux session 记录、监控时间点、退出状态和可追溯产物；
 - 是否存在当前 stage 明确禁止的 GT 覆盖、路径越界、空壳产物或编造评测结果。
-- 对 Stage4 与 Stage5，必须额外检查 `WORKSPACE_ROOT/EVALSET_DATASET/` 是否真实存在且非空，并包含可直接评测的图文、答案/GT 和指标代码；只在 `stage4/artifacts/` 下留一份数据而不收口到 workspace 根目录时，必须判定失败。
+- 对 Stage4 与 Stage5，必须额外检查 `WORKSPACE_ROOT/EVALSET_DATASET/` 是否真实存在且非空，并包含可直接评测的真实图像文件、问题、答案/GT 和指标代码；若发现链接型图片、symlink、placeholder 文件或只在 `stage4/artifacts/` 下留一份数据而不收口到 workspace 根目录时，必须判定失败。
 - 对 Stage3/Stage4/Stage5，必须以 `BENCHCLAW_ROOT/skills/validate_stage_gate.py` 的退出码和 JSON 报告作为最终完成裁决；自然语言报告、`DONE.json` 或空目录不能替代该结果。
 
 `FAIL` 或缺失关键终端产物时必须停止；`NEEDS_REVIEW` 只能在用户明确确认后继续。

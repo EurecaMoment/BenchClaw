@@ -5,27 +5,32 @@ description: Use for the specific BenchClaw subskill `stage4-small-batch-result-
 
 # Subskill - 小批量合成数据集评测结果获取
 
-对灰度小批量合成数据集进行抽样、外部模型推理、预测打分和结果汇总。该 subskill 参考 `/home/maqiang/uav_grey_eval.py` 的流程，但将通用评测逻辑沉淀到本目录，并把 API、API key、评测模型、模型难度层级放到独立用户配置文件。
+对灰度小批量合成数据集进行抽样、外部模型推理、预测打分和结果汇总。该 subskill 参考 `/home/maqiang/uav_grey_eval.py` 的流程，但将通用评测逻辑沉淀到本目录，并把 API、API key、评测模型配置统一收口到 `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json`。
 
 ## 用户配置文件
 
-用户只修改：
+唯一允许的模型配置来源：
 
 ```text
-config/user_eval_config.json
+BENCHCLAW_ROOT/modelNeedMeasured/model_config.json
 ```
 
-配置项：
+灰度测试必须读取这份配置，并使用其中：
 
-- `endpoint`: OpenAI-compatible chat completions 接口地址。
-- `api_keys`: API key 空槽位，支持 `key1`、`key2`、`key3` 等命名。
-- `model_key_map`: 将模型名、难度层级或 `*` 映射到 key 槽位。
-- `tiers`: 本轮要评测的模型难度层级。
-- `models`: 可选模型白名单；留空表示使用所选层级下全部模型。
-- `model_groups`: 按难度层级组织的评测模型列表。
-- `temperature`、`max_tokens`、`timeout`、`retries`、`parallel_per_key`: 推理参数。
+- `grey_test.models` 作为灰度测试模型列表；
+- `provider` 中的 endpoint / apiKey / model alias 作为调用配置。
 
-也可以用环境变量 `EPHONE_KEY_1`、`EPHONE_KEY_2`、`EPHONE_KEY_3` 提供 key。命令行参数会覆盖配置文件中的同名值。
+不得改用 `skills/.../config/user_eval_config.json`、`model_roster.yaml` 或任何其它散落配置文件。
+
+模板配置项：
+
+- `provider`: opencode 风格 provider 定义。
+- `model`: 默认主模型引用。
+- `small_model`: 默认轻量模型引用。
+- `grey_test.models`: 灰度测试模型列表。
+- `full_test.models`: 全量测试模型列表（供 Stage5 使用）。
+
+当 `model_config.json` 中 provider 的 `options.apiKey` 使用 `${ENV_NAME}` 形式时，脚本会从对应环境变量取值。也可以继续使用 `EPHONE_KEY_1`、`EPHONE_KEY_2`、`EPHONE_KEY_3` 作为本地环境回退。命令行参数会覆盖配置文件中的同名值。
 
 ## 工具脚本
 
@@ -70,7 +75,8 @@ python scripts/grey_batch_eval.py prepare \
 python scripts/grey_batch_eval.py infer-ephone \
   --gold artifacts/data_21_grey_eval_results/run_001/sampled_gold.jsonl \
   --out-dir artifacts/data_21_grey_eval_results/run_001/model_eval \
-  --config config/user_eval_config.json
+  --config "$BENCHCLAW_ROOT/modelNeedMeasured/model_config.json" \
+  --test-group grey_test
 ```
 
 输出：

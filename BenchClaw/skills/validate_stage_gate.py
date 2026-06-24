@@ -255,6 +255,88 @@ def nonempty_jsonl_records(paths: Iterable[Path]) -> int:
     return total
 
 
+def iter_jsonl_records(path: Path, limit: int = 2000) -> Iterable[tuple[int, dict[str, Any]]]:
+    if not path.is_file() or path.stat().st_size == 0:
+        return
+    count = 0
+    with path.open("r", encoding="utf-8") as fh:
+        for line_no, line in enumerate(fh, start=1):
+            stripped = line.strip()
+            if not stripped:
+                continue
+            data = json.loads(stripped)
+            if isinstance(data, dict):
+                yield line_no, data
+                count += 1
+                if count >= limit:
+                    return
+
+
+def flatten_media_values(value: Any) -> list[str]:
+    out: list[str] = []
+    if value is None:
+        return out
+    if isinstance(value, str):
+        text = value.strip()
+        if text:
+            out.append(text)
+        return out
+    if isinstance(value, dict):
+        for key in ("path", "paths", "image", "images", "media", "url"):
+            if key in value:
+                out.extend(flatten_media_values(value[key]))
+        return out
+    if isinstance(value, (list, tuple, set)):
+        for item in value:
+            out.extend(flatten_media_values(item))
+        return out
+    return out
+
+
+def record_media_paths(record: dict[str, Any]) -> list[str]:
+    paths: list[str] = []
+    for key in (
+        "image",
+        "images",
+        "image_path",
+        "image_paths",
+        "media",
+        "media_refs",
+        "image_refs",
+        "auxiliary_images",
+        "source_media",
+    ):
+        if key in record:
+            paths.extend(flatten_media_values(record.get(key)))
+    seen = set()
+    deduped: list[str] = []
+    for item in paths:
+        if item not in seen:
+            deduped.append(item)
+            seen.add(item)
+    return deduped
+
+
+def looks_like_placeholder_path(path_text: str) -> bool:
+    lowered = path_text.strip().lower()
+    return any(token in lowered for token in ("placeholder", "dummy", "fake", "todo", "tbd"))
+
+
+def is_evalset_relative_image_path(path_text: str) -> bool:
+    text = path_text.strip()
+    return text.startswith("./images/") and len(text) > len("./images/")
+
+
+def resolve_evalset_media_path(evalset_root: Path, raw_path: str) -> Path | None:
+    text = raw_path.strip()
+    if not text or text.startswith(("http://", "https://", "file://", "data:")):
+        return None
+    if not is_evalset_relative_image_path(text):
+        return None
+    relative = text[2:]
+    return (evalset_root / relative).resolve()
+
+
 def check_workspace_evalset_dataset(gate: Gate, stage: str) -> None:
     evalset_root = gate.workspace_root / "EVALSET_DATASET"
     gate.dir_nonempty_files(evalset_root, f"{stage}.evalset_dataset.nonempty")
@@ -269,6 +351,36 @@ def check_workspace_evalset_dataset(gate: Gate, stage: str) -> None:
     gate.dir_nonempty_files(images_dir, f"{stage}.evalset_dataset.images_dir")
     gate.dir_nonempty_files(metrics_dir, f"{stage}.evalset_dataset.metrics_dir")
 
+    image_files = [p for p in images_dir.rglob("*") if p.is_file()]
+    real_image_files = [p for p in image_files if not p.is_symlink()]
+    placeholder_image_files = [p for p in image_files if looks_like_placeholder_path(p.name)]
+    symlink_image_files = [p for p in image_files if p.is_symlink()]
+    gate.add(
+        len(real_image_files) > 0,
+        f"{stage}.evalset_dataset.real_image_files",
+        f"images/ contains {len(real_image_files)} non-symlink files"
+        if real_image_files else
+        "images/ has no real non-symlink files",
+        images_dir,
+        files=len(real_image_files),
+    )
+    gate.add(
+        not placeholder_image_files,
+        f"{stage}.evalset_dataset.no_placeholder_images",
+        "no placeholder-named files under images/"
+        if not placeholder_image_files else
+        f"found placeholder-named files under images/: {len(placeholder_image_files)}",
+        placeholder_image_files[0] if placeholder_image_files else images_dir,
+    )
+    gate.add(
+        not symlink_image_files,
+        f"{stage}.evalset_dataset.no_image_symlinks",
+        "no symlink files under images/"
+        if not symlink_image_files else
+        f"found symlink files under images/: {len(symlink_image_files)}",
+        symlink_image_files[0] if symlink_image_files else images_dir,
+    )
+
     test_jsonl = data_dir / "test.jsonl"
     record_count = gate.jsonl_nonempty(test_jsonl, f"{stage}.evalset_dataset.test_jsonl")
     record = first_jsonl_record(test_jsonl)
@@ -281,6 +393,164 @@ def check_workspace_evalset_dataset(gate: Gate, stage: str) -> None:
         gate.add(has_question, f"{stage}.evalset_dataset.question_fields", "question field exists in test.jsonl records" if has_question else "missing question field in test.jsonl record", test_jsonl, records=record_count)
         gate.add(has_media, f"{stage}.evalset_dataset.media_fields", "media field exists in test.jsonl records" if has_media else "missing media field in test.jsonl record", test_jsonl, records=record_count)
         gate.add(has_answer, f"{stage}.evalset_dataset.answer_fields", "answer/GT field exists in test.jsonl records" if has_answer else "missing answer/GT field in test.jsonl record", test_jsonl, records=record_count)
+
+    data_jsonl_paths = sorted(p for p in data_dir.rglob("*.jsonl") if p.is_file())
+    checked_records = 0
+    records_with_media = 0
+    total_media_refs = 0
+    bad_url_refs: list[tuple[Path, int, str]] = []
+    bad_relative_format_refs: list[tuple[Path, int, str]] = []
+    bad_placeholder_refs: list[tuple[Path, int, str]] = []
+    missing_local_refs: list[tuple[Path, int, str]] = []
+    symlink_target_refs: list[tuple[Path, int, str]] = []
+    outside_evalset_refs: list[tuple[Path, int, str]] = []
+    unique_media_refs: set[str] = set()
+    for jsonl_path in data_jsonl_paths:
+        for line_no, rec in iter_jsonl_records(jsonl_path, limit=500):
+            checked_records += 1
+            media_paths = record_media_paths(rec)
+            if media_paths:
+                records_with_media += 1
+            total_media_refs += len(media_paths)
+            for raw_path in media_paths:
+                text = raw_path.strip()
+                if not text:
+                    continue
+                if text.startswith(("http://", "https://", "file://", "data:")):
+                    bad_url_refs.append((jsonl_path, line_no, text))
+                    continue
+                if not is_evalset_relative_image_path(text):
+                    bad_relative_format_refs.append((jsonl_path, line_no, text))
+                    continue
+                if looks_like_placeholder_path(text):
+                    bad_placeholder_refs.append((jsonl_path, line_no, text))
+                    continue
+                resolved = resolve_evalset_media_path(evalset_root, text)
+                if resolved is None or not resolved.exists() or not resolved.is_file():
+                    missing_local_refs.append((jsonl_path, line_no, text))
+                    continue
+                try:
+                    resolved.relative_to(evalset_root)
+                except ValueError:
+                    outside_evalset_refs.append((jsonl_path, line_no, text))
+                    continue
+                if resolved.is_symlink():
+                    symlink_target_refs.append((jsonl_path, line_no, text))
+                    continue
+                unique_media_refs.add(str(resolved))
+            if checked_records >= 1000:
+                break
+        if checked_records >= 1000:
+            break
+
+    gate.add(
+        not bad_url_refs,
+        f"{stage}.evalset_dataset.no_media_links",
+        "no URL/data/file link media refs in data/*.jsonl"
+        if not bad_url_refs else
+        f"found forbidden linked media refs in data/*.jsonl: {len(bad_url_refs)}",
+        bad_url_refs[0][0] if bad_url_refs else data_dir,
+        line=bad_url_refs[0][1] if bad_url_refs else None,
+        sample=bad_url_refs[0][2] if bad_url_refs else None,
+    )
+    gate.add(
+        not bad_relative_format_refs,
+        f"{stage}.evalset_dataset.media_refs_relative_format",
+        "all sampled media refs use ./images/... relative-path format"
+        if not bad_relative_format_refs else
+        f"found non-./images/... media refs in data/*.jsonl: {len(bad_relative_format_refs)}",
+        bad_relative_format_refs[0][0] if bad_relative_format_refs else data_dir,
+        line=bad_relative_format_refs[0][1] if bad_relative_format_refs else None,
+        sample=bad_relative_format_refs[0][2] if bad_relative_format_refs else None,
+    )
+    gate.add(
+        not bad_placeholder_refs,
+        f"{stage}.evalset_dataset.no_placeholder_media_refs",
+        "no placeholder media refs in data/*.jsonl"
+        if not bad_placeholder_refs else
+        f"found placeholder media refs in data/*.jsonl: {len(bad_placeholder_refs)}",
+        bad_placeholder_refs[0][0] if bad_placeholder_refs else data_dir,
+        line=bad_placeholder_refs[0][1] if bad_placeholder_refs else None,
+        sample=bad_placeholder_refs[0][2] if bad_placeholder_refs else None,
+    )
+    gate.add(
+        not missing_local_refs,
+        f"{stage}.evalset_dataset.media_refs_resolve",
+        "all sampled media refs resolve to local files"
+        if not missing_local_refs else
+        f"found unresolved local media refs in data/*.jsonl: {len(missing_local_refs)}",
+        missing_local_refs[0][0] if missing_local_refs else data_dir,
+        line=missing_local_refs[0][1] if missing_local_refs else None,
+        sample=missing_local_refs[0][2] if missing_local_refs else None,
+    )
+    gate.add(
+        not outside_evalset_refs,
+        f"{stage}.evalset_dataset.media_refs_inside_evalset",
+        "sampled media refs point inside EVALSET_DATASET"
+        if not outside_evalset_refs else
+        f"found media refs outside EVALSET_DATASET: {len(outside_evalset_refs)}",
+        outside_evalset_refs[0][0] if outside_evalset_refs else data_dir,
+        line=outside_evalset_refs[0][1] if outside_evalset_refs else None,
+        sample=outside_evalset_refs[0][2] if outside_evalset_refs else None,
+    )
+    gate.add(
+        not symlink_target_refs,
+        f"{stage}.evalset_dataset.no_symlink_media_targets",
+        "sampled media refs point to real local files instead of symlinks"
+        if not symlink_target_refs else
+        f"found media refs pointing to symlink files: {len(symlink_target_refs)}",
+        symlink_target_refs[0][0] if symlink_target_refs else data_dir,
+        line=symlink_target_refs[0][1] if symlink_target_refs else None,
+        sample=symlink_target_refs[0][2] if symlink_target_refs else None,
+    )
+    gate.add(
+        records_with_media > 0,
+        f"{stage}.evalset_dataset.records_with_media",
+        f"sampled media-bearing records: {records_with_media}" if records_with_media else "no sampled records carry media refs",
+        data_dir,
+        records=records_with_media,
+        checked_records=checked_records,
+    )
+    gate.add(
+        total_media_refs >= records_with_media,
+        f"{stage}.evalset_dataset.media_ref_volume",
+        f"sampled media refs: {total_media_refs} across {records_with_media} records"
+        if total_media_refs >= records_with_media else
+        "sampled media refs are fewer than media-bearing records",
+        data_dir,
+        total_media_refs=total_media_refs,
+        records_with_media=records_with_media,
+    )
+    gate.add(
+        len(real_image_files) >= len(unique_media_refs),
+        f"{stage}.evalset_dataset.unique_media_covered",
+        f"real image files {len(real_image_files)} cover unique referenced images {len(unique_media_refs)}"
+        if len(real_image_files) >= len(unique_media_refs) else
+        f"real image files {len(real_image_files)} are fewer than unique referenced images {len(unique_media_refs)}",
+        images_dir,
+        real_image_files=len(real_image_files),
+        unique_referenced_images=len(unique_media_refs),
+    )
+    if records_with_media >= 20 and unique_media_refs:
+        max_records_per_unique_image = 20
+        scale_ok = records_with_media <= len(unique_media_refs) * max_records_per_unique_image
+        gate.add(
+            scale_ok,
+            f"{stage}.evalset_dataset.image_scale_consistency",
+            (
+                f"dataset/image scale looks plausible: {records_with_media} media-bearing records, "
+                f"{len(unique_media_refs)} unique referenced images"
+            )
+            if scale_ok else
+            (
+                f"too few unique images for dataset scale: {records_with_media} media-bearing records but only "
+                f"{len(unique_media_refs)} unique referenced images"
+            ),
+            images_dir,
+            records_with_media=records_with_media,
+            unique_referenced_images=len(unique_media_refs),
+            max_records_per_unique_image=max_records_per_unique_image,
+        )
 
     eval_py = metrics_dir / "evaluate.py"
     if eval_py.exists():

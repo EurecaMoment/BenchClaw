@@ -32,8 +32,8 @@ tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf 
 
 1. 只使用通过灰度验证的模板与指标。
 2. 按执行计划生成全量 benchmark item、媒体副本、GT、评分配置、数据集卡和校验和。
-3. 所有媒体引用必须指向当前 `WORKSPACE_ROOT` 内稳定存在的文件，且在最终 `dataset.jsonl` 中必须写为可直接访问的本地绝对路径。
-4. 默认应把最终 benchmark 使用的媒体统一收敛到 `artifacts/data_22_full_benchmark_dataset/media/` 或当前 workspace 内其他稳定目录；禁止把 `dataset.jsonl` 中的图片路径继续写成 `stage3/...`、相对路径或其他 workspace 的绝对路径。
+3. `WORKSPACE_ROOT/EVALSET_DATASET/` 必须是一个可直接离线评测的完整数据包：其中必须真实落盘完整图像文件、问题数据、答案/GT 数据和可执行评测指标代码。
+4. 所有媒体引用必须指向当前 `WORKSPACE_ROOT/EVALSET_DATASET/` 内稳定存在的真实文件；在 `data/*.jsonl` 中必须统一写成 `./images/...` 这种以评测包根目录为基准的相对路径。禁止写成 URL、symlink、placeholder、`images/...`、`stage3/...`、`../...`、绝对路径或任何目录外引用。
 5. 最终 benchmark item 必须同时保留原图列与作答图列：
    - `source_media`：原图；
    - `media`：给模型作答使用的处理图，可能是 GT overlay 图，也可能是无标识的回退处理图。
@@ -42,12 +42,13 @@ tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf 
 8. 除了 `artifacts/data_22_full_benchmark_dataset/` 外，必须同步生成 `WORKSPACE_ROOT/EVALSET_DATASET/`，作为 Stage5 默认消费的完整评测包。该目录必须至少包含：
    - `README.md`
    - `data/test.jsonl` 或等价的评测题目文件
-   - `images/` 或等价的评测媒体目录
+   - `images/` 或等价的评测媒体目录，且其中是完整真实图片文件而不是链接或 placeholder
    - `metrics/` 中可直接执行的评测指标代码
    - 供评测或审计使用的答案/GT 数据
-9. `WORKSPACE_ROOT/EVALSET_DATASET/` 中的内容必须与 `artifacts/data_22_full_benchmark_dataset/` 保持一致的评测语义，不能是另一套降级样本、占位图文或缺答案的空壳目录。
-10. 禁止只输出旧版目录名 `sample_images/`、`gt_bundle/`；如果需要兼容旧调用，可额外写这些目录，但当前契约目录 `media/` 和 `ground_truth/` 必须存在且非空。
-11. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数、`WORKSPACE_ROOT/EVALSET_DATASET/` 落盘位置和质量门结果。
+9. `WORKSPACE_ROOT/EVALSET_DATASET/` 中的内容必须与 `artifacts/data_22_full_benchmark_dataset/` 保持一致的评测语义，不能是另一套降级样本、占位图文、链接型媒体目录或缺答案的空壳目录。
+10. `images/` 中的真实图片数量必须与 `data/*.jsonl` 的评测规模大体匹配：允许多图问答或一图多问，但不得只用极少数图片支撑明显更大规模的评测集。
+11. 禁止只输出旧版目录名 `sample_images/`、`gt_bundle/`；如果需要兼容旧调用，可额外写这些目录，但当前契约目录 `media/` 和 `ground_truth/` 必须存在且非空。
+12. `NODE_REPORT.md` 必须记录全量合成 tmux session、完整命令、日志路径、15 秒监控记录摘要、退出状态、输出文件计数、`WORKSPACE_ROOT/EVALSET_DATASET/` 落盘位置和质量门结果。
 
 ## 输出
 
