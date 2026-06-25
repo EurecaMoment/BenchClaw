@@ -1,0 +1,112 @@
+{
+  "status": "PASS",
+  "scope": "stage4_skill_pipeline_audit_and_revision",
+  "date": "2026-06-24",
+  "audit_summary": {
+    "original_problem_1": "GT kinship high-depth constraints could block strict-core benchmark generation.",
+    "original_problem_2": "small-batch model eval and CDM/IRT were too close to mandatory Stage4 gates.",
+    "original_problem_3": "template/metric/answer-program subskills had overlapping responsibilities with parent runtime.",
+    "original_problem_4": "packaged data/test.jsonl previously exposed hidden answer/provenance fields.",
+    "revision_principle": "minimum executable core is mandatory; high-depth/model-eval/statistical diagnostics are optional unless explicitly required by Stage4 plan."
+  },
+  "skill_status": [
+    {
+      "skill": "stage4-plan-generation",
+      "status": "kept",
+      "purpose": "plan only; freezes strict/high-depth/model-eval policies",
+      "redundancy_fix": "does not generate templates or code"
+    },
+    {
+      "skill": "gt-kinship-analysis",
+      "status": "kept_as_supporting_analysis",
+      "purpose": "evidence graph and optional high-depth chains",
+      "redundancy_fix": "no longer blocks strict-core when distant chains are absent"
+    },
+    {
+      "skill": "template-compilation",
+      "status": "kept",
+      "purpose": "select enabled/disabled templates from parent registry",
+      "redundancy_fix": "does not generate full item code"
+    },
+    {
+      "skill": "metric-compilation",
+      "status": "kept",
+      "purpose": "deterministic metric contract",
+      "redundancy_fix": "no hidden GT reread or mandatory model judge"
+    },
+    {
+      "skill": "answer-program-generation",
+      "status": "renamed_by_role_in_docs",
+      "purpose": "thin generated adapter and CLI generation",
+      "redundancy_fix": "no full parent runtime copy into child generator"
+    },
+    {
+      "skill": "contract-checking",
+      "status": "kept_as_hard_gate",
+      "purpose": "compile/dry-run/positive-negative smoke/no-leak package smoke",
+      "redundancy_fix": "does not replace grey batch"
+    },
+    {
+      "skill": "per-template-batch-synthesis",
+      "status": "kept",
+      "purpose": "real per-template generation",
+      "redundancy_fix": "only calls bundle CLI"
+    },
+    {
+      "skill": "invalid-item-screening",
+      "status": "strengthened",
+      "purpose": "screen media/answer/options/metric/provenance/question leakage",
+      "redundancy_fix": "does not run model eval"
+    },
+    {
+      "skill": "small-batch-result-evaluation",
+      "status": "reframed",
+      "purpose": "deterministic scorer smoke mandatory; external model eval optional",
+      "redundancy_fix": "does not block when model_config missing unless plan requires"
+    },
+    {
+      "skill": "cdm-irt-analysis",
+      "status": "reframed_as_diagnostic",
+      "purpose": "statistical diagnosis only when matrix sufficient",
+      "redundancy_fix": "does not fake small-sample IRT"
+    },
+    {
+      "skill": "full-synthesis",
+      "status": "strengthened",
+      "purpose": "full generation and packaging",
+      "redundancy_fix": "separates model-visible questions from hidden ground_truth"
+    }
+  ],
+  "smoke": {
+    "py_compile_python_files": 11,
+    "bundle_build": "PASS",
+    "enabled_templates": [
+      "BC_PARENT_D1_CATEGORY_VISIBLE_YN",
+      "BC_PARENT_D2_CATEGORY_COUNT_INTERVAL",
+      "BC_PARENT_D3_LEFT_RIGHT",
+      "BC_PARENT_D3_ABOVE_BELOW",
+      "BC_PARENT_D4_LARGEST_VISIBLE_AREA",
+      "BC_PARENT_D5_NEAREST_DEPTH"
+    ],
+    "grey_generated_items": 6,
+    "valid_items": 6,
+    "invalid_items": 0,
+    "perfect_score_mean": 1.0,
+    "negative_score_mean": 0.0,
+    "packaged_dataset_rows": 6,
+    "ground_truth_answer_rows": 6,
+    "model_visible_forbidden_key_leaks": [],
+    "first_model_visible_media": "./images/000000_rgb.jpg",
+    "required_dirs_nonempty": [
+      "images",
+      "media",
+      "ground_truth",
+      "metrics"
+    ]
+  },
+  "outputs": {
+    "revised_skill_root": "/mnt/data/stage4_revised",
+    "smoke_root": "/mnt/data/stage4_revised_smoke",
+    "evalset_dataset": "/mnt/data/stage4_revised_smoke/EVALSET_DATASET"
+  }
+}

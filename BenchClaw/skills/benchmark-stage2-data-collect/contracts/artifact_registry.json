@@ -27,5 +27,9 @@
         "Placeholder media, historical cache, hand-written media manifests, model hallucinations, and unexecuted sample outputs cannot satisfy data_16."
       ]
     }
+  ],
+  "stage_quality_gate": [
+    "Unless the user request or data_13_execution_plan explicitly requires a different collection scale, Stage2 must collect at least 100 real, non-empty, decodable image files or render frames across data_14, data_15, and data_16 before _STAGE_DONE.json may be written.",
+    "If a different scale is required, stage2_execution_plan.yaml must set collection_requirements.minimum_total_collected_images and explain the override reason."
   ]
 }

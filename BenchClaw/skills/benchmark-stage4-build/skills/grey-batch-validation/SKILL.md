@@ -3,66 +3,66 @@ name: benchclaw-stage4-grey-batch-validation
 description: Use for the specific BenchClaw node skill `stage4-grey-batch-validation` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 小批量合成灰度验证
 
-## 内部层级
+## 目标
 
-运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
+用 `data_20_template_metric_code_bundle` 的公开 CLI 真实合成小批量 item，筛除无效题，完成 mandatory small-batch result evaluation，并执行 mandatory CDM/IRT 诊断。该节点 PASS 后，`full-synthesis` 才允许开始。
 
-```text
-subskills/per-template-batch-synthesis/SKILL.md
-subskills/invalid-item-screening/SKILL.md
-subskills/small-batch-result-evaluation/SKILL.md
-subskills/cdm-irt-analysis/SKILL.md
-```
+## 内部顺序
 
-## Registered Subskill Names
+以下每个内部 subskill 都必须通过 `/benchclaw-subskill` 作为新的 `child-skill-module-runner` 子 agent 派发；本 node 只负责编排顺序、传递冻结路径与 artifact 契约、汇总返回摘要，不得直接内联执行 subskill 步骤。
 
-本节点的内部流程在 opencode 中必须按顺序显式调用以下 skill 名：
+1. `per-template-batch-synthesis` -> `benchclaw-stage4-per-template-batch-synthesis`
+2. `invalid-item-screening` -> `benchclaw-stage4-invalid-item-screening`
+3. `small-batch-result-evaluation` -> `benchclaw-stage4-small-batch-result-evaluation`
+4. `cdm-irt-analysis` -> `benchclaw-stage4-cdm-irt-analysis`
 
-- `per-template-batch-synthesis` -> `benchclaw-stage4-per-template-batch-synthesis`
-- `invalid-item-screening` -> `benchclaw-stage4-invalid-item-screening`
-- `small-batch-result-evaluation` -> `benchclaw-stage4-small-batch-result-evaluation`
-- `cdm-irt-analysis` -> `benchclaw-stage4-cdm-irt-analysis`
-
-## Subskill Context Return Protocol
-
-每个 subskill 只返回：`status`、报告路径、有效/剔除计数、质量门结论、阻塞原因和一句摘要。不要把长推理日志、模型原始输出全文、item 级大表或 CDM/IRT 中间矩阵继续回灌。
-
-## 输入
-
-- `data_20_template_metric_code_bundle`
-- Stage3 三类已标注数据
-
-## tmux 后台灰度合成与实际评测监控硬约束
-
-本节点的四个内部 subskill 都必须按 `stage4_execution_plan.yaml` 的 `tmux_execution_policy` 后台执行，并把 stdout/stderr、15 秒监控记录和最终退出状态写入 `WORKSPACE_ROOT/stage4/nodes/grey-batch-validation/run_logs/`。不得在前台长期运行灰度合成、模型推理、评分或 CDM/IRT 分析。
-
-1. 每个 subskill 启动命令必须使用：
+## 必达输出
 
 ```text
-tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf '\nEXIT_CODE:%s\n' \$? >> <log_path>"
+artifacts/data_21_grey_validation_report/
+  per_template_batch/generated_items.jsonl
+  per_template_batch/filtered_items.jsonl
+  per_template_batch/template_status.csv
+  invalid_item_screening/valid_items.jsonl
+  invalid_item_screening/invalid_items.jsonl
+  invalid_item_screening/item_level_findings.jsonl
+  scorer_smoke/perfect_score_report.json
+  scorer_smoke/negative_score_report.json
+  small_model_eval/predictions.jsonl
+  small_model_eval/score_items.jsonl
+  small_model_eval/score_matrix.jsonl
+  small_model_eval/model_overall_scores.csv
+  cdm_irt/status.json
+  cdm_irt/item_parameters.csv
+  cdm_irt/model_ability.csv
+  cdm_irt/capability_mastery.csv
+  cdm_irt/item_level_findings.jsonl
+  cdm_irt/cdm_irt_summary.json
+  template_status.csv
+  item_level_findings.jsonl
+  report.md
 ```
 
-2. 启动后立即检查一次：`tmux has-session -t <tmux_session_name>`、`tmux capture-pane -pt <tmux_session_name>`、`tail -n 100 <log_path>`。
-3. 只要 tmux 会话仍存在，就必须每 15 秒检查一次状态；任一活跃会话两次检查间隔不得超过 15 秒。
-4. 每次检查必须追加写入 `monitoring_log_path`，记录 `timestamp`、`tmux_session_name`、`task`、`status`、最近 pane 输出摘要、最近 100 行日志摘要，以及当前已落盘 item、valid item、prediction、score、CDM/IRT 产物计数。
-5. 会话结束后必须读取最终日志和 `EXIT_CODE`，校验对应输出目录非空且 manifest/report 可追溯；缺少 15 秒监控记录、最终日志、退出码或真实灰度产物时，不得写本节点 `DONE.json`。
+## 通过条件
 
-## 处理
+- 至少 1 个模板真实产出 item。
+- `valid_items.jsonl` 至少 1 行。
+- 无效题筛查没有 error 级问题进入 valid 集。
+- 完美预测满分，负例低于满分。
+- `small_model_eval/score_matrix.jsonl` 非空；外部模型不可用时必须运行内置 deterministic/proxy responders，并在 `small_model_eval/status.json` 标记 `evaluation_mode=proxy`。
+- `cdm_irt/cdm_irt_summary.json`、`item_parameters.csv`、`model_ability.csv` 非空；若是小样本，状态可为 `limited_matrix`，但不得为 `NA`。
+- `difficulty_mix_report.json` 对灰度 valid items PASS。
 
-1. 按每个模板的灰度配额进行小批量合成。
-2. 检查媒体存在性、GT 可计算性、答案唯一性、选项干扰项合理性、评分函数可执行性。
-3. 对小批量合成数据集抽样、调用配置模型推理、打分并汇总模型 x 题型评测结果。
-4. 对通过灰度验证的模板记录保留原因；对失败模板记录失败原因、修复建议和是否剔除。
-5. 可执行 CDM/IRT 统计分析时，记录样本量、估计条件、结论适用范围。
-6. `NODE_REPORT.md` 必须汇总每个 subskill 的 `tmux_session_name`、`log_path`、`monitoring_log_path`、开始/结束时间、退出码、每 15 秒监控记录摘要和产物计数。
+## tmux
 
-## 输出
-
-- `artifacts/data_21_grey_validation_report/report.md`
-- `artifacts/data_21_grey_validation_report/template_status.csv`
-- `artifacts/data_21_grey_validation_report/item_level_findings.jsonl`
-- `artifacts/data_21_grey_eval_results/**/model_question_format_scores.csv`
-- `artifacts/data_21_grey_eval_results/**/model_overall_scores.csv`
-- 节点执行记录文件
+灰度合成、筛查、外部模型调用、CDM/IRT 可能长运行时必须使用 tmux，并在 `nodes/grey-batch-validation/run_logs/` 记录命令、日志、退出码和监控摘要。极小 smoke 可前台运行，但必须在 `NODE_REPORT.md` 写明耗时。

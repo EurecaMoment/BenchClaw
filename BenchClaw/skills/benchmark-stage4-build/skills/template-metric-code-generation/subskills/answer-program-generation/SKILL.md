@@ -3,173 +3,153 @@ name: benchclaw-stage4-answer-program-generation
 description: Use for the specific BenchClaw subskill `stage4-answer-program-generation` only when its parent node explicitly dispatches to it.
 ---
 
-# Subskill — 答案程序生成
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
+# Subskill — 答案程序与运行时子类生成
 
 ## 目标
 
-为每个 enabled 模板生成可运行的答案程序和批量合成代码，使 `grey-batch-validation` 能直接从 `data_20_template_metric_code_bundle` 生成小批量 item、验证标准答案、运行评分脚本并追溯每道题的证据来源。
+生成当前数据集专用但足够薄的 `scripts/generate_items.py`。答案计算应复用父类模板的 `instantiate/finalize_item/validate_item` 逻辑，只在必要时覆写 GT 字段映射、读取作答图像 manifest 和绑定 enabled templates。
 
-本 subskill 必须把 GT 链式支撑写进答案程序：不仅能算出 gold answer，还要能返回紧凑、可审计的 `compute_reasoning_chain()` 结果，证明题目为何可回答、为何唯一、为何不依赖隐藏 GT 泄漏。
+该 subskill 是本地 Qwen 代码生成的唯一入口。目标是产出类似 `/home/maqiang/uav_spatial_eval_synthesizer.py` 的严格一键 synthesizer，但结构上仍服从 Stage4 bundle：`generate_items.py` 负责真实 item 生成，`score_predictions.py` 负责 deterministic scoring，`package_evalset.py` 负责模型可见/隐藏答案分离。
 
-## 输入
+本 subskill 是装配器，不是独裁生成器。它必须消费并记录以下 contributor：
 
-- `templates/<template_id>.json`
-- `metrics/<metric_id>.json`
-- `selected_template_sources.jsonl`
-- `metric_manifest.jsonl`
-- `source_inventory.jsonl`
-- `field_catalog.yaml`
-- `evidence_index.jsonl`
-- `gt_kinship/gt_distant_reasoning_chains.jsonl`
-- 本 stage `templates/benchmark_item.schema.json`
-- 本 skill `reference_library/answer_type_metric_registry.json`、`reference_library/template_family_registry.yaml` 和 `schema_patch_notes.md`
-- `WORKSPACE_ROOT/path_resolution.json`
-
-## 每模板答案程序接口
-
-每个 `answer_programs/<template_id>.py` 必须暴露：
-
-```python
-TEMPLATE_ID = "<template_id>"
-
-def supports(record, template_config):
-    """Return (ok: bool, reason: str)."""
-
-def build_item(record, template_config, *, rng=None, item_index=0):
-    """Return a benchmark item dict compatible with benchmark_item.schema.json."""
-
-def compute_answer(record, template_config):
-    """Return the gold answer derived from GT/evidence."""
-
-def evidence_refs(record, template_config):
-    """Return stable evidence references used by this item."""
-
-def compute_reasoning_chain(record, template_config):
-    """
-    Return an auditable, compact evidence reasoning chain.
-    This is for benchmark auditing and answer derivation, not for forcing the
-    evaluated model to reveal private chain-of-thought.
-    """
+```text
+contrib/gt_adapter/adapter_contract.json
+contrib/asset_builder/asset_builder_contract.json
+contrib/template_registry/template_registry.json
+contrib/metric_registry/metric_registry.json
 ```
 
-`compute_reasoning_chain` 返回结构至少为：
+生成器可以把这些 contributor 内联成单文件实现，但 `synthesizer_contract.json` 必须声明 consumed_contributors，`generate_items.py` 的模板函数必须对应 `template_registry.json` 的 `implementation_hint`，媒体解析必须对应 `asset_builder_contract.json`，字段读取必须对应 `adapter_contract.json`。若 contributor 缺失或没有被实际使用，必须阻塞。
 
-```python
-{
-  "chain_id": "...",
-  "hops": [
-    {
-      "hop_id": 1,
-      "operation": "...",
-      "input_evidence_refs": [],
-      "output": "...",
-      "verifiable": True
-    }
-  ],
-  "final_answer": "...",
-  "answerability_proof": {}
-}
+## 必须生成
+
+```text
+data_20_template_metric_code_bundle/scripts/generate_items.py
+data_20_template_metric_code_bundle/scripts/package_evalset.py
+data_20_template_metric_code_bundle/scripts/validate_bundle.py
+data_20_template_metric_code_bundle/scripts/check_difficulty_mix.py
+data_20_template_metric_code_bundle/qwen_one_click_synthesizer_prompt.md
+data_20_template_metric_code_bundle/synthesizer_contract.json
+data_20_template_metric_code_bundle/contrib/item_validator/item_validator_contract.json
 ```
 
-## `supports(record, template_config)` 新增硬约束
-
-`supports` 必须检查：
-
-- `record` 是否包含 `reasoning_chain_plan` 所需所有 GT
-- 所有 `media_refs` 是否存在
-- 每个 reasoning hop 是否可执行
-- 最终答案是否唯一
-- 题干是否不需要隐藏 GT 直接暴露
-- 干扰项是否能构造
-- 视觉可见性是否满足
-
-任一失败都必须返回 `False`，并给出具体原因。
-
-## `build_item` 新增字段
-
-生成 item 时，必须新增或填充：
-
-```json
-{
-  "answer_derivation": "...",
-  "metadata": {
-    "chain_id": "...",
-    "reasoning_hop_count": 3,
-    "gt_distance_level": "far",
-    "reasoning_depth_score": 0.0,
-    "gt_distance_score": 0.0,
-    "human_language_quality": "PASS"
-  }
-}
-```
-
-注意：
-
-- `answer_derivation` 是给 gold/audit 使用的简洁解释，不是要求被评测模型输出完整思维链。
-- `metadata.chain_id` 必须与模板 `reasoning_chain_plan.chain_id` 一致。
-
-媒体路径硬约束：
-
-- `build_item` 写出的 `media` 必须是可直接访问的本地绝对路径。
-- 所有 `media` 路径必须位于当前 `WORKSPACE_ROOT` 内；禁止继续输出 `stage3/...`、`../...`、裸相对路径，或指向其他 workspace 的绝对路径。
-- 如果上游 evidence 只提供相对路径，答案程序必须先基于当前 `WORKSPACE_ROOT` 完成路径解析与规范化，再写入 item。
-- 如果原始媒体不在当前 workspace 内，必须先复制或链接到当前 workspace 内稳定目录，再把该 workspace 内绝对路径写入 `media`。
-- 多图题的 `media` 数组中每个元素都必须满足以上要求。
-- 当启用 GT 图片标识处理时，item 还必须保留原始作图输入列。推荐保持：
-  - `source_media`：原图绝对路径数组；
-  - `media`：最终给模型作答使用的处理图绝对路径数组，可能是 overlay 图，也可能是在 GT 不足时回退到原图。
-- 对需要对象指称消歧的题，答案程序或其下游 helper 必须把 label ↔ object_id ↔ GT evidence 的映射落到 sidecar 映射文件，并把映射路径写回 item 的 `metadata`。
-
-## 题干自然语言约束
-
-`build_item` 生成题干时必须符合：
-
-- 像真人会问的问题
-- 不暴露字段名和隐藏 GT 术语
-- 不出现 `object_id`、`bbox`、`depth_median`、`json`、`metadata`、`annotation`、`privileged` 等 forbidden terms
-- 多跳题干可以更长，但不能机械列步骤
-- 默认 1 到 3 句话
-
-示例导向：
-
-- 好：`画面中更靠近桌子边缘的物体是哪一个？`
-- 坏：`根据 object_id 判断 target_object 的 depth_median 是否大于 distractor_object。`
-
-## 批量合成入口新增过滤参数
-
-`scripts/generate_items.py` 必须支持：
+本 subskill 自带一个默认可执行运行时写入器：
 
 ```bash
---min-reasoning-hops 3
---min-gt-distance-level far
---depth-role high_depth
+python subskills/answer-program-generation/scripts/write_one_click_runtime.py --bundle data_20_template_metric_code_bundle
 ```
 
-并且无论模板程序返回什么形式的媒体引用，`generate_items.py` 在落盘 `benchmark_items.jsonl`、`generated_items.jsonl` 或其他 item jsonl 前，都必须执行一次统一路径规范化，保证最终 item 的 `media` 字段只包含当前 `WORKSPACE_ROOT` 内的本地绝对路径。
+`build_parent_runtime_bundle.py` 会自动调用它，初始化一个能直接 smoke test 的严格 baseline。本地 Qwen 的任务是在此基础上按数据集增强 adapter/template 函数，而不是从空白文件开始。
 
-若启用了 visual marker：
+允许额外生成：
 
-- `generate_items.py` 必须在“候选对象已确定、题干最终落盘之前”调用 GT 标识处理。
-- 处理后若题干要求引用 label，则题干、答案、解析、评分和映射文件必须共用同一套 label-object 对应关系。
-- 标识失败且题目又依赖 label 时，该样本必须进入 `filtered_items.jsonl` 或被显式降级，不能静默输出不可审计题。
-
-并把被过滤样本写入 `filtered_items.jsonl`，每条至少包含：
-
-```json
-{
-  "template_id": "...",
-  "chain_id": "...",
-  "source_sample_id": "...",
-  "reason": "answer_not_unique | missing_gt_node | media_missing | reasoning_hops_failed | question_not_natural | distractor_not_available | gt_too_near"
-}
+```text
+data_20_template_metric_code_bundle/scripts/one_click_generate_evalset.py
 ```
 
-## 失败与阻塞
+该 wrapper 只能调用上述 canonical scripts，不得重写独立生成/评分/打包逻辑。
 
-以下情况必须向主节点报告阻塞：
+## 本地 Qwen 使用方式
 
-- enabled 模板无法生成 `compute_reasoning_chain`
-- 无法证明唯一答案
-- 题干自然语言约束无法满足
-- 只有隐藏 GT 泄漏才能把链走通
-- `generate_items.py` 无法按 `min_reasoning_hops` / `min_gt_distance_level` / `depth_role` 过滤
+如果使用本地 Qwen 生成 runtime 源码，必须先写 `qwen_one_click_synthesizer_prompt.md`。提示必须小模型友好：短、结构化、只包含通用契约和 compact manifest，不用坏样例特例教模型。至少包含：
+
+- `reference_library/BENCHMARK_QUALITY_CONTRACT.md` 的通用质量生命周期：evidence -> model-visible anchor -> deterministic answer -> hidden audit -> deterministic scorer -> audit gate。
+- `reference_library/ONE_CLICK_SYNTHESIZER_CONTRACT.md` 的硬约束。
+- `reference_library/UNIVERSAL_EVALSET_FORMAT_CONTRACT.md` 的 canonical audit item 与 Stage5 package 投影规则。
+- `stage4_execution_plan.yaml` 中的能力、难度和图像策略。
+- `contrib/*/*_contract.json` 的 contributor 摘要。
+- `template_manifest.jsonl` 中 enabled 模板的 `template_id`、`answer_type`、`metric_id`、`difficulty_level`、`requires_overlay`、`visual_marker_policy`、`required_evidence_fields`、`gt_rule`、`implementation_hint`。
+- `metric_manifest.jsonl` 中 parser 和 score function。
+- `gt_kinship_report.md` / `difficulty_support_by_template.jsonl` 的摘要，尤其是每个模板的 evidence kinship 和可验证字段族。
+- `image_processing/image_manifest.jsonl` 的字段 schema 和 3-5 条脱敏样例。
+- `/home/maqiang/uav_spatial_eval_synthesizer.py` 的设计摘要：curated registry、dataclasses、adapter、overlay、strict validator、report writers、CLI。
+- `/home/maqiang/libero_temporal_benchmark_final` 的格式摘要：`benchmark_items.jsonl`、`template_registry.json`、`generation_report.json`、`benchmark_assets/`，但不得复制 LIBERO 的 temporal 模板作为通用默认任务。
+
+不得把完整 Stage3 私有 GT、大量原图路径、答案泄漏字段或“正确答案示例”直接塞进提示。Qwen 输出必须保存为源码后接受 contract-checking；若失败，修代码或重新生成，不能放宽契约。
+
+## 代码边界
+
+允许：
+
+```python
+class GeneratedDatasetAdapter(GenericGTAdapter):
+    CATEGORY_KEYS = (...)
+    BBOX_KEYS = (...)
+```
+
+禁止：
+
+- 把父类 runtime 整体复制粘贴到 `generate_items.py`。
+- 绕过 `validate_item()`。
+- 在题干中暴露 object id、bbox、mask、depth 字段名。
+- 对需要对象、区域、轨迹、视角或候选指代的题，直接在题干中写 GT 对象名称或隐藏字段来代替视觉锚点；必须使用处理后图像上的 A/B/C/D、P1/P2、View 1/2、Step 1/2 等中性标记，并让题干或选项引用这些标记。
+- 生成不可回答、三分类不可确定、裸数字答案。
+- 只写 manifest，不真实生成 item。
+- 只生成单一难度模板，导致全量无法满足难度配比。
+
+## `generate_items.py` 推荐结构
+
+```text
+constants: CAPABILITIES, QUESTION_TYPES, ENABLED_TEMPLATE_REGISTRY
+dataclasses: EvidenceRecord, CandidateObject, GeneratedItem
+adapter: GeneratedDatasetAdapter
+asset access: GeneratedAssetBuilder / image manifest resolver
+validators: validate_item_contract(), validate_no_leakage(), validate_media()
+visuals: resolve_answer_image(), optional neutral overlay/panel helpers
+template funcs: one deterministic gen_* function per enabled template
+scoring hints: metric_id copied from metric_manifest
+writers: audit item JSONL, filtered/rejected JSONL, generation report, optional audit_format
+main(): parse CLI, load bundle manifests, generate, validate, write
+```
+
+每个 `gen_*` 函数必须只消费 `required_evidence_fields` 和 image manifest 中已通过检查的图像。不能在函数内部重新扫描私有 Stage3 目录寻找额外 GT。
+
+每个 `gen_*` 函数还必须显式执行通用质量检查：
+
+- 题目引用的 GT 实体是否有模型可见锚点。
+- 答案是否只由模板声明的 deterministic rule 得到。
+- 选项是否无重复、无格式唯一缺陷、无不完整文本、无逃避项。
+- model-visible row 是否不含 hidden GT、audit metadata 或原始 annotation path。
+- hidden audit row 是否能复现答案和视觉标记映射。
+
+## 输出格式装配
+
+`generate_items.py` 输出的是含答案 audit items，字段必须尽量贴近 `UNIVERSAL_EVALSET_FORMAT_CONTRACT.md`：
+
+```text
+id/sample_id/scene_id/split/image/images/source_image_count/input_modalities/
+sequence_semantics/template_id/capability_id/capability_name/question_type/
+question_type_name/question/options/answer/answer_type/scoring/provenance/
+answerability_proof/quality_flags
+```
+
+`package_evalset.py` 必须能从同一批 audit items 派生：
+
+- Stage5 model-visible package：`data/test.jsonl`、`images/`、`ground_truth/`、`metrics/`。
+- 可选审计格式：通过 `--audit-format-out <dir>` 写 `benchmark_items.jsonl`、`template_registry.json`、`generation_report.json`、`benchmark_assets/`。
+
+这两个输出不得分别采样或重新生成题目。只允许投影、复制媒体、脱敏和写报告。
+
+## CLI 契约
+
+`generate_items.py` 必须支持：
+
+```bash
+--bundle --evidence-index --out --limit --seed --template-id --filtered-output
+```
+
+## 阻塞条件
+
+- 代码不可 `py_compile`。
+- `--limit 1` 不能生成真实 item。
+- 生成 item 缺媒体、答案、metric、template_id、difficulty_level 或追溯信息。
+- 初始化后仍是 guard/placeholder runtime，没有真实 `gen_*` 模板函数。

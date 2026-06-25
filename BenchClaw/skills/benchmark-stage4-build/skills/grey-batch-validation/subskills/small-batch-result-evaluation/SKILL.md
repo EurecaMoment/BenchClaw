@@ -3,105 +3,50 @@ name: benchclaw-stage4-small-batch-result-evaluation
 description: Use for the specific BenchClaw subskill `stage4-small-batch-result-evaluation` only when its parent node explicitly dispatches to it.
 ---
 
-# Subskill - 小批量合成数据集评测结果获取
+## Opencode 子 agent 触发契约
 
-对灰度小批量合成数据集进行抽样、外部模型推理、预测打分和结果汇总。该 subskill 参考 `/home/maqiang/uav_grey_eval.py` 的流程，但将通用评测逻辑沉淀到本目录，并把 API、API key、评测模型配置统一收口到 `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json`。
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
 
-## 用户配置文件
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
 
-唯一允许的模型配置来源：
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
 
-```text
-BENCHCLAW_ROOT/modelNeedMeasured/model_config.json
-```
+# Subskill — 小批量结果评测
 
-灰度测试必须读取这份配置，并使用其中：
+## 目标
 
-- `grey_test.models` 作为灰度测试模型列表；
-- `provider` 中的 endpoint / apiKey / model alias 作为调用配置。
+验证灰度 valid items 的 scorer、题型解析、作答图像路径和模型响应矩阵。该 subskill 是 full-synthesis 的必达前置门，不允许因为没有外部模型配置而跳过。
 
-不得改用 `skills/.../config/user_eval_config.json`、`model_roster.yaml` 或任何其它散落配置文件。
-
-模板配置项：
-
-- `provider`: opencode 风格 provider 定义。
-- `model`: 默认主模型引用。
-- `small_model`: 默认轻量模型引用。
-- `grey_test.models`: 灰度测试模型列表。
-- `full_test.models`: 全量测试模型列表（供 Stage5 使用）。
-
-当 `model_config.json` 中 provider 的 `options.apiKey` 使用 `${ENV_NAME}` 形式时，脚本会从对应环境变量取值。也可以继续使用 `EPHONE_KEY_1`、`EPHONE_KEY_2`、`EPHONE_KEY_3` 作为本地环境回退。命令行参数会覆盖配置文件中的同名值。
-
-## 工具脚本
+## 必做输出
 
 ```text
-scripts/grey_batch_eval.py
+scorer_smoke/perfect_predictions.jsonl
+scorer_smoke/negative_predictions.jsonl
+scorer_smoke/perfect_score_report.json
+scorer_smoke/negative_score_report.json
+small_model_eval/predictions.jsonl
+small_model_eval/score_items.jsonl
+small_model_eval/score_matrix.jsonl
+small_model_eval/model_overall_scores.csv
+small_model_eval/model_question_format_scores.csv
+small_model_eval/status.json
 ```
 
-## tmux 后台实际评测监控硬约束
+## 执行规则
 
-本 subskill 的抽样、外部模型推理、预测打分和结果汇总都必须后台 `tmux` 执行，并每 15 秒检查一次直到结束。尤其是 `infer-ephone` 会调用外部模型 API，严禁在前台长时间运行或只依赖聊天上下文输出。
+1. 先运行 deterministic scorer smoke：完美预测必须满分，负例必须低于满分。
+2. 若 `modelNeedMeasured/model_config.json` 可用且 Stage4 plan 未禁用外部模型，则运行真实模型 mini eval。
+3. 若外部模型不可用，必须运行内置 proxy responders：`oracle`、`biased_first`、`random_seeded`、`wrong_choice`。这些 responders 只用于验证灰度门与 CDM/IRT 输入矩阵，不得写成真实模型能力排名。
+4. 所有输出必须包含 `model`、`item_id`、`score`、`template_id`、`question_format`、`difficulty_level`。
 
-1. 启动前必须创建 `WORKSPACE_ROOT/stage4/nodes/grey-batch-validation/run_logs/`。
-2. 每个实际评测命令必须使用：
+## 可执行脚本
 
 ```text
-tmux new-session -d -s <tmux_session_name> "<command> > <log_path> 2>&1; printf '\nEXIT_CODE:%s\n' \$? >> <log_path>"
+scripts/grey_batch_eval.py mandatory-proxy-eval   --gold invalid_item_screening/valid_items.jsonl   --out-dir small_model_eval
 ```
 
-3. `tmux_session_name` 建议格式：`benchclaw_s4_grey_batch_eval_<mode>_<YYYYMMDDHHMMSS>`；`prepare`、`infer-ephone`、`score` 可分别写入 `run_logs/small-batch-eval-prepare.log`、`run_logs/small-batch-eval-infer.log`、`run_logs/small-batch-eval-score.log`，监控记录写入同名 `.monitoring.jsonl`。
-4. 启动后立即检查一次 `tmux has-session -t <tmux_session_name>`、`tmux capture-pane -pt <tmux_session_name>` 和 `tail -n 100 <log_path>`。
-5. 只要会话仍存在，就必须每 15 秒检查一次状态；每次记录最近日志摘要、`sampled_gold.jsonl` 行数、`raw_inference/` 文件数、`predictions/` 行数、`scores/` item 级记录数、模型汇总表是否生成、失败/重试计数。
-6. 会话结束后必须读取最终日志和 `EXIT_CODE`，校验 `sampled_gold.jsonl`、`questions_for_inference.jsonl`、`raw_inference/`、`predictions/`、`scores/`、`model_question_format_scores.csv/json`、`model_overall_scores.csv/json`；缺少 15 秒监控记录、最终日志、退出码或真实推理/评分产物时，不得向父节点报告完成。
-7. 除非用户显式要求 smoke test，实际灰度评测不得用 `--dry-run`、placeholder prediction 或空预测文件冒充模型评测结果；使用外部已物化预测文件时，也必须 tmux 后台运行 `score` 并记录 15 秒监控。
+## 阻塞条件
 
-主要模式：
-
-```bash
-python scripts/grey_batch_eval.py prepare \
-  --dataset artifacts/data_20_grey_batch/items.jsonl \
-  --out-dir artifacts/data_21_grey_eval_results/run_001 \
-  --per-format 100
-```
-
-输出：
-
-- `sampled_gold.jsonl`: 带答案的抽样评测集。
-- `questions_for_inference.jsonl`: 去除 gold 字段后的外部推理题目。
-- `prediction_template.jsonl`: 外部预测 JSONL 模板。
-- `manifest.json`: 抽样配置和数据统计。
-
-```bash
-python scripts/grey_batch_eval.py infer-ephone \
-  --gold artifacts/data_21_grey_eval_results/run_001/sampled_gold.jsonl \
-  --out-dir artifacts/data_21_grey_eval_results/run_001/model_eval \
-  --config "$BENCHCLAW_ROOT/modelNeedMeasured/model_config.json" \
-  --test-group grey_test
-```
-
-输出：
-
-- `raw_inference/`: 每个模型、每个题目的原始 API 返回。
-- `predictions/`: 每个模型的预测 JSONL。
-- `scores/`: 每个模型的 item 级打分和 summary。
-- `model_question_format_scores.csv/json`: 模型 x question_format 汇总。
-- `model_overall_scores.csv/json`: 模型整体汇总。
-
-```bash
-python scripts/grey_batch_eval.py score \
-  --gold artifacts/data_21_grey_eval_results/run_001/sampled_gold.jsonl \
-  --pred artifacts/data_21_grey_eval_results/run_001/predictions/external_model.jsonl \
-  --out-dir artifacts/data_21_grey_eval_results/run_001/external_score
-```
-
-用于给外部推理结果补打分。预测 JSONL 支持 `eval_id`、`id` 或 `item_id` 作为题目 id，支持 `prediction`、`pred`、`answer`、`model_answer`、`response`、`output` 作为预测字段。
-
-## 完成证据
-
-写入父节点报告前必须提供：
-
-- tmux session name、完整命令、日志路径和 monitoring JSONL 路径；
-- 每 15 秒监控记录摘要；
-- 最终 `EXIT_CODE`；
-- 每个模型的预测文件、score item 文件和 summary 文件计数；
-- `model_question_format_scores.csv/json` 与 `model_overall_scores.csv/json` 路径。
+- scorer smoke 失败。
+- 既未完成真实模型 mini eval，也未完成 proxy eval。
+- `score_matrix.jsonl` 为空或缺少 item/template/difficulty 字段。

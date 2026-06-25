@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "generated_at": "2026-06-24T07:30:00Z",
+  "skill_package_root": "/mnt/data/stage4_final/stage4_revised",
+  "reference_intent": "difficulty-balanced Stage4 with mandatory answer-image processing, small-batch evaluation, and CDM/IRT gate",
+  "py_compile": {
+    "total_python_files": 12,
+    "failures": []
+  },
+  "bundle": {
+    "enabled_template_count": 17,
+    "enabled_templates": [
+      "BC_PARENT_D1_CATEGORY_VISIBLE_YN",
+      "BC_PARENT_D1_VISIBLE_CATEGORY_SINGLE_CHOICE",
+      "BC_PARENT_D1_VISIBLE_CATEGORY_MULTISELECT",
+      "BC_PARENT_D2_CATEGORY_COUNT_INTERVAL",
+      "BC_PARENT_D2_TOTAL_INSTANCE_COUNT_INTERVAL",
+      "BC_PARENT_D2_UNIQUE_CATEGORY_COUNT_INTERVAL",
+      "BC_PARENT_D3_LEFT_RIGHT",
+      "BC_PARENT_D3_ABOVE_BELOW",
+      "BC_PARENT_D3_GRID_REGION",
+      "BC_PARENT_D3_NEAREST_IMAGE_CENTER",
+      "BC_PARENT_D3_LEFT_TO_RIGHT_ORDER",
+      "BC_PARENT_D4_LARGEST_VISIBLE_AREA",
+      "BC_PARENT_D4_AREA_ORDER",
+      "BC_PARENT_D5_DEPTH_INTERVAL",
+      "BC_PARENT_D5_CLOSER_DEPTH_YN",
+      "BC_PARENT_D5_NEAREST_DEPTH",
+      "BC_PARENT_D5_NEAR_FAR_ORDER"
+    ],
+    "image_processing_manifest_rows": 1,
+    "difficulty_contract_exists": true,
+    "check_difficulty_mix_exists": true
+  },
+  "generation": {
+    "generated_items": 17,
+    "filtered_items": 0,
+    "valid_items": 17,
+    "invalid_items": 0,
+    "screening_findings": 0
+  },
+  "difficulty_mix": {
+    "status": "PASS",
+    "counts": {
+      "easy": 5,
+      "hard": 4,
+      "medium": 8
+    },
+    "ratios": {
+      "easy": 0.29411764705882354,
+      "hard": 0.23529411764705882,
+      "medium": 0.47058823529411764
+    },
+    "required_min_ratios": {
+      "easy": 0.2,
+      "medium": 0.25,
+      "hard": 0.2
+    }
+  },
+  "small_batch_result_evaluation": {
+    "status": "PASS",
+    "evaluation_mode": "proxy",
+    "reason": "external_models_not_required_for_stage4_gate",
+    "n_items": 17,
+    "n_score_records": 68,
+    "note": "Proxy responders validate the grey gate and CDM/IRT matrix; they are not a real model leaderboard."
+  },
+  "cdm_irt_analysis": {
+    "status": "PASS",
+    "usable_for_full_irt": true,
+    "n_models": 4,
+    "n_items": 17,
+    "n_score_records": 68,
+    "warnings": [],
+    "matrix_source": "proxy_or_external_score_matrix"
+  },
+  "full_synthesis": {
+    "evalset_rows": 17,
+    "ground_truth_answer_rows": 17,
+    "model_visible_forbidden_key_leaks": [],
+    "model_visible_answers_removed": true,
+    "first_model_visible_row": {
+      "item_id": "sample001_BC_PARENT_D1_CATEGORY_VISIBLE_YN_0001",
+      "id": "sample001_BC_PARENT_D1_CATEGORY_VISIBLE_YN_0001",
+      "media": [
+        "./images/000000_rgb.jpg"
+      ],
+      "source_media": [
+        "./images/000000_source_rgb.jpg"
+      ],
+      "question": "当前图像中是否可见 car？",
+      "options": {
+        "A": "是",
+        "B": "否"
+      },
+      "answer_type": "yes_no",
+      "capability_tags": [
+        "D1_visible_category"
+      ],
+      "template_id": "BC_PARENT_D1_CATEGORY_VISIBLE_YN",
+      "metric_id": "exact_choice",
+      "difficulty_level": "easy",
+      "kinship_level": "single_field"
+    }
+  },
+  "scorer_smoke": {
+    "perfect_prediction_mean_score": 1.0,
+    "perfect_prediction_n": 17
+  },
+  "note": "small-batch evaluation in this smoke used built-in proxy responders because no external model config was provided; it validates the gate and score matrix plumbing, not a real leaderboard."
+}

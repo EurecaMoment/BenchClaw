@@ -23,6 +23,7 @@ description: Use for the BenchClaw skill `stage5-eval` when the workflow is expl
 - `WORKSPACE_ROOT/EVALSET_DATASET/images/` 中的真实图片数量必须与评测集规模大体匹配；允许多图问答或一图多问，但不得只有极少数图片却支撑明显更大规模的数据集。
 - 本仓库中的灰度测试与全量测试模型配置必须统一从 `BENCHCLAW_ROOT/modelNeedMeasured/model_config.json` 读取；Stage5 使用其中 `full_test`，不得切换到 `skills/` 目录内的局部模型配置。
 - Stage5 完成必须有真实预测或真实模型调用来源，且输出 `evaluation_report.md`、`metrics.json`、`prediction_audit.jsonl`、`error_taxonomy.jsonl` 均非空；不得只用 Stage4 原始 artifact、自然语言摘要或占位目录冒充评测。
+- Stage5 最后一个节点 `full-evaluation` 完成全部评测任务后，必须调用 `benchclaw-stage5-opencode-usage-report` 的脚本，保存 `artifacts/data_23_evaluation_report/opencode_usage_report.json` 与 `opencode_usage_report.txt`，作为父 session 与子 agent 消耗审计报告；该报告不得替代真实评测结果。
 - 在写 `stage5/_STAGE_DONE.json` 或向 pipeline 返回 `PASS` 前，必须运行可执行质量门：
 
 ```bash
@@ -37,13 +38,23 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 ## Registered Node Skill Names
 
-本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+本 stage 调度 ready 节点时，必须通过 `/benchclaw-subskill` 创建 `child-skill-module-runner` 子 agent，并使用下面这些显式 skill 名：
 
 - `full-evaluation` -> `benchclaw-stage5-full-evaluation`
+
+## Registered Utility Skill Names
+
+用户要求查看 opencode 父 session、子 agent、token 或 cost 消耗报告时，使用下面的工具型 skill；它不属于 DAG 节点，也不得替代 Stage5 评测产物：
+
+- `opencode-usage-report` -> `benchclaw-stage5-opencode-usage-report`
 
 ## Node Context Return Protocol
 
 节点返回时只保留：评测状态、报告路径、关键分数摘要、阻塞原因和一句总结。不要回灌全量 prediction log、长错误明细或整份报告正文。
+
+## Opencode 子 agent 调度契约
+
+`full-evaluation` 和工具型 `opencode-usage-report` 都必须通过 `/benchclaw-subskill` 派发到 `child-skill-module-runner` 子 agent。调用参数必须包含目标 `SKILL.md` 绝对路径、注册 skill 名、冻结路径、输入/输出 artifact、父 session/usage 报告需求和完成判据。Stage5 manager 禁止在自身上下文中直接内联执行评测或 usage report 脚本；无法创建子 agent 时必须写 `BLOCKED`。
 
 ## 输入
 
@@ -62,9 +73,9 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 1. 从 `dag.json` 读取节点依赖。
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
-3. 对 ready 节点调用对应的已注册 skill 名：`full-evaluation -> benchclaw-stage5-full-evaluation`。
+3. 对 ready 节点用 `/benchclaw-subskill` 调用对应的已注册 skill 名：`full-evaluation -> benchclaw-stage5-full-evaluation`。
 4. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
-5. 本 stage 只在所有 terminal artifacts 完成且 `validate_stage_gate.py --stage stage5` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
+5. 本 stage 只在所有 terminal artifacts 完成、`artifacts/data_23_evaluation_report/opencode_usage_report.json` 与 `opencode_usage_report.txt` 已生成，且 `validate_stage_gate.py --stage stage5` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据
 
@@ -77,6 +88,9 @@ WORKSPACE_ROOT/stage5/
   nodes/<node-id>/
     run_logs/
   artifacts/
+    data_23_evaluation_report/
+      opencode_usage_report.json
+      opencode_usage_report.txt
   _STAGE_DONE.json
   _stage_report.md
 ```

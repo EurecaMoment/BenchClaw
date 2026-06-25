@@ -5,6 +5,7 @@
     "BENCHCLAW_ROOT",
     "WORKSPACE_PARENT",
     "WORKSPACE_ROOT",
+    "workspace_isolation",
     "checks"
   ],
   "properties": {
@@ -18,7 +19,61 @@
       "type": "string"
     },
     "WORKSPACE_ROOT": {
-      "type": "string"
+      "type": "string",
+      "description": "Must resolve exactly to PROJECT_ROOT/workspaces/workspace{I}, where {I} is decimal digits.",
+      "pattern": "(^|/)workspaces/workspace[0-9]+$"
+    },
+    "workspace_isolation": {
+      "type": "object",
+      "required": [
+        "default_policy",
+        "workspace_parent_scan_scope",
+        "unauthorized_other_workspace_content_read",
+        "authorized_external_workspaces"
+      ],
+      "properties": {
+        "default_policy": {
+          "type": "string",
+          "const": "forbid_other_workspace_content_without_explicit_user_authorization"
+        },
+        "workspace_parent_scan_scope": {
+          "type": "string",
+          "enum": [
+            "direct_child_names_only_for_allocation",
+            "not_scanned"
+          ]
+        },
+        "unauthorized_other_workspace_content_read": {
+          "type": "boolean",
+          "const": false
+        },
+        "authorized_external_workspaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "purpose",
+              "allowed_scope",
+              "user_authorization"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              },
+              "allowed_scope": {
+                "type": "string"
+              },
+              "user_authorization": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     },
     "checks": {
       "type": "array"

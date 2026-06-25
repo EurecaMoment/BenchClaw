@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "scope": "model_agnostic_stage4_skill_package",
+  "unified_execution_contract": {
+    "single_skill_package_for_all_models": true,
+    "model_specific_sections_removed": true,
+    "allowed_variation": "dataset GT field mapping and template enablement only",
+    "forbidden_variation": "different skill package, bypassed grey validation, copied full parent runtime, placeholder benchmark"
+  },
+  "py_compile": {
+    "status": "PASS",
+    "python_files": 11
+  },
+  "bundle_build": {
+    "status": "PASS",
+    "bundle": "/mnt/data/stage4_unified_smoke/data_20_template_metric_code_bundle",
+    "records": 1,
+    "templates": [
+      "BC_PARENT_D1_CATEGORY_VISIBLE_YN",
+      "BC_PARENT_D2_CATEGORY_COUNT_INTERVAL",
+      "BC_PARENT_D3_LEFT_RIGHT",
+      "BC_PARENT_D3_ABOVE_BELOW",
+      "BC_PARENT_D4_LARGEST_VISIBLE_AREA",
+      "BC_PARENT_D5_NEAREST_DEPTH"
+    ]
+  },
+  "grey_generation": {
+    "templates": 6,
+    "items": 6,
+    "log": "/mnt/data/stage4_unified_smoke/per_template.log"
+  },
+  "invalid_item_screening": {
+    "total": 6,
+    "valid": 6,
+    "invalid": 0
+  },
+  "packaged_dataset": {
+    "dataset_rows": 6,
+    "evalset_rows": 6,
+    "first_evalset_media": "./images/000000_rgb.jpg",
+    "required_dirs_nonempty": [
+      "images",
+      "media",
+      "ground_truth",
+      "metrics"
+    ]
+  },
+  "modified_files_key": [
+    "SKILL.md",
+    "README.md",
+    "STAGE4_ARCHITECTURE.md",
+    "skills/template-metric-code-generation/SKILL.md",
+    "skills/template-metric-code-generation/subskills/contract-checking/SKILL.md",
+    "skills/template-metric-code-generation/scripts/build_parent_runtime_bundle.py",
+    "skills/template-metric-code-generation/subskills/template-compilation/parent_code/benchclaw_stage4_synthesis_base.py",
+    "skills/template-metric-code-generation/subskills/template-compilation/parent_code/README.md",
+    "PATCH_SUMMARY_20260624.md",
+    "contracts/model_agnostic_execution_contract.json",
+    "PATCH_SUMMARY_20260624_UNIFIED.md"
+  ]
+}

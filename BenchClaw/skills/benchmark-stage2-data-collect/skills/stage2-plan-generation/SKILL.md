@@ -3,6 +3,14 @@ name: benchclaw-stage2-plan-generation
 description: Use for the specific BenchClaw node skill `stage2-plan-generation` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 本阶段执行计划生成
 
 ## 输入
@@ -34,6 +42,7 @@ description: Use for the specific BenchClaw node skill `stage2-plan-generation` 
 11. 不同数据源的第一步 subskill 节点必须放入同一个跨类别 `parallel_group`，使真实图片、已有 benchmark 和仿真器数据源能实质并行启动；同一数据源内部的第二步 subskill 只能依赖自己的第一步，不得依赖其他数据源完成。
 12. 根 bundle 汇总节点必须是每个类别内部的串行 barrier，只依赖本类别所有 work unit 的末端 subskill；不得让某一类别的汇总等待其他类别的 work unit，Stage2 的最终完成门才等待三类 terminal bundle。
 13. 所有执行真实数据采集、扫描、下载、解压、复制、物化、仿真 replay/运行或 GT 导出的 DAG 节点都必须写入 `tmux_required: true`、`monitor_interval_seconds: 15`、`monitor_until: session_finished`、`tmux_session_name`、`log_path` 和 `monitoring_log_path`；计划不得把采集命令设计成前台长期运行。
+14. 除非用户请求或 `data_13_execution_plan` 明确要求其他规模/禁用相关分支，计划必须写入 `collection_requirements.minimum_total_collected_images: 100`，并把该下限分解为各启用分支的目标或补采策略；若另有要求，写入对应数值与 `override_reason`，不得生成低于显式要求的采集计划。
 
 ## 处理
 
@@ -55,6 +64,7 @@ BENCHCLAW_ROOT/simulatorCards/<simulator_id>/SKILL.md
 ```
 
 4. 分别生成真实图片、已有 benchmark、仿真器三条采集分支的数量、字段、工具、目录、质量门和阻塞条件。每条分支只能包含本类别的 `source_root`、`allowed_card_glob`、`discovered_cards`、`work_units` 和输出 bundle。
+   默认情况下，三条分支汇总的有效图片媒体总数目标不得低于 100；如果 Stage1 或用户显式要求更少，必须在计划中记录 `explicit_scale_exception`、来源依据和允许的目标数量。
 5. 将运行时发现到的每个数据源都展开成显式 DAG work unit：每个 work unit 至少包含两个串行 subskill 节点，节点之间只建立同一数据源内部的依赖边，不同数据源之间不建立互相等待边。
 6. 为三条采集分支写入同一个跨类别 `parallel_group`，要求 `real-image-collection-analysis`、`existing-benchmark-collection-analysis`、`simulator-collection-analysis` 在 `stage2-plan-generation` 完成后作为同一 ready set 并行消费计划；同时在 `parallel_dag.nodes[]` 中把所有数据源第一步 subskill 节点标为同一 `ready_group: stage2-source-first-step`。只有资源、依赖或用户显式限制导致无法并行时，才可串行执行，并必须在节点报告中记录原因。
 7. 为每个类别内部写明并行 work unit 粒度：
@@ -102,6 +112,21 @@ source_policy:
       node_id: simulator-collection-analysis
       output_bundle: data_16_simulator_collection_bundle
 execution:
+  collection_requirements:
+    minimum_total_collected_images: 100
+    override_reason: null
+    scope: data_14_real_image_collection_bundle + data_15_existing_benchmark_collection_bundle + data_16_simulator_collection_bundle
+    counted_media: real non-empty decodable image files or render frames
+  collection_scale_policy:
+    default_min_total_images: 100
+    effective_min_total_images: 100
+    count_scope: enabled terminal bundles combined
+    count_unit: unique decodable image media paths with decode_status ok
+    explicit_scale_exception: null
+    per_category_targets:
+      real_image: planned count or null
+      existing_benchmark: planned count or null
+      simulator: planned count or null
   tmux_collection_policy:
     required: true
     monitor_interval_seconds: 15

@@ -23,7 +23,13 @@ benchmark-stage5-eval/SKILL.md
 
 ## Opencode Skill Dispatch Contract
 
-在 opencode 中，本入口 skill 只负责做一件事：显式调用 `benchclaw-pipeline`。执行时必须通过 `skill(name="benchclaw-pipeline")` 进入 pipeline，不要把 Stage1 到 Stage5 的内容直接内联到当前对话里。
+在 opencode 中，本入口 skill 只负责做一件事：显式调用 `benchclaw-pipeline`。执行时必须通过 `skill(name="benchclaw-pipeline")` 或 `/benchclaw-pipeline` 进入 pipeline，不要把 Stage1 到 Stage5 的内容直接内联到当前对话里。
+
+所有下游 stage skill、node skill 与 nested subskill 必须继续触发 opencode 子 agent 流程：
+
+- Stage1 到 Stage5 manager 必须由 `BENCHCLAW_ROOT/opencode.json` 中 `subtask: true` 的 `/benchclaw-stage1` 到 `/benchclaw-stage5` 命令派发。
+- 每个 `skills/<node-id>/SKILL.md` 和 `subskills/<subskill-id>/SKILL.md` 必须由 `/benchclaw-subskill` 派发；该命令绑定 `mode: "subagent"` 的 `child-skill-module-runner`。
+- 父级只传冻结路径、目标 SKILL 路径、注册 skill 名、输入/输出 artifact 路径和依赖判据；子 agent 只回传结构化摘要、artifact 路径和 blockers。
 
 ### Required child skill
 
@@ -50,8 +56,8 @@ benchmark-stage5-eval/SKILL.md
 
 ## 启动规则
 
-1. 先通过 opencode `skill` 工具调用 `benchclaw-pipeline`，不要只把 `benchmark-pipeline/SKILL.md` 当作普通文本路径。
-2. 按 pipeline skill 冻结 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT`。
+1. 先通过 opencode `skill` 工具调用 `benchclaw-pipeline` 或执行 `/benchclaw-pipeline`，不要只把 `benchmark-pipeline/SKILL.md` 当作普通文本路径。
+2. 按 pipeline skill 冻结 `PROJECT_ROOT`、`BENCHCLAW_ROOT`、`WORKSPACE_PARENT`、`WORKSPACE_ROOT`，且 `WORKSPACE_ROOT` 必须严格解析为 `PROJECT_ROOT/workspaces/workspace{I}`。
 3. 只把五个 stage 当作大阶段顺序调用；stage 内部节点必须由各自的 `dag.json` 和 ready-set 规则调度。
 4. 手绘图中的椭圆才是 DAG 节点；带编号的内容是中间流动数据，不是节点。用户输入与结束状态也不是节点。
 5. 所有写入只能落在本次 `WORKSPACE_ROOT` 下；`BENCHCLAW_ROOT` 只读。

@@ -11,7 +11,7 @@ description: Use for the BenchClaw skill `stage1-draft` when the workflow is exp
 
 ## Registered Node Skill Names
 
-本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名，而不是只在上下文里保留 `skills/<node-id>/SKILL.md` 这种路径提示：
+本 stage 调度 ready 节点时，必须通过 `/benchclaw-subskill` 创建 `child-skill-module-runner` 子 agent，并使用下面这些显式 skill 名作为目标身份，而不是只在上下文里保留 `skills/<node-id>/SKILL.md` 这种路径提示：
 
 - `intent-understanding` -> `benchclaw-stage1-intent-understanding`
 - `scope-preprocess-analysis` -> `benchclaw-stage1-scope-preprocess-analysis`
@@ -25,6 +25,10 @@ description: Use for the BenchClaw skill `stage1-draft` when the workflow is exp
 ## Node Context Return Protocol
 
 每个节点 skill 返回时，只保留 `node_id`、`status`、`artifacts`、`blocking_issues`、`summary`。不要把论文全文、搜索长列表、长日志或整个节点内部轨迹完整回灌到 stage 上下文。
+
+## Opencode 子 agent 调度契约
+
+每个 ready node 都必须作为独立 opencode 子 agent 执行：调用 `/benchclaw-subskill`，传入 node 的注册 skill 名、`BENCHCLAW_ROOT/skills/benchmark-stage1-draft/skills/<node-id>/SKILL.md` 绝对路径、冻结路径、输入 artifact、输出 artifact、父依赖和完成判据。stage manager 禁止直接内联执行节点步骤；若无法创建子 agent，必须写 `BLOCKED`，不得继续。
 
 ## 关键规则
 
@@ -66,9 +70,10 @@ description: Use for the BenchClaw skill `stage1-draft` when the workflow is exp
 
 1. 从 `dag.json` 读取节点依赖。
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
-3. `scope-preprocess-analysis` 是 offline 节点：只有用户明确要求离线预处理时才运行；正常在线调度只校验其 `data_08` 输出已存在。
-4. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
-5. 本 stage 只在所有 terminal artifacts 完成且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
+3. 对每个 ready 节点必须使用 `/benchclaw-subskill` 派发到 `child-skill-module-runner` 子 agent；调用参数中同时包含上表注册 skill 名和目标 `SKILL.md` 路径。
+4. `scope-preprocess-analysis` 是 offline 节点：只有用户明确要求离线预处理时才运行；正常在线调度只校验其 `data_08` 输出已存在。
+5. 并行分支可以并行处理，但共享输入必须只读，共享输出必须写入各自 artifact 目录。
+6. 本 stage 只在所有 terminal artifacts 完成且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据
 

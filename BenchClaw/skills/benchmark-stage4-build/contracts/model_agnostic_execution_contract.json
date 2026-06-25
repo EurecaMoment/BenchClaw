@@ -1,0 +1,53 @@
+{
+  "contract_name": "benchclaw_stage4_model_agnostic_execution_contract",
+  "version": "2026-06-24-careful-audit",
+  "principle": "Every executor uses the same Stage4 skill package, DAG, parent runtime, generated thin child code, grey gates, and packaging contract. Quality is enforced by executable gates, not by model identity.",
+  "mandatory_rail": [
+    "profile_gt_with_parent_adapter",
+    "emit_evidence_index_and_field_catalog",
+    "emit_subskill_contributor_contracts",
+    "select_templates_from_parent_registry_and_stage4_plan",
+    "emit_qwen_one_click_synthesizer_prompt_when_runtime_code_is_generated_by_llm",
+    "generate_thin_child_generate_items_py",
+    "validate_one_click_synthesizer_cli_contract",
+    "py_compile_all_generated_code",
+    "synthesize_at_least_one_real_item",
+    "run_invalid_item_screening",
+    "run_deterministic_scoring_smoke_positive_and_negative",
+    "emit_universal_audit_format_from_same_audit_items",
+    "package_evalset_with_real_media_relative_paths_and_hidden_answers_separated"
+  ],
+  "optional_diagnostics": [
+    "selected_distant_gt_chain_high_depth_templates_when_required_by_plan",
+    "external_model_mini_eval_when_model_config_exists",
+    "cdm_irt_analysis_when_response_matrix_is_sufficient"
+  ],
+  "allowed_variation": [
+    "field key tuple overrides in GeneratedDatasetAdapter",
+    "template enablement according to GT support and Stage1 capability plan",
+    "custom BenchmarkTemplate subclasses only when they pass the same contract gates"
+  ],
+  "forbidden_variation": [
+    "different skill package for different models",
+    "bypassing grey-batch-validation",
+    "copying the full parent runtime into generated child code",
+    "letting local qwen or any LLM change DAG nodes thresholds schemas scoring policy or hidden-answer rules",
+    "manifest-only or placeholder-only benchmark generation",
+    "generating audit_format and EVALSET_DATASET from different item samples",
+    "copying LIBERO or UAV task taxonomy into unrelated data sources instead of deriving templates from current evidence",
+    "relaxing schema or media checks based on executor capability",
+    "using model identity to decide quality thresholds",
+    "leaking answer metadata or GT provenance in model-facing data/test.jsonl"
+  ],
+  "minimum_completion_evidence": [
+    "self_test/dry_run_items.jsonl has at least one row",
+    "invalid_item_screening/valid_items.jsonl has at least one row",
+    "perfect scoring smoke is full score and negative smoke is lower",
+    "data_22_full_benchmark_dataset/audit_format/benchmark_items.jsonl has rows with answer provenance and quality_flags",
+    "data_22_full_benchmark_dataset/audit_format/template_registry.json and generation_report.json are non-empty",
+    "data_22_full_benchmark_dataset/data/test.jsonl uses ./images/... media paths",
+    "data/test.jsonl contains no answer metadata evidence_refs gt_* or gold_* keys",
+    "images media ground_truth metrics are non-empty",
+    "stage4_gate_report.json status is PASS before _STAGE_DONE.json"
+  ]
+}

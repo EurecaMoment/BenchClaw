@@ -15,13 +15,34 @@
       "required_at_workspace_root": "EVALSET_DATASET",
       "required_files": [
         "README.md",
-        "data/test.jsonl"
+        "data/test.jsonl",
+        "ground_truth/answers.jsonl",
+        "metrics/score_predictions.py"
       ],
       "required_nonempty_directories": [
         "images",
+        "ground_truth",
         "metrics"
       ],
-      "must_be_stage5_consumed": true
+      "must_be_stage5_consumed": true,
+      "model_visible_forbidden_keys": [
+        "answer",
+        "answers",
+        "gold_answer",
+        "ground_truth",
+        "gt",
+        "metadata",
+        "provenance",
+        "object_provenance",
+        "evidence_refs",
+        "evidence_ref",
+        "bbox",
+        "bboxes",
+        "depth",
+        "area",
+        "gt_*",
+        "gold_*"
+      ]
     },
     {
       "id": "data_23_evaluation_report",
@@ -29,7 +50,9 @@
         "evaluation_report.md",
         "metrics.json",
         "prediction_audit.jsonl",
-        "error_taxonomy.jsonl"
+        "error_taxonomy.jsonl",
+        "opencode_usage_report.json",
+        "opencode_usage_report.txt"
       ],
       "nonempty_jsonl": [
         "prediction_audit.jsonl",

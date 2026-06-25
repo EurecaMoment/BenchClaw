@@ -3,11 +3,19 @@ name: benchclaw-stage2-real-image-collection-analysis
 description: Use for the specific BenchClaw node skill `stage2-real-image-collection-analysis` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 真实图片采集与分析
 
 ## 内部层级
 
-本节点包含两个 subskill，按每个真实图片数据集独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
+本节点包含两个 subskill，按每个真实图片数据集独立运行。运行时必须优先通过 `/benchclaw-subskill` 按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/content-analysis/SKILL.md
@@ -16,7 +24,7 @@ subskills/data-structure-normalization/SKILL.md
 
 ## Registered Subskill Names
 
-本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+本节点的内部 DAG 在 opencode 中必须通过 `/benchclaw-subskill` 显式派发以下 skill 名：
 
 - `content-analysis` -> `benchclaw-stage2-real-image-content-analysis`
 - `data-structure-normalization` -> `benchclaw-stage2-real-image-data-structure-normalization`
@@ -75,7 +83,7 @@ real_image::<dataset_id>::content-analysis
 real_image::<dataset_id>::data-structure-normalization
 ```
 
-这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
+这两个节点必须分别通过 `/benchclaw-subskill` 精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
 benchclaw-stage2-real-image-content-analysis
@@ -84,7 +92,7 @@ benchclaw-stage2-real-image-data-structure-normalization
 
 如果 `stage2_execution_plan.yaml` 没有显式列出某个真实图片数据集的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同数据集之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
-每个 work unit 必须先读取自己的 `real_data_card_skill`，再在该数据卡的指导下依次运行：
+每个 work unit 必须先读取自己的 `real_data_card_skill`，再在该数据卡的指导下依次通过 `/benchclaw-subskill` 运行：
 
 1. `benchclaw-stage2-real-image-content-analysis`
 2. `benchclaw-stage2-real-image-data-structure-normalization`
@@ -125,7 +133,8 @@ artifacts/data_14_real_image_collection_bundle/datasets/<dataset_id>/
 2. 对每个真实图片数据集独立执行内容分析。
 3. 在各自 per-dataset 目录中物化媒体文件、媒体 manifest、元数据、来源记录和标注需求。
 4. 不只记录外部路径；后续 Stage3 必需消费的媒体必须真实落盘到 workspace 内，图片必须存在、非空、sha256 已记录且可解码。
-5. 所有数据集完成后，串行汇总 per-dataset 结果到 bundle 根目录。
+5. 统计本分支贡献的有效图片数：根 `media_manifest.jsonl` 中 `modality: image`、`decode_status: ok`、文件存在且非空的唯一 `workspace_path`。若 Stage2 汇总默认 100 张下限尚未满足且本分支仍有可采集数据，必须继续采集或补采，不能只因本分支非空就结束。
+6. 所有数据集完成后，串行汇总 per-dataset 结果到 bundle 根目录。
 
 ## 汇总输出
 
@@ -144,4 +153,5 @@ artifacts/data_14_real_image_collection_bundle/datasets/<dataset_id>/
 - 每个数据集的 `real_data_card_skill`
 - 每个数据集 work unit 的状态和 per-dataset 输出目录
 - 每个 work unit 的 `tmux_session_name`、`log_path`、`monitoring_log_path`、15 秒监控记录摘要和最终退出状态
+- 本分支有效图片总数，以及对 Stage2 默认 100 张总下限的贡献
 - 被阻塞的数据集及原因，如有

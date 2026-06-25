@@ -675,10 +675,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     write_csv(out_dir / "capability_mastery.csv", cap_rows, ["model", "capability", "n_items", "mean_score", "binary_accuracy", "mastery_threshold", "mastery_status"])
     write_csv(out_dir / "template_diagnostics.csv", tmpl_rows, ["template_id", "n_items", "mean_p_value", "mean_discrimination", "flag_summary"])
     write_jsonl(out_dir / "item_level_findings.jsonl", findings)
+    status_label = "PASS" if status.get("usable_for_full_irt") else "LIMITED_PASS" if records else "FAIL"
+    status_payload = {
+        "status": status_label,
+        "usable_for_full_irt": bool(status.get("usable_for_full_irt")),
+        "n_models": status.get("n_models"),
+        "n_items": status.get("n_items"),
+        "n_score_records": status.get("n_score_records"),
+        "warnings": status.get("warnings", []),
+        "matrix_source": "proxy_or_external_score_matrix",
+    }
+    write_json(out_dir / "status.json", status_payload)
     write_json(out_dir / "cdm_irt_summary.json", summary)
     write_report(out_dir / "cdm_irt_report.md", status, item_rows, model_rows, cap_rows)
 
-    print(json.dumps({"out_dir": str(out_dir), **summary["counts"], "usable_for_full_irt": status["usable_for_full_irt"]}, ensure_ascii=False, indent=2))
+    print(json.dumps({"out_dir": str(out_dir), **summary["counts"], "usable_for_full_irt": status["usable_for_full_irt"], "status": status_label}, ensure_ascii=False, indent=2))
     return 0
 
 

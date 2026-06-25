@@ -1,5 +1,6 @@
 {
   "stage": "stage4",
+  "revision": "2026-06-24-careful-audit",
   "executable_gate": {
     "command": "python3 BENCHCLAW_ROOT/skills/validate_stage_gate.py --workspace-root WORKSPACE_ROOT --stage stage4 --report WORKSPACE_ROOT/stage4/stage4_gate_report.json",
     "required_before": [
@@ -10,34 +11,65 @@
   },
   "artifacts": [
     {
+      "id": "stage4_execution_plan",
+      "node": "stage4-plan-generation",
+      "required_files": [
+        "stage4_execution_plan.yaml"
+      ]
+    },
+    {
       "id": "data_20_template_metric_code_bundle",
       "required_files": [
         "README.md",
         "source_inventory.jsonl",
         "field_catalog.yaml",
         "evidence_index.jsonl",
+        "difficulty_mix_contract.json",
+        "image_processing/image_manifest.jsonl",
+        "contrib/gt_adapter/adapter_contract.json",
+        "contrib/asset_builder/asset_builder_contract.json",
+        "contrib/template_registry/template_registry.json",
+        "contrib/metric_registry/metric_registry.json",
+        "contrib/item_validator/item_validator_contract.json",
         "template_manifest.jsonl",
         "metric_manifest.jsonl",
         "code_manifest.json",
+        "synthesizer_contract.json",
+        "qwen_one_click_synthesizer_prompt.md",
         "synthesis_plan.yaml",
         "traceability.csv",
+        "scripts/benchclaw_stage4_synthesis_base.py",
         "scripts/generate_items.py",
         "scripts/score_predictions.py",
+        "scripts/package_evalset.py",
+        "scripts/check_difficulty_mix.py",
         "scripts/validate_bundle.py",
+        "scripts/one_click_generate_evalset.py",
         "contracts/benchmark_item.schema.json",
         "tests/smoke_test.py",
         "self_test/dry_run_items.jsonl",
         "self_test/perfect_score_report.json",
         "self_test/negative_score_report.json",
+        "self_test/difficulty_mix_report.json",
         "self_test/py_compile.log",
         "self_test/self_test_report.md"
       ],
       "nonempty_jsonl": [
         "source_inventory.jsonl",
         "evidence_index.jsonl",
+        "image_processing/image_manifest.jsonl",
         "template_manifest.jsonl",
         "metric_manifest.jsonl",
         "self_test/dry_run_items.jsonl"
+      ],
+      "must_compile": [
+        "scripts/benchclaw_stage4_synthesis_base.py",
+        "scripts/generate_items.py",
+        "scripts/score_predictions.py",
+        "scripts/package_evalset.py",
+        "scripts/check_difficulty_mix.py",
+        "scripts/validate_bundle.py",
+        "scripts/one_click_generate_evalset.py"
       ]
     },
     {
@@ -45,45 +77,88 @@
       "required_files": [
         "report.md",
         "template_status.csv",
-        "item_level_findings.jsonl"
+        "item_level_findings.jsonl",
+        "per_template_batch/generated_items.jsonl",
+        "invalid_item_screening/valid_items.jsonl",
+        "invalid_item_screening/screening_report.json",
+        "scorer_smoke/perfect_score_report.json",
+        "scorer_smoke/negative_score_report.json",
+        "small_model_eval/score_matrix.jsonl",
+        "cdm_irt/cdm_irt_summary.json",
+        "difficulty_mix_report.json"
       ],
       "nonempty_jsonl": [
-        "item_level_findings.jsonl"
+        "per_template_batch/generated_items.jsonl",
+        "invalid_item_screening/valid_items.jsonl",
+        "small_model_eval/score_matrix.jsonl"
       ]
     },
     {
       "id": "data_22_full_benchmark_dataset",
       "required_files": [
+        "audit_format/benchmark_items.jsonl",
+        "audit_format/template_registry.json",
+        "audit_format/generation_report.json",
         "dataset.jsonl",
+        "data/test.jsonl",
+        "ground_truth/answers.jsonl",
+        "ground_truth/audit_items_with_answers.jsonl",
+        "metrics/score_predictions.py",
         "manifest.json",
         "cards/benchmark_card.md",
         "checksums.json"
       ],
       "required_nonempty_directories": [
+        "audit_format/benchmark_assets",
         "media",
+        "images",
         "ground_truth",
         "metrics"
       ],
       "nonempty_jsonl": [
-        "dataset.jsonl"
+        "audit_format/benchmark_items.jsonl",
+        "dataset.jsonl",
+        "data/test.jsonl",
+        "ground_truth/answers.jsonl"
       ],
-      "forbidden_as_only_output_directories": [
-        "sample_images",
-        "gt_bundle"
-      ]
+      "model_visible_file": "data/test.jsonl",
+      "model_visible_forbidden_keys": [
+        "answer",
+        "gold_answer",
+        "metadata",
+        "provenance",
+        "evidence_refs",
+        "evidence_ref",
+        "gt_*",
+        "gold_*"
+      ],
+      "media_path_prefix": "./images/"
     },
     {
       "id": "workspace_evalset_dataset",
       "required_at_workspace_root": "EVALSET_DATASET",
       "required_files": [
         "README.md",
-        "data/test.jsonl"
+        "data/test.jsonl",
+        "ground_truth/answers.jsonl",
+        "metrics/score_predictions.py"
       ],
       "required_nonempty_directories": [
         "images",
+        "ground_truth",
         "metrics"
       ],
-      "must_be_stage5_consumable": true
+      "must_be_stage5_consumable": true,
+      "model_visible_forbidden_keys": [
+        "answer",
+        "gold_answer",
+        "metadata",
+        "provenance",
+        "evidence_refs",
+        "evidence_ref",
+        "gt_*",
+        "gold_*"
+      ]
     }
   ]
 }

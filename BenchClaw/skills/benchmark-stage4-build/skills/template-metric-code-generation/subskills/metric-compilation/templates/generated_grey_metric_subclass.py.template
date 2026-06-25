@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Template for a generated dataset-specific grey metric evaluator.
+
+The generated file must import and subclass BaseGreyMetricEvaluator from
+scripts/grey_metric_eval_base.py. It must not add an alternate model config
+path or hardcoded model list.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Dict, Tuple
+
+from grey_metric_eval_base import BaseGreyMetricEvaluator
+
+
+DATASET_PROFILE = {{DATASET_PROFILE_JSON}}
+
+
+class {{CLASS_NAME}}(BaseGreyMetricEvaluator):
+    dataset_profile = DATASET_PROFILE
+
+    @property
+    def metric_name(self) -> str:
+        return "{{METRIC_NAME}}"
+
+    def score_item(self, item: Dict[str, Any], prediction: Any) -> Tuple[float, Dict[str, Any]]:
+        """Dataset/template-specific metric generated from actual benchmark items.
+
+        The implementation must only inspect item answer/options/metadata and
+        model prediction. It must not reload hidden GT or source annotations.
+        """
+        raise NotImplementedError("metric-compilation must fill in template-specific scoring code")
+
+
+Evaluator = {{CLASS_NAME}}

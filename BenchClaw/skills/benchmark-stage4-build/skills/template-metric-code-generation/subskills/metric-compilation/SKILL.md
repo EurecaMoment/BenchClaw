@@ -3,76 +3,89 @@ name: benchclaw-stage4-metric-compilation
 description: Use for the specific BenchClaw subskill `stage4-metric-compilation` only when its parent node explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Subskill — 指标编译
 
 ## 目标
 
-为每个 enabled 模板编译可执行、可解释、可聚合的评分指标。指标必须能被 `answer_programs/` 和 `scripts/score_predictions.py` 调用，并能对后续合成出的 item 进行自动评分或明确声明外部评估协议。
-
-本 subskill 新增链式难度聚合维度，但评分本身仍只根据 item answer 与 prediction 判分；不得重新读取隐藏 GT 为预测找补。
+为 enabled 模板生成确定性评分契约和 scorer。Stage4 主指标必须可复现、可离线执行，不能依赖 LLM judge 作为主判分。
 
 ## 输入
 
-- `artifacts/data_20_template_metric_code_bundle/templates/<template_id>.json`
-- `artifacts/data_20_template_metric_code_bundle/selected_template_sources.jsonl`
-- `artifacts/data_20_template_metric_code_bundle/template_manifest.jsonl`
-- `artifacts/data_20_template_metric_code_bundle/gt_kinship/gt_distant_reasoning_chains.jsonl`
-- `data_11_template_metric_initial_draft/metrics.yaml`
-- `stage4_execution_plan.yaml`
-- 本 stage `templates/benchmark_item.schema.json`
-- 统一模板包中的 `template_system/05_metrics_and_scoring.md`
-- 本 skill `reference_library/answer_type_metric_registry.json` 和 `reference_library/template_family_registry.yaml`
+- `template_manifest.jsonl`
+- `reference_library/answer_type_metric_registry.json`
+- 父类 runtime scorer：`run_scoring_cli()` 或等价 deterministic scorer。
 
-## 指标契约
-
-每个指标写入：
+## 输出
 
 ```text
-artifacts/data_20_template_metric_code_bundle/metrics/<metric_id>.json
-artifacts/data_20_template_metric_code_bundle/metrics/<metric_id>.py
-artifacts/data_20_template_metric_code_bundle/contracts/metric_contract.schema.json
+data_20_template_metric_code_bundle/metric_manifest.jsonl
+data_20_template_metric_code_bundle/scripts/score_predictions.py
+data_20_template_metric_code_bundle/contrib/metric_registry/metric_registry.json
 ```
 
-指标 JSON 除现有字段外，评分报告契约必须支持：
+`metric_manifest.jsonl` 每个 enabled 模板至少包含：
 
 ```json
 {
-  "by_reasoning_hop_count": {},
-  "by_gt_distance_level": {},
-  "by_depth_role": {},
-  "by_chain_id": {}
+  "template_id": "...",
+  "answer_type": "single_choice|multi_choice|ordered_list|interval_choice|...",
+  "metric_id": "accuracy|set_f1|order_exact_accuracy|...",
+  "primary_metric": true,
+  "prediction_parser": "choice_key|choice_set|ordered_keys|json_object|numeric_interval",
+  "score_function": "score_exact_choice",
+  "qwen_generation_notes": [
+    "score_predictions.py must inspect only item/prediction/gold answer files, never Stage3 private GT."
+  ]
 }
 ```
 
-## 处理
+`contrib/metric_registry/metric_registry.json` 必须把 scorer 可执行接口和 answer_type 映射写成机器可读格式，供 `answer-program-generation`、`package_evalset.py` 和 `audit_format/generation_report.json` 消费：
 
-1. 读取所有 enabled 模板，按 `answer_format` 和 `metric_id` 分组。
-2. 对照 Stage1 `metrics.yaml`、`selected_template_sources.jsonl` 和统一模板包评分说明，保留同一 metric 的语义一致性。
-3. 每个 metric 必须能追溯到：
-   - `unified_template_id`
-   - `canonical_question_type`
-   - `reference_metric_id`
-   - `chain_id`
-4. 聚合维度必须新增：
-   - `by_reasoning_hop_count`
-   - `by_gt_distance_level`
-   - `by_depth_role`
-   - `by_chain_id`
-5. 评分代码必须只根据 item answer 与 prediction 判分，不允许评分脚本重新读取隐藏 GT 来给预测找补。
-6. 链式信息只用于聚合分析和诊断，不用于泄漏答案。
+```json
+{
+  "schema_version": "benchclaw.stage4.metric_registry.v1",
+  "scorer_cli": "scripts/score_predictions.py --items <items> --predictions <predictions> --gold <answers> --out <report>",
+  "metrics": {
+    "accuracy": {
+      "answer_types": ["single_choice", "yes_no", "interval_choice"],
+      "prediction_parser": "choice_key",
+      "score_function": "score_exact_choice",
+      "requires_complete_prediction_set": true
+    }
+  }
+}
+```
 
-## 质量要求
+## 指标规则
 
-- 主指标仍然必须属于外挂参考库保留 deterministic metric。
-- 评分脚本必须接受 item metadata 中的：
-  - `chain_id`
-  - `reasoning_hop_count`
-  - `gt_distance_level`
-  - `depth_role`
-  但这些字段只用于分桶聚合。
-- 完美预测必须满分；负例必须低于完美预测。
+- 单选/二选/区间选择：exact choice。
+- 多选：set exact 与 F1；若父类当前只支持 exact choice，则多选模板不得 enabled。
+- 排序：exact order 或 pairwise accuracy；当前 scorer 不支持时不得 enabled。
+- 连续数值：必须转为区间、容差成功率或结构化 metric；不得裸数字答案。
+- 评分只读取 item/answer 与 prediction，不得重新读取 Stage3 私有 GT 为预测找补。
+- scorer 必须输出 item-level 分数、parse 状态和 summary。
+- `score_predictions.py` 必须支持灰度和最终包共用的 CLI：
 
-## 失败与阻塞
+```bash
+python scripts/score_predictions.py \
+  --items items.jsonl \
+  --predictions predictions.jsonl \
+  --out score_report.json
+```
 
-- 若评分代码需要读取 Stage3 私有 GT 才能判分，必须阻塞。
-- 若新增聚合维度无法从 item metadata 获得，而试图从隐藏数据反查，必须阻塞。
+如果最终打包后答案被移到 `ground_truth/answers.jsonl`，scorer 还必须支持 `--gold ground_truth/answers.jsonl`。本地 Qwen 生成 scorer 时只能实现 `metric_manifest.jsonl` 中声明的 deterministic metrics，不能新增 LLM judge 或主观评分。
+
+## 阻塞条件
+
+- enabled 模板没有 metric_id。
+- 完美预测不能满分。
+- 负例与完美预测同分。
+- 评分脚本不可编译或不可执行。

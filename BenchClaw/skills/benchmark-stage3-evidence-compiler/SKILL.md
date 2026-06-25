@@ -42,7 +42,7 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 ## Registered Node Skill Names
 
-本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+本 stage 调度 ready 节点时，必须通过 `/benchclaw-subskill` 创建 `child-skill-module-runner` 子 agent，并使用下面这些显式 skill 名：
 
 - `stage3-plan-generation` -> `benchclaw-stage3-plan-generation`
 - `real-image-evidence-compilation` -> `benchclaw-stage3-real-image-evidence-compilation`
@@ -52,6 +52,10 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 ## Node Context Return Protocol
 
 每个节点只向 stage 返回：节点状态、artifact 路径、work unit 计数、质量门结果、阻塞原因和简短摘要。不要把清洗日志、默认标注长输出、整段 evidence 正文或大批 JSONL 全文继续回灌。
+
+## Opencode 子 agent 调度契约
+
+每个外显 node 以及每个数据源节点内部的 cleaning/annotation subskill 都必须通过 `/benchclaw-subskill` 派发到 `child-skill-module-runner` 子 agent。调用参数必须包含注册 skill 名、目标 `SKILL.md` 绝对路径、冻结路径、work_unit id、输入/输出 artifact、父依赖和完成判据。stage manager 与 source node 禁止直接内联执行清洗、标注或 GT 整理步骤；无法创建子 agent 时必须写 `BLOCKED`。
 
 ## 输入
 
@@ -73,10 +77,10 @@ python3 "$BENCHCLAW_ROOT/skills/validate_stage_gate.py" \
 
 1. 从 `dag.json` 读取节点依赖。
 2. 首先运行 `stage3-plan-generation`。
-3. `stage3-plan-generation` 完成后，先读取 `stage3_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `substage: cleaning` 且 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，并且要映射到已注册的显式 skill 名，而不是只保留文件路径。
+3. `stage3-plan-generation` 完成后，先读取 `stage3_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `substage: cleaning` 且 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，并且要通过 `/benchclaw-subskill` 映射到已注册的显式 skill 名，而不是只保留文件路径。
 4. 每个 work unit 的 annotation 节点只依赖同一 `work_unit_id` 的 cleaning 节点；不同数据源之间不得互相等待，除非 `parallel_dag.edges[]` 明确声明且原因写入计划。
 5. 三个类别 summary barrier 只等待本类别 work unit 的 annotation 节点；Stage3 最终完成门才等待三个 terminal artifacts。
-6. 每个数据源节点内部只在本节点工作目录中按 `parallel_dag` 运行显式注册的 cleaning skill 再运行显式注册的 annotation skill；同一数据源下的不同 dataset/work unit 可以并行，但只能写各自隔离目录。
+6. 每个数据源节点内部只在本节点工作目录中按 `parallel_dag` 用 `/benchclaw-subskill` 运行显式注册的 cleaning skill 再运行显式注册的 annotation skill；同一数据源下的不同 dataset/work unit 可以并行，但只能写各自隔离目录。
 7. 本 stage 只在三个 terminal artifacts 完成、图像/文字/GT 均完整落盘、执行证明齐全且 `validate_stage_gate.py --stage stage3` 通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据

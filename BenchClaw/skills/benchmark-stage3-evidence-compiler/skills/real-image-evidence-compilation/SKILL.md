@@ -3,11 +3,19 @@ name: benchclaw-stage3-real-image-evidence-compilation
 description: Use for the specific BenchClaw node skill `stage3-real-image-evidence-compilation` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 真实图片清洗与标注
 
 ## 内部层级
 
-本节点包含两个内部 subskill，按每个真实图片数据集 work unit 独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
+本节点包含两个内部 subskill，按每个真实图片数据集 work unit 独立运行。运行时必须优先通过 `/benchclaw-subskill` 按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/cleaning/SKILL.md
@@ -16,7 +24,7 @@ subskills/annotation/SKILL.md
 
 ## Registered Subskill Names
 
-本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+本节点的内部 DAG 在 opencode 中必须通过 `/benchclaw-subskill` 显式派发以下 skill 名：
 
 - `cleaning` -> `benchclaw-stage3-real-image-cleaning`
 - `annotation` -> `benchclaw-stage3-real-image-annotation`
@@ -51,7 +59,7 @@ real_image::<dataset_id>::cleaning
 real_image::<dataset_id>::annotation
 ```
 
-这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
+这两个节点必须分别通过 `/benchclaw-subskill` 精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
 benchclaw-stage3-real-image-cleaning
@@ -60,7 +68,7 @@ benchclaw-stage3-real-image-annotation
 
 如果 `stage3_execution_plan` 没有显式列出某个真实图片数据集的上述 DAG 节点、节点缺少 `subskill_path`、`subskill_path` 指向其他类别，或不同数据集之间被错误建立依赖，必须 BLOCKED，不得自行补一个隐式串行流程。
 
-每个 work unit 必须先读取 Stage2 写出的 per-dataset 目录，再依次运行：
+每个 work unit 必须先读取 Stage2 写出的 per-dataset 目录，再依次通过 `/benchclaw-subskill` 运行：
 
 1. `benchclaw-stage3-real-image-cleaning`
 2. `benchclaw-stage3-real-image-annotation`
@@ -91,8 +99,8 @@ artifacts/data_17_annotated_real_image_bundle/datasets/<dataset_id>/
 ## 处理
 
 1. 动态发现 `data_14` 中的真实图片数据集和可用媒体。
-2. 对每个数据集先调用 `benchclaw-stage3-real-image-cleaning`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
-3. 基于清洗结果调用 `benchclaw-stage3-real-image-annotation`，该 subskill 必须调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md` 的默认标注流程；服务不可用、无可标注图片或默认标注失败时必须 BLOCKED。
+2. 对每个数据集先通过 `/benchclaw-subskill` 调用 `benchclaw-stage3-real-image-cleaning`，该 subskill 必须通过 `BENCHCLAW_ROOT/data-juicer_card/SKILL.md` 运行 Data-Juicer pipeline，不能只做手写清洗。
+3. 基于清洗结果通过 `/benchclaw-subskill` 调用 `benchclaw-stage3-real-image-annotation`，该 subskill 必须调用 `BENCHCLAW_ROOT/annotation-tool/default-annotation/SKILL.md` 的默认标注流程；服务不可用、无可标注图片或默认标注失败时必须 BLOCKED。
 4. 真实图片不得把模型推断直接提升为 GT；可验证人工标注或授权 GT 必须单独标明来源。
 5. 将每条清洗样本的图像、文本、标注候选和来源字段完整写入 workspace：图片必须复制或链接到本 bundle 的 `media/`，`text_items.jsonl` 必须包含 Stage4 可读的文本字段，`annotation_records.jsonl` 必须引用默认标注真实输出和复核状态。
 6. 每个 per-dataset `evidence_manifest.json` 必须记录 Data-Juicer 命令、配置、日志、退出码、输入/输出计数、默认标注命令、tmux session、15 秒监控日志、输出目录、样本到结果的映射、媒体 sha256/尺寸和阻塞/复核原因。

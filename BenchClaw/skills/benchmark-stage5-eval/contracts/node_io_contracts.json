@@ -2,7 +2,9 @@
   "stage": "stage5",
   "required_inputs": [
     "data_13_execution_plan",
-    "data_22_full_benchmark_dataset"
+    "data_22_full_benchmark_dataset",
+    "WORKSPACE_ROOT/EVALSET_DATASET",
+    "BENCHCLAW_ROOT/modelNeedMeasured/model_config.json"
   ],
   "terminal_artifacts": [
     "data_23_evaluation_report"

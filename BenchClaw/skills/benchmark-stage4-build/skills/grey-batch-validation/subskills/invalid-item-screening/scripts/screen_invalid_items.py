@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -13,6 +14,13 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".gif", ".tif", ".tiff"}
+FORBIDDEN_QUESTION_TERMS = (
+    "object_id", "entity_annotations", "bbox_2d", "mask.area_px", "depth_median",
+    "ground truth", "GT", "metadata", "annotation", "evidence_index", "字段", "元数据",
+    "无法判断", "信息不足", "不能确定",
+)
+MODEL_VISIBLE_FORBIDDEN_KEYS = {"gold_answer", "gt_answer", "answer_key_hidden"}
+INCOMPLETE_CHOICE_RE = re.compile(r"(\bto the (?:left|right) of|\bin front of|\bbehind)$", re.I)
 
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -93,7 +101,7 @@ def normalize_paths(value: Any) -> List[str]:
 
 def media_paths(item: Dict[str, Any]) -> List[str]:
     paths: List[str] = []
-    for key in ("image", "media", "images", "auxiliary_images", "image_refs", "evidence_ref"):
+    for key in ("image_path", "image", "media", "images", "auxiliary_images", "image_refs", "evidence_ref"):
         paths.extend(normalize_paths(item.get(key)))
     meta = item.get("metadata")
     if isinstance(meta, dict):
@@ -178,6 +186,46 @@ def has_duplicate_options(options: Any) -> bool:
     return len(values) != len(set(values))
 
 
+def normalized_option_surface(value: Any) -> str:
+    text = str(value).casefold().strip()
+    text = re.sub(r"\bthe target\b", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def has_normalized_duplicate_options(options: Any) -> bool:
+    values = [normalized_option_surface(v) for v in option_values(options)]
+    return len(values) != len(set(values))
+
+
+def incomplete_option_keys(options: Any) -> List[str]:
+    keys = option_keys(options)
+    return [keys[idx] for idx, value in enumerate(option_values(options)) if INCOMPLETE_CHOICE_RE.search(str(value).strip())]
+
+
+def answer_points_to_incomplete_option(answer: Any, options: Any) -> bool:
+    if not options or isinstance(answer, list):
+        return False
+    text = str(answer).strip()
+    keys = option_keys(options)
+    values = option_values(options)
+    by_key = {key.upper(): str(values[idx]) for idx, key in enumerate(keys)}
+    if text.upper() in by_key:
+        return bool(INCOMPLETE_CHOICE_RE.search(by_key[text.upper()].strip()))
+    return bool(INCOMPLETE_CHOICE_RE.search(text))
+
+
+def marker_label_references_present(question_text: str, options: Any, labels: Sequence[Any]) -> bool:
+    haystack = " ".join([question_text, *[str(value) for value in option_values(options)]])
+    for raw_label in labels:
+        label = str(raw_label or "").strip()
+        if not label:
+            continue
+        if not re.search(rf"(?<![A-Za-z0-9]){re.escape(label)}(?![A-Za-z0-9])", haystack):
+            return False
+    return True
+
+
 def answer_in_options(answer: Any, options: Any) -> bool:
     if not options:
         return True
@@ -207,8 +255,15 @@ def check_item(item: Dict[str, Any], args: argparse.Namespace, item_file_dir: Pa
             }
         )
 
-    if not str(item.get("question") or item.get("question_text") or "").strip():
+    question_text = str(item.get("question") or item.get("question_text") or "").strip()
+    if not question_text:
         add("missing_question", "error", {}, "Regenerate item with a non-empty question.")
+    for term in FORBIDDEN_QUESTION_TERMS:
+        if term in question_text:
+            add("question_leaks_gt_or_meta", "error", {"term": term, "question": question_text}, "Rewrite the question without GT field names, metadata terms, or unanswerable wording.")
+    leaked_keys = sorted(k for k in item.keys() if k in MODEL_VISIBLE_FORBIDDEN_KEYS)
+    if leaked_keys:
+        add("forbidden_visible_key", "error", {"keys": leaked_keys}, "Move hidden answer fields into ground_truth sidecar before model-facing packaging.")
     answer = gold_answer(item)
     if answer in (None, "", [], {}):
         add("missing_gold_answer", "error", {}, "Fix answer program or GT linkage before evaluation.")
@@ -230,15 +285,52 @@ def check_item(item: Dict[str, Any], args: argparse.Namespace, item_file_dir: Pa
             if not ok:
                 add("media_decode_failed", "error", {"path": raw_path, "resolved": str(path), "note": note}, "Regenerate item or replace corrupt image.")
 
-    options = item.get("options")
+    options = item.get("options") if "options" in item else item.get("choices")
     at = answer_type(item)
     if options:
         if has_duplicate_options(options):
-            add("duplicate_options", "warning", {"options": options}, "Regenerate stronger distractors with unique option texts.")
+            add("duplicate_options", "error", {"options": options}, "Regenerate stronger distractors with unique option texts; duplicated options are invalid.")
+        if has_normalized_duplicate_options(options):
+            add(
+                "normalized_duplicate_options",
+                "error",
+                {"options": options},
+                "Regenerate options; option text must remain distinct after removing filler such as 'the target'.",
+            )
+        incomplete_keys = incomplete_option_keys(options)
+        if incomplete_keys:
+            add(
+                "incomplete_option_text",
+                "error",
+                {"option_keys": incomplete_keys, "options": options},
+                "Regenerate choices; no option may end with dangling spatial text like 'to the left of', 'in front of', or 'behind'.",
+            )
+        if answer_points_to_incomplete_option(answer, options):
+            add(
+                "gold_answer_surface_shortcut",
+                "error",
+                {"answer": answer, "options": options},
+                "The correct option has a unique malformed surface form; regenerate balanced complete choices.",
+            )
         if answer not in (None, "", [], {}) and not answer_in_options(answer, options):
             add("answer_not_in_options", "error", {"answer": answer, "options": options}, "Fix option mapping so gold answer is valid.")
     if ("choice" in at or str(item.get("question_format", "")).startswith(("F1", "F2", "F3"))) and not options:
         add("choice_item_missing_options", "error", {"answer_type": at}, "Choice item must include options.")
+
+    metadata = item.get("metadata")
+    if isinstance(metadata, dict):
+        anchor_policy = metadata.get("question_anchor_policy") or metadata.get("visual_marker_policy")
+        if isinstance(anchor_policy, dict) and anchor_policy.get("requires_processed_marker_image"):
+            marker_labels = anchor_policy.get("marker_labels") or anchor_policy.get("labels") or []
+            if not paths:
+                add("marker_template_missing_processed_media", "error", {"anchor_policy": anchor_policy}, "Templates that require visual markers must provide processed marker media.")
+            if marker_labels and not marker_label_references_present(question_text, options, marker_labels):
+                add(
+                    "marker_labels_not_referenced",
+                    "error",
+                    {"marker_labels": marker_labels, "question": question_text, "options": options},
+                    "Question text or options must reference the neutral A/B/C/D markers shown on the processed image.",
+                )
 
     if not (item.get("evidence_refs") or item.get("evidence_ref") or item.get("provenance") or item.get("metadata")):
         add("missing_evidence_trace", "warning", {}, "Attach evidence refs and source provenance.")

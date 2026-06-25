@@ -21,6 +21,7 @@ description: Use for the BenchClaw skill `stage2-data-collect` when the workflow
 - `existing-benchmark-collection-analysis` 必须运行时动态枚举 `BENCHCLAW_ROOT/benchmarkDatasetCards` 下的直接子文件夹，并按每个文件夹内的 `SKILL.md` 作为独立 benchmark 数据集卡处理；不得硬编码数据集名称或修改数据集卡目录。
 - `simulator-collection-analysis` 必须运行时动态枚举 `BENCHCLAW_ROOT/simulatorCards` 下的直接子文件夹，并按每个文件夹内的 `SKILL.md` 作为独立仿真器卡处理；计划要求执行的仿真器必须真实运行并采集本次运行产生的观测、状态、动作和 GT，不得硬编码仿真器名称或修改仿真器卡目录。
 - 对仿真器 work unit，任何一次采集如果没有真实图像/渲染帧落盘，不能被视为完成、失败退出或可阻塞终止；必须立即回到采集循环重新尝试，直到至少有一个真实图像被写入 `observations/` 和 `media_manifest.jsonl`。零图像结果只能算一次无效尝试，不能写 `DONE.json`、不能写 `BLOCKED.json` 作为终局，也不能改用占位图、历史缓存、手写媒体或模型幻觉替代。
+- 除非用户请求或 `data_13_execution_plan` 明确写出其他采集规模/禁用相关分支，本 stage 三个 terminal bundle 汇总后必须至少包含 100 张真实落盘、非空、可解码且 `decode_status: ok` 的图片或渲染帧；若另有要求，必须在 `stage2_execution_plan.yaml` 写明 `minimum_total_collected_images` 及原因，最终质量门按该显式数值检查。达不到要求时不得写 `_STAGE_DONE.json`，必须继续采集或写明外部约束导致的显式例外。
 - `stage2-plan-generation` 必须在 `stage2_execution_plan.yaml` 中固化三类数据源的唯一 card 根目录、唯一消费节点、唯一输出 bundle 和同一并行 ready group：真实图片只能来自 `BENCHCLAW_ROOT/realDataCards` 并进入 `data_14_real_image_collection_bundle`，已有 benchmark 只能来自 `BENCHCLAW_ROOT/benchmarkDatasetCards` 并进入 `data_15_existing_benchmark_collection_bundle`，仿真器只能来自 `BENCHCLAW_ROOT/simulatorCards` 并进入 `data_16_simulator_collection_bundle`；任何跨类别读取、错分输出或未进入并行 ready group 的计划都必须 BLOCKED。
 - `stage2-plan-generation` 必须在 `stage2_execution_plan.yaml` 中写出 `parallel_dag.nodes[]` 与 `parallel_dag.edges[]`，把每个实际发现的数据源展开成精确 subskill 调用节点；执行者必须按该显式 DAG 的 ready set 并行运行，不得把各数据源隐式串行化。
 - 三类数据源的规整与物化都必须遵守 `templates/collection_bundle_contract.md`：媒体真实落盘，图片必须可解码并记录尺寸/sha256，样本必须保留来源、原始字段、关键标签或 GT，不得写 placeholder、空数据或虚假数据。
@@ -28,7 +29,7 @@ description: Use for the BenchClaw skill `stage2-data-collect` when the workflow
 
 ## Registered Node Skill Names
 
-本 stage 调度 ready 节点时，必须使用下面这些显式 skill 名：
+本 stage 调度 ready 节点时，必须通过 `/benchclaw-subskill` 创建 `child-skill-module-runner` 子 agent，并使用下面这些显式 skill 名：
 
 - `stage2-plan-generation` -> `benchclaw-stage2-plan-generation`
 - `real-image-collection-analysis` -> `benchclaw-stage2-real-image-collection-analysis`
@@ -38,6 +39,10 @@ description: Use for the BenchClaw skill `stage2-data-collect` when the workflow
 ## Node Context Return Protocol
 
 每个节点只向 stage 返回：节点状态、per-dataset 或 per-simulator artifact 路径、关键计数、阻塞原因和简短摘要。不要把数据卡全文、采集长日志、枚举结果全文或中间大 JSONL 正文继续回灌。
+
+## Opencode 子 agent 调度契约
+
+每个 ready node 和每个 `stage2_execution_plan.yaml.parallel_dag.nodes[]` 中的 nested subskill 都必须通过 `/benchclaw-subskill` 派发到 `child-skill-module-runner` 子 agent。调用参数必须包含注册 skill 名、目标 `SKILL.md` 绝对路径、冻结的四个根路径、work_unit id、输入/输出 artifact 路径、父依赖和完成判据。stage manager 或 source node 禁止在自身上下文内直接执行 node/subskill 步骤；无法创建子 agent 时必须写 `BLOCKED`。
 
 ## 输入
 
@@ -56,12 +61,12 @@ description: Use for the BenchClaw skill `stage2-data-collect` when the workflow
 
 1. 从 `dag.json` 读取节点依赖。
 2. 每轮选择所有 parents 已完成且未执行的 ready 节点。
-3. 对 ready 节点调用对应的已注册 skill 名：`stage2-plan-generation -> benchclaw-stage2-plan-generation`，`real-image-collection-analysis -> benchclaw-stage2-real-image-collection-analysis`，`existing-benchmark-collection-analysis -> benchclaw-stage2-existing-benchmark-collection-analysis`，`simulator-collection-analysis -> benchclaw-stage2-simulator-collection-analysis`。
-4. `stage2-plan-generation` 完成后，先读取 `stage2_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，且必须精确调用节点声明的 `subskill_path`。
+3. 对 ready 节点用 `/benchclaw-subskill` 调用对应的已注册 skill 名：`stage2-plan-generation -> benchclaw-stage2-plan-generation`，`real-image-collection-analysis -> benchclaw-stage2-real-image-collection-analysis`，`existing-benchmark-collection-analysis -> benchclaw-stage2-existing-benchmark-collection-analysis`，`simulator-collection-analysis -> benchclaw-stage2-simulator-collection-analysis`。
+4. `stage2-plan-generation` 完成后，先读取 `stage2_execution_plan.yaml` 的 `parallel_dag`；`parallel_dag.nodes[]` 中 `parents: []` 的所有数据源 subskill 节点必须组成同一 ready set 并行启动，且必须通过 `/benchclaw-subskill` 精确调用节点声明的 `subskill_path`。
 5. 每个 work unit 的后续 subskill 只依赖同一 `work_unit_id` 的前置 subskill；不同数据源之间不得互相等待，除非 `parallel_dag.edges[]` 明确声明且原因写入计划。
 6. 三个类别 summary barrier 只等待本类别 work unit 的末端 subskill；Stage2 最终完成门才等待三个 terminal artifacts。
 7. 并行分支共享输入必须只读，共享输出必须写入各自 artifact 目录；各类别内部也必须按自身 card 类别拆分 work unit 并行处理，完成后再串行汇总根 bundle。
-8. 本 stage 只在所有 terminal artifacts 完成且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
+8. 本 stage 只在所有 terminal artifacts 完成、三类 bundle 汇总的有效图片媒体总数满足默认 100 张下限（或有显式例外）且质量门通过后写 `_STAGE_DONE.json` 与 `_stage_report.md`。
 
 ## 终端数据
 

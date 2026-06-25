@@ -3,11 +3,19 @@ name: benchclaw-stage2-simulator-collection-analysis
 description: Use for the specific BenchClaw node skill `stage2-simulator-collection-analysis` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 仿真器采集与分析
 
 ## 内部层级
 
-本节点包含两个 subskill，按每个仿真器和任务族独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
+本节点包含两个 subskill，按每个仿真器和任务族独立运行。运行时必须优先通过 `/benchclaw-subskill` 按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/data-acquisition/SKILL.md
@@ -16,7 +24,7 @@ subskills/gt-materialization/SKILL.md
 
 ## Registered Subskill Names
 
-本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+本节点的内部 DAG 在 opencode 中必须通过 `/benchclaw-subskill` 显式派发以下 skill 名：
 
 - `data-acquisition` -> `benchclaw-stage2-simulator-data-acquisition`
 - `gt-materialization` -> `benchclaw-stage2-simulator-gt-materialization`
@@ -84,7 +92,7 @@ simulator::<simulator_id>::<task_family>::data-acquisition
 simulator::<simulator_id>::<task_family>::gt-materialization
 ```
 
-这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
+这两个节点必须分别通过 `/benchclaw-subskill` 精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
 benchclaw-stage2-simulator-data-acquisition
@@ -150,7 +158,8 @@ artifacts/data_16_simulator_collection_bundle/simulators/<simulator_id>/<task_fa
 3. 对每个待执行仿真器和任务族真实运行仿真器，采集观测、状态、动作、场景配置和 privileged GT。
 4. 在各自 per-simulator 目录中物化观测媒体、媒体 manifest、状态日志、GT、随机种子、环境版本、执行命令和运行日志。
 5. 如果采集结果中没有真实图像或渲染帧，不能结束当前 work unit；必须记录本次失败尝试并立刻重试。采集失败必须记录失败原因与复现命令，不可改用未授权数据、历史缓存或占位产物替代。
-6. 所有 work unit 完成后，串行汇总 per-simulator 结果到 bundle 根目录。
+6. 统计本分支贡献的有效图片数：根 `media_manifest.jsonl` 中 `modality: image`、`decode_status: ok`、文件存在且非空的唯一 `workspace_path`。若 Stage2 汇总默认 100 张下限尚未满足且仿真器可继续运行，必须继续采集或补采，不能只因每个 work unit 至少有 1 张图就结束。
+7. 所有 work unit 完成后，串行汇总 per-simulator 结果到 bundle 根目录。
 
 ## 汇总输出
 
@@ -171,4 +180,5 @@ artifacts/data_16_simulator_collection_bundle/simulators/<simulator_id>/<task_fa
 - 每个 work unit 的 `simulator_id`、`task_family`、`run_id`、执行命令、随机种子、环境版本和 per-simulator 输出目录
 - 每个 work unit 的 `tmux_session_name`、`log_path`、`monitoring_log_path`、15 秒监控记录摘要和最终退出状态
 - 真实采集产物清单和校验信息
+- 本分支有效图片总数，以及对 Stage2 默认 100 张总下限的贡献
 - 被阻塞的仿真器、任务族及原因，如有

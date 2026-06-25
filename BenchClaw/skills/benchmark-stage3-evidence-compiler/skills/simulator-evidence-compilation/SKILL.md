@@ -3,11 +3,19 @@ name: benchclaw-stage3-simulator-evidence-compilation
 description: Use for the specific BenchClaw node skill `stage3-simulator-evidence-compilation` only when its parent stage explicitly dispatches to it.
 ---
 
+## Opencode 子 agent 触发契约
+
+本文件是 BenchClaw child skill module。父级 stage、node 或 pipeline 调度到本文件时，必须通过 opencode 命令 `/benchclaw-subskill` 启动隔离子 agent；该命令在 `BENCHCLAW_ROOT/opencode.json` 中配置为 `subtask: true`，并绑定 `mode: "subagent"` 的 `child-skill-module-runner`。禁止父级 manager 直接在自己的对话上下文中内联执行本文件步骤。
+
+调用 `/benchclaw-subskill` 时必须传入：目标 `SKILL.md` 绝对路径、注册 skill 名、冻结的 `PROJECT_ROOT` / `BENCHCLAW_ROOT` / `WORKSPACE_PARENT` / `WORKSPACE_ROOT`、当前 node 或 work_unit id、已满足的输入 artifact 路径、期望输出 artifact 路径、父级 DAG 依赖与完成判据。子 agent 只返回 `status`、artifact 路径、证据摘要和 blockers，不回灌长日志或完整中间内容。
+
+如果当前执行上下文不是 `/benchclaw-subskill` 产生的 `child-skill-module-runner` 子 agent，本文件不得继续执行；应立即返回 `BLOCKED`，说明必须由父级使用 `/benchclaw-subskill` 重新派发。
+
 # Node Skill — 仿真器清洗与标注
 
 ## 内部层级
 
-本节点包含两个内部 subskill，按仿真器、任务族或场景 work unit 独立运行。运行时必须优先按已注册 skill 名调度，下面的路径仅用于源码定位：
+本节点包含两个内部 subskill，按仿真器、任务族或场景 work unit 独立运行。运行时必须优先通过 `/benchclaw-subskill` 按已注册 skill 名调度，下面的路径仅用于源码定位：
 
 ```text
 subskills/cleaning/SKILL.md
@@ -16,7 +24,7 @@ subskills/annotation/SKILL.md
 
 ## Registered Subskill Names
 
-本节点的内部 DAG 在 opencode 中必须显式调用以下 skill 名：
+本节点的内部 DAG 在 opencode 中必须通过 `/benchclaw-subskill` 显式派发以下 skill 名：
 
 - `cleaning` -> `benchclaw-stage3-simulator-cleaning`
 - `annotation` -> `benchclaw-stage3-simulator-annotation`
@@ -51,7 +59,7 @@ simulator::<work_unit_id>::cleaning
 simulator::<work_unit_id>::annotation
 ```
 
-这两个节点必须分别精确调用对应的已注册 skill 名；文件路径只作为源码定位：
+这两个节点必须分别通过 `/benchclaw-subskill` 精确调用对应的已注册 skill 名；文件路径只作为源码定位：
 
 ```text
 benchclaw-stage3-simulator-cleaning
